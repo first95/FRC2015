@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
+import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 
 
 /**
@@ -42,14 +43,16 @@ public class Robot2015 extends IterativeRobot {
      */
     public void robotInit() {
         frontLeft = new Talon(1);
-        frontRight = new Talon(2);
-        backLeft = new Talon(3);
-        backRight = new Talon(4);
+        frontRight = new Talon(4);
+        backLeft = new Talon(2);
+        backRight = new Talon(3);
         frontLeftEncoder = new Encoder(2, 3);
         backLeftEncoder = new Encoder(4, 5);
         frontRightEncoder = new Encoder(6, 7);
         backRightEncoder = new Encoder(8, 9);
         driveTrain = new RobotDrive(frontLeft, backLeft, frontRight, backRight);
+        driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
+        driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
         
         gyro = new Gyro(1);
         accel = new ADXL345_I2C(1, ADXL345_I2C.DataFormat_Range.k2G); // TODO: Find out exactly what this does.
@@ -74,12 +77,13 @@ public class Robot2015 extends IterativeRobot {
      */
     public void teleopPeriodic() {
         double x, y, rotate, turned;
-        x = chasis.getAxis(Joystick.AxisType.kX);
+        x = chasis.getAxis(Joystick.AxisType.kTwist);
         y = chasis.getAxis(Joystick.AxisType.kY);
-        rotate = chasis.getAxis(Joystick.AxisType.kTwist);
+        rotate = chasis.getAxis(Joystick.AxisType.kX);
         turned = gyro.getAngle();
         
-        driveTrain.mecanumDrive_Cartesian(x, y, rotate, turned);
+        driveTrain.mecanumDrive_Cartesian(x, y, 0.0, 0.0); // Change once hay gyroscope.
+        //driveTrain.tankDrive(x, y);
         
         double accelX, accelY;
         accelX = Math.cos(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kX) +
