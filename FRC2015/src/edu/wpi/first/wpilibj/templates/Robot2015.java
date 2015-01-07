@@ -13,6 +13,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Gyro;
+import edu.wpi.first.wpilibj.Accelerometer;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.ADXL345_I2C;
+import java.lang.Math;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,9 +27,13 @@ import edu.wpi.first.wpilibj.Gyro;
  */
 public class Robot2015 extends IterativeRobot {
     Talon frontLeft, frontRight, backLeft, backRight;
+    Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder;
     RobotDrive driveTrain;
     
     Gyro gyro;
+    ADXL345_I2C accel;
+    
+    PositionTracker xDisplacement, yDisplacement;
     
     Joystick chasis, weapons;
     
@@ -38,9 +46,17 @@ public class Robot2015 extends IterativeRobot {
         frontRight = new Talon(2);
         backLeft = new Talon(3);
         backRight = new Talon(4);
+        frontLeftEncoder = new Encoder(2, 3);
+        backLeftEncoder = new Encoder(4, 5);
+        frontRightEncoder = new Encoder(6, 7);
+        backRightEncoder = new Encoder(8, 9);
         driveTrain = new RobotDrive(frontLeft, backLeft, frontRight, backRight);
         
         gyro = new Gyro(1);
+        accel = new ADXL345_I2C(1, ADXL345_I2C.DataFormat_Range.k2G); // TODO: Find out exactly what this does.
+        
+        xDisplacement = new PositionTracker();
+        yDisplacement = new PositionTracker();
         
         chasis = new Joystick(1);
         weapons = new Joystick(2);
@@ -65,6 +81,14 @@ public class Robot2015 extends IterativeRobot {
         turned = gyro.getAngle();
         
         driveTrain.mecanumDrive_Cartesian(x, y, rotate, turned);
+        
+        double accelX, accelY;
+        accelX = Math.cos(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kX) +
+                 Math.sin(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kY);
+        accelY = Math.cos(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kX) +
+                 Math.sin(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kY);
+        xDisplacement.update(accelX);
+        yDisplacement.update(accelY);
     }
     
     /**
