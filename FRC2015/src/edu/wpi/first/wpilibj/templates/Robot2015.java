@@ -13,10 +13,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Gyro;
-import edu.wpi.first.wpilibj.Accelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
-import java.lang.Math;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -75,9 +74,9 @@ public class Robot2015 extends IterativeRobot {
      */
     public void teleopPeriodic() {
         double x, y, rotate, turned;
-        x = chasis.getRawAxis(1);
-        y = chasis.getRawAxis(3);
-        rotate = chasis.getRawAxis(2);
+        x = chasis.getAxis(Joystick.AxisType.kX);
+        y = chasis.getAxis(Joystick.AxisType.kY);
+        rotate = chasis.getAxis(Joystick.AxisType.kTwist);
         turned = gyro.getAngle();
         
         driveTrain.mecanumDrive_Cartesian(x, y, rotate, turned);
