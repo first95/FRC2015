@@ -30,10 +30,10 @@ public class Robot2015 extends IterativeRobot {
     Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder;
     RobotDrive driveTrain;
     
-    Gyro gyro;
+    ITG3200_I2C gyro;
     ADXL345_I2C accel;
     
-    PositionTracker xDisplacement, yDisplacement;
+    PositionTracker xDisplacement, yDisplacement, rotationTracker;
     
     Joystick chasis, weapons;
     
@@ -54,11 +54,12 @@ public class Robot2015 extends IterativeRobot {
         driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
         
-        gyro = new Gyro(1);
+        gyro = new ITG3200_I2C(1);
         accel = new ADXL345_I2C(1, ADXL345_I2C.DataFormat_Range.k2G); // TODO: Find out exactly what this does.
         
         xDisplacement = new PositionTracker();
         yDisplacement = new PositionTracker();
+        rotationTracker = new PositionTracker();
         
         chasis = new Joystick(1);
         weapons = new Joystick(2);
@@ -80,7 +81,7 @@ public class Robot2015 extends IterativeRobot {
         x = chasis.getAxis(Joystick.AxisType.kTwist);
         y = chasis.getAxis(Joystick.AxisType.kY);
         rotate = chasis.getAxis(Joystick.AxisType.kX);
-        turned = gyro.getAngle();
+        turned = rotationTracker.mVelocityIntegral;
         
         driveTrain.mecanumDrive_Cartesian(x, y, 0.0, 0.0); // Change once hay gyroscope.
         //driveTrain.tankDrive(x, y);
@@ -92,6 +93,7 @@ public class Robot2015 extends IterativeRobot {
                  Math.sin(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kY);
         xDisplacement.update(accelX);
         yDisplacement.update(accelY);
+        rotationTracker.update(gyro.getRate());
     }
     
     /**
