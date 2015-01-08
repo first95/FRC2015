@@ -37,6 +37,9 @@ public class Robot2015 extends IterativeRobot {
     
     Joystick chasis, weapons;
     
+    ButtonTracker changeDriveStyle;
+    boolean driveStyle;
+    
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -64,6 +67,8 @@ public class Robot2015 extends IterativeRobot {
         chasis = new Joystick(1);
         weapons = new Joystick(2);
 
+        changeDriveStyle = new ButtonTracker(chasis, 2);
+        driveStyle = false; // False == traditional
     }
 
     /**
@@ -77,13 +82,28 @@ public class Robot2015 extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        double x, y, rotate, turned;
-        x = chasis.getAxis(Joystick.AxisType.kTwist);
-        y = chasis.getAxis(Joystick.AxisType.kY);
-        rotate = chasis.getAxis(Joystick.AxisType.kX);
+        if (changeDriveStyle.justPressedp()) {
+            driveStyle = !driveStyle;
+        }
+        
+        double x, y, rotate, turned, sensitivity;
+        sensitivity = (chasis.getAxis(Joystick.AxisType.kZ) + 1) * 0.25 + 0.5;
+        if (driveStyle) {
+            x = chasis.getAxis(Joystick.AxisType.kThrottle);
+            y = chasis.getAxis(Joystick.AxisType.kY);
+            rotate = -chasis.getAxis(Joystick.AxisType.kX);
+        } else {
+            x = chasis.getAxis(Joystick.AxisType.kX);
+            y = chasis.getAxis(Joystick.AxisType.kY);
+            rotate = -chasis.getAxis(Joystick.AxisType.kThrottle);
+        }
+        x *= sensitivity;
+        y *= sensitivity;
+        rotate *= sensitivity;
         turned = rotationTracker.mVelocityIntegral;
         
-        driveTrain.mecanumDrive_Cartesian(x, y, 0.0, 0.0); // Change once hay gyroscope.
+        
+        driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0.0); // Change once hay gyroscope.
         //driveTrain.tankDrive(x, y);
         
         double accelX, accelY;
@@ -94,6 +114,8 @@ public class Robot2015 extends IterativeRobot {
         xDisplacement.update(accelX);
         yDisplacement.update(accelY);
         rotationTracker.update(gyro.getRate());
+        
+        changeDriveStyle.update();
     }
     
     /**
