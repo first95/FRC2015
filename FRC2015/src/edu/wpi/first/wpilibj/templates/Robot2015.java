@@ -12,11 +12,9 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -37,8 +35,9 @@ public class Robot2015 extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle;
-    boolean driveStyle;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right;
+    boolean driveStyle, rotating;
+    double 
     
     /**
      * This function is run when the robot is first started up and should be
@@ -69,6 +68,9 @@ public class Robot2015 extends IterativeRobot {
 
         changeDriveStyle = new ButtonTracker(chasis, 2);
         driveStyle = false; // False == traditional
+        rotate90Left = new ButtonTracker(chasis, 3);
+        rotate90Right = new ButtonTracker(chasis, 4);
+        
     }
 
     /**
@@ -87,19 +89,29 @@ public class Robot2015 extends IterativeRobot {
         }
         
         double x, y, rotate, turned, sensitivity;
-        sensitivity = (chasis.getAxis(Joystick.AxisType.kZ) + 1) * 0.25 + 0.5;
+        sensitivity = //(chasis.getAxis(Joystick.AxisType.kThrottle) + 1) * 0.25 + 0.5;
+                (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.25 + 0.5;
         if (driveStyle) {
-            x = chasis.getAxis(Joystick.AxisType.kThrottle);
+            x = chasis.getAxis(Joystick.AxisType.kZ);
             y = chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kX);
         } else {
             x = chasis.getAxis(Joystick.AxisType.kX);
             y = chasis.getAxis(Joystick.AxisType.kY);
-            rotate = -chasis.getAxis(Joystick.AxisType.kThrottle);
+            rotate = -chasis.getAxis(Joystick.AxisType.kZ);
         }
         x *= sensitivity;
         y *= sensitivity;
         rotate *= sensitivity;
+        if (Math.abs(x) < 0.04) {
+            x = 0;
+        }
+        if (Math.abs(y) < 0.04) {
+            y = 0;
+        }
+        if (Math.abs(rotate) < 0.04) {
+            rotate = 0;
+        }
         turned = rotationTracker.mVelocityIntegral;
         
         
