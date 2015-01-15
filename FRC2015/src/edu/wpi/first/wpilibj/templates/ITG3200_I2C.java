@@ -18,7 +18,7 @@ public class ITG3200_I2C {
     private static final byte kPowerManagement = 0x3E;
     private static final byte kPowerControlRegister = 0x00;
     // could not find kdataformatregister
-    private static final byte kDataRegister = 0x21;
+    //private static final byte kDataRegister = 0x21;
     private static final double kGsPerLSB = 14.375;
     
     
@@ -26,7 +26,7 @@ public class ITG3200_I2C {
     
     public ITG3200_I2C(Port i2cPort) {
         // dataFormat value
-        byte range = 0x00;
+        //byte range = 0x00;
         
         m_i2c = new I2C(i2cPort, kAddress);
         
