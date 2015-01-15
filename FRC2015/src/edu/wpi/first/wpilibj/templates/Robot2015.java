@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.                             */
++/* Copyright (c) FIRST 2008. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -37,7 +37,7 @@ public class Robot2015 extends IterativeRobot {
     
     ButtonTracker changeDriveStyle, rotate90Left, rotate90Right;
     boolean driveStyle, rotating;
-    double 
+    double targetAngle;
     
     /**
      * This function is run when the robot is first started up and should be
