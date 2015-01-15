@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
+import edu.wpi.first.wpilibj.I2C.Port;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -56,8 +58,8 @@ public class Robot2015 extends IterativeRobot {
         driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
         
-        gyro = new ITG3200_I2C(1);
-        accel = new ADXL345_I2C(1, ADXL345_I2C.DataFormat_Range.k2G); // TODO: Find out exactly what this does.
+        gyro = new ITG3200_I2C(Port.kOnboard);
+        accel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k2G); // TODO: Find out exactly what this does.
         
         xDisplacement = new PositionTracker();
         yDisplacement = new PositionTracker();

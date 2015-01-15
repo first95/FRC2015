@@ -6,7 +6,6 @@
 
 package edu.wpi.first.wpilibj.templates;
 
-import edu.wpi.first.wpilibj.DigitalModule;
 import edu.wpi.first.wpilibj.I2C;
 
 /**
@@ -24,12 +23,11 @@ public class ITG3200_I2C {
     
     private I2C m_i2c;
     
-    public ITG3200_I2C(int module_number) {
+    public ITG3200_I2C(I2C i2c) {
         // dataFormat value
         byte range = 0x00;
         
-        DigitalModule module = DigitalModule.getInstance(module_number);
-        m_i2c = module.getI2C(kAddress);
+        m_i2c = i2c;
         
         m_i2c.write(kPowerManagement, kPowerControlRegister);
     }
