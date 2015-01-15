@@ -7,6 +7,7 @@
 package edu.wpi.first.wpilibj.templates;
 
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 
 /**
  *
@@ -23,11 +24,11 @@ public class ITG3200_I2C {
     
     private I2C m_i2c;
     
-    public ITG3200_I2C(I2C i2c) {
+    public ITG3200_I2C(Port i2cPort) {
         // dataFormat value
         byte range = 0x00;
         
-        m_i2c = i2c;
+        m_i2c = new I2C(i2cPort, kAddress);
         
         m_i2c.write(kPowerManagement, kPowerControlRegister);
     }
