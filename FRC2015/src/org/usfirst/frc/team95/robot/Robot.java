@@ -105,7 +105,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
     	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
-    	SmartDashboard.putNumber("PowerDistribution Total Power", powerDistribution.getTotalPower()); 
+    	SmartDashboard.putNumber("PowerDistribution Total Power", powerDistribution.getCurrent(12)); 
     	
         if (changeDriveStyle.justPressedp()) {
             driveStyle = !driveStyle;
