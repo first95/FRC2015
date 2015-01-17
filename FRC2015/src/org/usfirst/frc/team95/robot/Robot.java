@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -47,6 +48,8 @@ public class Robot extends IterativeRobot {
     double targetAngle;
     
     Timer timeOut;
+    
+    PowerDistributionPanel powerDistribution;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -86,6 +89,7 @@ public class Robot extends IterativeRobot {
         fieldcentric = true;
         
         timeOut = new Timer();
+        powerDistribution = new PowerDistributionPanel();
         
     }
 
@@ -100,6 +104,9 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+    	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
+    	SmartDashboard.putNumber("PowerDistribution Total Power", powerDistribution.getTotalPower()); 
+    	
         if (changeDriveStyle.justPressedp()) {
             driveStyle = !driveStyle;
         }
