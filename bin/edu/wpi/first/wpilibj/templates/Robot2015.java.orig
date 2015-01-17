@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package org.usfirst.frc.team95.robot;
+package edu.wpi.first.wpilibj.templates;
 
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -14,12 +14,9 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,25 +25,21 @@ import edu.wpi.first.wpilibj.BuiltInAccelerometer;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot {
+public class Robot2015 extends IterativeRobot {
     Talon frontLeft, frontRight, backLeft, backRight;
     Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder;
     RobotDrive driveTrain;
     
     ITG3200_I2C gyro;
-    ADXL345_I2C extraAccel;
-    BuiltInAccelerometer builtinAccel;
-    CommonFilter accel;
+    ADXL345_I2C accel;
     
     PositionTracker xDisplacement, yDisplacement, rotationTracker;
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric;
-    boolean driveStyle, rotating, fieldcentric;
-    double targetAngle;
-    
-    Timer timeOut;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right;
+    boolean driveStyle, rotating;
+    double 
     
     /**
      * This function is run when the robot is first started up and should be
@@ -66,26 +59,19 @@ public class Robot extends IterativeRobot {
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
         
         gyro = new ITG3200_I2C(Port.kOnboard);
-        extraAccel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k8G);
-        builtinAccel = new BuiltInAccelerometer();
-        accel = new CommonFilter(extraAccel, builtinAccel);
+        accel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k2G); // TODO: Find out exactly what this does.
         
         xDisplacement = new PositionTracker();
         yDisplacement = new PositionTracker();
         rotationTracker = new PositionTracker();
         
-        chasis = new Joystick(0);
-        weapons = new Joystick(1);
+        chasis = new Joystick(1);
+        weapons = new Joystick(2);
 
         changeDriveStyle = new ButtonTracker(chasis, 2);
-        fieldCentric = new ButtonTracker(chasis, 5);
         driveStyle = false; // False == traditional
         rotate90Left = new ButtonTracker(chasis, 3);
         rotate90Right = new ButtonTracker(chasis, 4);
-        rotating = false;
-        fieldcentric = true;
-        
-        timeOut = new Timer();
         
     }
 
@@ -104,8 +90,7 @@ public class Robot extends IterativeRobot {
             driveStyle = !driveStyle;
         }
         
-        double x, y, rotate, turned, sensitivity, temp;
-        turned = rotationTracker.mVelocityIntegral;
+        double x, y, rotate, turned, sensitivity;
         sensitivity = //(chasis.getAxis(Joystick.AxisType.kThrottle) + 1) * 0.25 + 0.5;
                 (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.25 + 0.5;
         if (driveStyle) {
@@ -129,46 +114,10 @@ public class Robot extends IterativeRobot {
         if (Math.abs(rotate) < 0.04) {
             rotate = 0;
         }
+        turned = rotationTracker.mVelocityIntegral;
         
-        if (fieldcentric) {
-        	temp = Math.cos(turned) * x + Math.sin(turned) * y;
-        	y = Math.sin(turned) * x + Math.cos(turned) * y;
-        	x = temp;
-        }
         
-        if (fieldCentric.justPressedp()) {
-        	fieldcentric = !fieldcentric;
-        }
-        
-        if (rotate90Right.justPressedp()) {
-        	targetAngle = rotationTracker.mVelocityIntegral - 90;
-        	System.out.println(targetAngle);
-        	rotating = true;
-        	timeOut.start();
-        }
-        else if(rotate90Left.justPressedp()){
-        	targetAngle = rotationTracker.mVelocityIntegral + 90;
-        	System.out.println(targetAngle);
-        	rotating = true;
-        	timeOut.start();
-        }
-        else {
-        	//rotating = false;
-        }
-        
-        if (Math.abs(rotationTracker.mVelocityIntegral - targetAngle) < 1 ||
-        		timeOut.get() > 5) {
-        	rotating = false;
-        	timeOut.stop();
-        	timeOut.reset();
-        }
-        
-        if (rotating) {
-        	driveTrain.mecanumDrive_Cartesian(x, y, targetAngle, rotationTracker.mVelocityIntegral);
-        	System.out.println(rotationTracker.mVelocityIntegral);
-        } else {
-        	driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0.0); // Change once hay gyroscope.
-        }
+        driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0.0); // Change once hay gyroscope.
         //driveTrain.tankDrive(x, y);
         
         double accelX, accelY;
@@ -181,9 +130,6 @@ public class Robot extends IterativeRobot {
         rotationTracker.update(gyro.getRate());
         
         changeDriveStyle.update();
-        rotate90Right.update();
-        rotate90Left.update();
-        fieldCentric.update();
     }
     
     /**
