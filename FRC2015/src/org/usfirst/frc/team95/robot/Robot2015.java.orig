@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package edu.wpi.first.wpilibj.templates;
+package org.usfirst.frc.team95.robot;
 
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -39,7 +39,7 @@ public class Robot2015 extends IterativeRobot {
     
     ButtonTracker changeDriveStyle, rotate90Left, rotate90Right;
     boolean driveStyle, rotating;
-    double targetAngle;
+    double 
     
     /**
      * This function is run when the robot is first started up and should be
@@ -72,7 +72,6 @@ public class Robot2015 extends IterativeRobot {
         driveStyle = false; // False == traditional
         rotate90Left = new ButtonTracker(chasis, 3);
         rotate90Right = new ButtonTracker(chasis, 4);
-        rotating = false;
         
     }
 
@@ -114,20 +113,6 @@ public class Robot2015 extends IterativeRobot {
         }
         if (Math.abs(rotate) < 0.04) {
             rotate = 0;
-        }
-        if (rotate90Right.justPressedp()) {
-        	targetAngle = rotationTracker.mVelocityIntegral + 90;
-        	rotating = true;
-        }
-        else if(rotate90Left.justPressedp()){
-        	targetAngle = rotationTracker.mVelocityIntegral - 90;
-        	rotating = true;
-        }
-        else {
-        	rotating = false;
-        }
-        if (rotating) {
-        	driveTrain.mecanumDrive_Cartesian(x, y, targetAngle, rotationTracker.mVelocityIntegral);
         }
         turned = rotationTracker.mVelocityIntegral;
         
