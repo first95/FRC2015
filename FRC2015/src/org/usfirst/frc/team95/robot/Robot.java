@@ -14,9 +14,11 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,6 +42,8 @@ public class Robot extends IterativeRobot {
     ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric;
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
+    
+    Timer timeOut;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -75,6 +79,8 @@ public class Robot extends IterativeRobot {
         rotate90Right = new ButtonTracker(chasis, 4);
         rotating = false;
         fieldcentric = true;
+        
+        timeOut = new Timer();
         
     }
 
@@ -130,23 +136,34 @@ public class Robot extends IterativeRobot {
         }
         
         if (rotate90Right.justPressedp()) {
-        	targetAngle = rotationTracker.mVelocityIntegral + 90;
+        	targetAngle = rotationTracker.mVelocityIntegral - 90;
+        	System.out.println(targetAngle);
         	rotating = true;
+        	timeOut.start();
         }
         else if(rotate90Left.justPressedp()){
-        	targetAngle = rotationTracker.mVelocityIntegral - 90;
+        	targetAngle = rotationTracker.mVelocityIntegral + 90;
+        	System.out.println(targetAngle);
         	rotating = true;
+        	timeOut.start();
         }
         else {
-        	rotating = false;
+        	//rotating = false;
         }
+        
+        if (Math.abs(rotationTracker.mVelocityIntegral - targetAngle) < 1 ||
+        		timeOut.get() > 5) {
+        	rotating = false;
+        	timeOut.stop();
+        	timeOut.reset();
+        }
+        
         if (rotating) {
         	driveTrain.mecanumDrive_Cartesian(x, y, targetAngle, rotationTracker.mVelocityIntegral);
+        	System.out.println(rotationTracker.mVelocityIntegral);
+        } else {
+        	driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0.0); // Change once hay gyroscope.
         }
-        
-        
-        
-        driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0.0); // Change once hay gyroscope.
         //driveTrain.tankDrive(x, y);
         
         double accelX, accelY;
