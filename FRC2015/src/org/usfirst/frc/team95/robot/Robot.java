@@ -172,10 +172,10 @@ public class Robot extends IterativeRobot {
         //driveTrain.tankDrive(x, y);
         
         double accelX, accelY;
-        accelX = Math.cos(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kX) +
-                 Math.sin(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kY);
-        accelY = Math.cos(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kX) +
-                 Math.sin(turned) * accel.getAcceleration(ADXL345_I2C.Axes.kY);
+        accelX = Math.cos(turned) * accel.getXAcceleration() +
+                 Math.sin(turned) * accel.getXAcceleration();
+        accelY = Math.cos(turned) * accel.getYAcceleration() +
+                 Math.sin(turned) * accel.getYAcceleration();
         xDisplacement.update(accelX);
         yDisplacement.update(accelY);
         rotationTracker.update(gyro.getRate());
