@@ -2,7 +2,7 @@ package org.usfirst.frc.team95.robot;
 
 import edu.wpi.first.wpilibj.SpeedController;
 
-public class MotorWrapper {
+public class MotorWrapper implements SpeedController {
 	SpeedController wrappedMotor;
 	
 	public MotorWrapper(SpeedController wrappedMotor) {
@@ -11,11 +11,39 @@ public class MotorWrapper {
 	
 	public void set(double speed) {
 		double currentSpeed;
-		double targetSpeed;
 		currentSpeed = wrappedMotor.get();
 		if (Math.abs(speed - currentSpeed) >= .5) {
-			targetSpeed = 
+			if (speed > 0) {
+				wrappedMotor.set(currentSpeed + 0.5);
+			} else {
+				wrappedMotor.set(currentSpeed + 0.5);
+			}
+		} else {
+			wrappedMotor.set(speed);
 		}
+	}
+
+	@Override
+	public void pidWrite(double output) {
+		wrappedMotor.pidWrite(output);
+		
+	}
+
+	@Override
+	public double get() {
+		return wrappedMotor.get();
+	}
+
+	@Override
+	public void set(double speed, byte syncGroup) {
+		set(speed);
+		
+	}
+
+	@Override
+	public void disable() {
+		wrappedMotor.disable();
+		
 	}
 
 }
