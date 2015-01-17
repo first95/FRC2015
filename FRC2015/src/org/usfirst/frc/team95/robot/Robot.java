@@ -65,8 +65,8 @@ public class Robot extends IterativeRobot {
         yDisplacement = new PositionTracker();
         rotationTracker = new PositionTracker();
         
-        chasis = new Joystick(1);
-        weapons = new Joystick(2);
+        chasis = new Joystick(0);
+        weapons = new Joystick(1);
 
         changeDriveStyle = new ButtonTracker(chasis, 2);
         fieldCentric = new ButtonTracker(chasis, 5);
