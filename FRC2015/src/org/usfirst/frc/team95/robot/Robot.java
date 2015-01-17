@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -33,7 +34,9 @@ public class Robot extends IterativeRobot {
     RobotDrive driveTrain;
     
     ITG3200_I2C gyro;
-    ADXL345_I2C accel;
+    ADXL345_I2C extraAccel;
+    BuiltInAccelerometer builtinAccel;
+    CommonFilter accel;
     
     PositionTracker xDisplacement, yDisplacement, rotationTracker;
     
@@ -63,7 +66,9 @@ public class Robot extends IterativeRobot {
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
         
         gyro = new ITG3200_I2C(Port.kOnboard);
-        accel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k2G); // TODO: Find out exactly what this does.
+        extraAccel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k8G);
+        builtinAccel = new BuiltInAccelerometer();
+        accel = new CommonFilter(extraAccel, builtinAccel);
         
         xDisplacement = new PositionTracker();
         yDisplacement = new PositionTracker();
