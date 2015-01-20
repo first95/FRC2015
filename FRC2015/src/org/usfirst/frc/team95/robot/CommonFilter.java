@@ -19,5 +19,9 @@ public class CommonFilter {
 	public double getYAcceleration() {
 		return extra.getAcceleration(ADXL345_I2C.Axes.kY) + builtin.getY() / 2;
 	}
+	
+	public double getZAcceleration() {
+		return extra.getAcceleration(ADXL345_I2C.Axes.kZ) + builtin.getZ() / 2;
+	}
 
 }
