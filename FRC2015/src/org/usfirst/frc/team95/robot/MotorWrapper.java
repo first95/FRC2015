@@ -26,6 +26,7 @@ public class MotorWrapper implements SpeedController {
 	@Override
 	public void pidWrite(double output) {
 		wrappedMotor.pidWrite(output);
+		System.out.println("If this is being printed, the pidWrite of MotorWrapper is being misused.");
 		
 	}
 

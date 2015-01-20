@@ -26,6 +26,7 @@ public class PositionTracker {
     
     void update(double acceleration)
     {
+    	mTimer.stop();
         mVelocityIntegral += (acceleration * mTimer.get());
         mDisplacementIntegral += (mVelocityIntegral * mTimer.get());
         mTimer.reset();

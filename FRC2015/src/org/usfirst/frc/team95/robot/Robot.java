@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Gyro;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,20 +32,26 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	/*
+	 * This is the definitions section, where all variables
+	 * that need to persist are declared to exist.
+	 */
+	
     Talon frontLeft, frontRight, backLeft, backRight;
+    MotorWrapper realFrontLeft, realFrontRight, realBackLeft, realBackRight;
     Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder;
     RobotDrive driveTrain;
     
-    ITG3200_I2C gyro;
+    Gyro gyro;
     ADXL345_I2C extraAccel;
     BuiltInAccelerometer builtinAccel;
     CommonFilter accel;
     
-    PositionTracker xDisplacement, yDisplacement, rotationTracker;
+    PositionTracker xDisplacement, yDisplacement, zDisplacement;
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric, markStraight;
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
     
@@ -51,31 +59,43 @@ public class Robot extends IterativeRobot {
     
     PowerDistributionPanel powerDistribution;
     
+    double[] xAccelCalibration, yAccelCalibration, zAccelCalibration, xGyroCalibration, yGyroCalibration, 
+    		zGyroCalibration;
+    
+    double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
+    
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
+    	/*
+    	 * This sets up everything's values.
+    	 */
         frontLeft = new Talon(1);
         frontRight = new Talon(4);
         backLeft = new Talon(2);
         backRight = new Talon(3);
+        realFrontLeft = new MotorWrapper(frontLeft);
+        realFrontRight = new MotorWrapper(frontRight);
+        realBackLeft = new MotorWrapper(backLeft);
+        realBackRight = new MotorWrapper(backRight);
         frontLeftEncoder = new Encoder(2, 3);
         backLeftEncoder = new Encoder(4, 5);
         frontRightEncoder = new Encoder(6, 7);
         backRightEncoder = new Encoder(8, 9);
-        driveTrain = new RobotDrive(frontLeft, backLeft, frontRight, backRight);
+        driveTrain = new RobotDrive(realFrontLeft, realBackLeft, realFrontRight, realBackRight);
         driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
         
-        gyro = new ITG3200_I2C(Port.kOnboard);
+        gyro = new Gyro(0);
         extraAccel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k8G);
         builtinAccel = new BuiltInAccelerometer();
         accel = new CommonFilter(extraAccel, builtinAccel);
         
         xDisplacement = new PositionTracker();
         yDisplacement = new PositionTracker();
-        rotationTracker = new PositionTracker();
+        zDisplacement = new PositionTracker();
         
         chasis = new Joystick(0);
         weapons = new Joystick(1);
@@ -85,25 +105,54 @@ public class Robot extends IterativeRobot {
         driveStyle = false; // False == traditional
         rotate90Left = new ButtonTracker(chasis, 3);
         rotate90Right = new ButtonTracker(chasis, 4);
+        markStraight = new ButtonTracker(chasis, 1);
         rotating = false;
         fieldcentric = true;
         
         timeOut = new Timer();
         powerDistribution = new PowerDistributionPanel();
         
+        xAccelCalibration = new double[500]; yAccelCalibration = new double[500]; zAccelCalibration = new double[500];
+        xGyroCalibration = new double[500]; yGyroCalibration = new double[500]; zGyroCalibration = new double[500];
+    }
+    
+    public void autonomousInit() {
+    	xAccelMean = mean(xAccelCalibration);
+    	yAccelMean = mean(yAccelCalibration);
+    	zAccelMean = mean(zAccelCalibration);
+    	xGyroMean = mean(xGyroCalibration);
+    	yGyroMean = mean(yGyroCalibration);
+    	zGyroMean = mean(zGyroCalibration);
     }
 
     /**
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
+    	//System.out.println(accel.getXAcceleration() + "," + accel.getYAcceleration() + "," + accel.getZAcceleration());
 
+    }
+    
+    public void disabledPeriodic() {
+    	//System.out.println(accel.getXAcceleration() + "," + accel.getYAcceleration() + "," + accel.getZAcceleration());
+    	xAccelCalibration = shift(xAccelCalibration);
+    	yAccelCalibration = shift(yAccelCalibration);
+    	zAccelCalibration = shift(zAccelCalibration);
+    	xGyroCalibration = shift(xGyroCalibration);
+    	yGyroCalibration = shift(yGyroCalibration);
+    	zGyroCalibration = shift(zGyroCalibration);
+    	
+    	xAccelCalibration[0] = accel.getXAcceleration();
+    	yAccelCalibration[0] = accel.getYAcceleration();
+    	zAccelCalibration[0] = accel.getZAcceleration();
+    	//xGyroCalibration = gyro.getRate();
     }
 
     /**
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+    	// Put currents and temperature on the smartDashboard
     	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
     	SmartDashboard.putNumber("PowerDistribution Total Motor Current", powerDistribution.getCurrent(12) + powerDistribution.getCurrent(13) + powerDistribution.getCurrent(14) + powerDistribution.getCurrent(15));
     	SmartDashboard.putNumber("PowerDistribution Back Right Motor Current", powerDistribution.getCurrent(12));
@@ -111,14 +160,31 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("PowerDistribution Back Left Motor Current", powerDistribution.getCurrent(14));
     	SmartDashboard.putNumber("PowerDistribution Front Left Motor Current", powerDistribution.getCurrent(15));
     	
+    	// Put accelerations and positions
+    	SmartDashboard.putNumber("Current X Acceleration", accel.getXAcceleration() - xAccelMean);
+    	SmartDashboard.putNumber("Current Y Acceleration", accel.getYAcceleration() - yAccelMean);
+    	SmartDashboard.putNumber("Current Z Acceleration", accel.getZAcceleration() - zAccelMean);
+    	SmartDashboard.putNumber("Current X Displacement", xDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Current Y Displacement", yDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Current Z Displacement", zDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
+    	SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
+    	
+    	// Drive style determines weather left and right are turn or strafe.
         if (changeDriveStyle.justPressedp()) {
             driveStyle = !driveStyle;
         }
         
+        if (markStraight.justPressedp()) {
+        	gyro.free();
+        	gyro = new Gyro(0);
+        }
+        
+        // Temporary variables
         double x, y, rotate, turned, sensitivity, temp;
-        turned = rotationTracker.mVelocityIntegral;
-        sensitivity = //(chasis.getAxis(Joystick.AxisType.kThrottle) + 1) * 0.25 + 0.5;
-                (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.25 + 0.5;
+        turned = gyro.getAngle();
+        sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.25 + 0.5;
+        
         if (driveStyle) {
             x = chasis.getAxis(Joystick.AxisType.kZ);
             y = chasis.getAxis(Joystick.AxisType.kY);
@@ -128,15 +194,20 @@ public class Robot extends IterativeRobot {
             y = chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kZ);
         }
+        
         x *= sensitivity;
         y *= sensitivity;
         rotate *= sensitivity;
+        
+        // Deadbanding
         if (Math.abs(x) < 0.04) {
             x = 0;
         }
+        
         if (Math.abs(y) < 0.04) {
             y = 0;
         }
+        
         if (Math.abs(rotate) < 0.04) {
             rotate = 0;
         }
@@ -152,22 +223,20 @@ public class Robot extends IterativeRobot {
         }
         
         if (rotate90Right.justPressedp()) {
-        	targetAngle = rotationTracker.mVelocityIntegral - 90;
+        	targetAngle = gyro.getAngle() - 90;
         	System.out.println(targetAngle);
         	rotating = true;
         	timeOut.start();
         }
         else if(rotate90Left.justPressedp()){
-        	targetAngle = rotationTracker.mVelocityIntegral + 90;
+        	targetAngle = gyro.getAngle() + 90;
         	System.out.println(targetAngle);
         	rotating = true;
         	timeOut.start();
         }
-        else {
-        	//rotating = false;
-        }
         
-        if (Math.abs(rotationTracker.mVelocityIntegral - targetAngle) < 1 ||
+        // Turning stop condition
+        if (Math.abs(gyro.getAngle() - targetAngle) < 1 ||
         		timeOut.get() > 5) {
         	rotating = false;
         	timeOut.stop();
@@ -175,26 +244,27 @@ public class Robot extends IterativeRobot {
         }
         
         if (rotating) {
-        	driveTrain.mecanumDrive_Cartesian(x, y, targetAngle, rotationTracker.mVelocityIntegral);
-        	System.out.println(rotationTracker.mVelocityIntegral);
+        	driveTrain.mecanumDrive_Cartesian(x, y, targetAngle, gyro.getAngle());
         } else {
         	driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0.0); // Change once hay gyroscope.
         }
-        //driveTrain.tankDrive(x, y);
         
+        // Track acceleration.
         double accelX, accelY;
-        accelX = Math.cos(turned) * accel.getXAcceleration() +
-                 Math.sin(turned) * accel.getXAcceleration();
-        accelY = Math.cos(turned) * accel.getYAcceleration() +
-                 Math.sin(turned) * accel.getYAcceleration();
+        accelX = Math.cos(turned) * (accel.getXAcceleration() - xAccelMean) +
+                 Math.sin(turned) * (accel.getYAcceleration() - yAccelMean);
+        accelY = Math.cos(turned) * (accel.getYAcceleration() - yAccelMean) +
+                 Math.sin(turned) * (accel.getXAcceleration() - xAccelMean);
         xDisplacement.update(accelX);
         yDisplacement.update(accelY);
-        rotationTracker.update(gyro.getRate());
+        zDisplacement.update(accel.getZAcceleration());
         
+        // Update button trackers
         changeDriveStyle.update();
         rotate90Right.update();
         rotate90Left.update();
         fieldCentric.update();
+        markStraight.update();
     }
     
     /**
@@ -202,6 +272,21 @@ public class Robot extends IterativeRobot {
      */
     public void testPeriodic() {
     
+    }
+    
+    private double[] shift(double[] table) {
+    	for (int i = table.length - 1; i > 0; i--) {
+    		table[i] = table[i - 1];
+    	}
+    	return table;
+    }
+    
+    private double mean(double[] table) {
+    	double sum = 0;
+    	for (int i = 0; i < table.length; i++) {
+    		sum += table[i];
+    	}
+    	return sum / table.length;
     }
     
 }
