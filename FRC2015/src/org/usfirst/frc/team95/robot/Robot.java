@@ -190,7 +190,7 @@ public class Robot extends IterativeRobot {
         
         // Temporary variables
         double x, y, rotate, turned, sensitivity, temp;
-        turned = gyro.getAngle();
+        turned = (gyro.getAngle() / 180.0 * Math.PI);
         sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
         
         if (driveStyle) {
