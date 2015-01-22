@@ -1,8 +1,9 @@
 package org.usfirst.frc.team95.robot;
 
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SpeedController;
 
-public class MotorWrapper implements SpeedController {
+public class MotorWrapper implements SpeedController, PIDOutput {
 	SpeedController wrappedMotor;
 	
 	public MotorWrapper(SpeedController wrappedMotor) {
@@ -13,10 +14,10 @@ public class MotorWrapper implements SpeedController {
 		double currentSpeed;
 		currentSpeed = wrappedMotor.get();
 		if (Math.abs(speed - currentSpeed) >= .5) {
-			if (speed > 0) {
+			if ((speed - currentSpeed) > 0) {
 				wrappedMotor.set(currentSpeed + 0.5);
 			} else {
-				wrappedMotor.set(currentSpeed + 0.5);
+				wrappedMotor.set(currentSpeed - 0.5);
 			}
 		} else {
 			wrappedMotor.set(speed);
@@ -26,7 +27,7 @@ public class MotorWrapper implements SpeedController {
 	@Override
 	public void pidWrite(double output) {
 		wrappedMotor.pidWrite(output);
-		System.out.println("If this is being printed, the pidWrite of MotorWrapper is being misused.");
+		//System.out.println("If this is being printed, the pidWrite of MotorWrapper is being misused.");
 		
 	}
 
