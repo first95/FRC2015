@@ -21,8 +21,8 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Gyro;
+import edu.wpi.first.wpilibj.PIDController;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -37,9 +37,9 @@ public class Robot extends IterativeRobot {
 	 * that need to persist are declared to exist.
 	 */
 	
-    Talon frontLeft, frontRight, backLeft, backRight;
+    Talon frontLeft, frontRight, backLeft, backRight, armTalon;
     MotorWrapper realFrontLeft, realFrontRight, realBackLeft, realBackRight;
-    Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder;
+    Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder, armEncoder;
     RobotDrive driveTrain;
     
     Gyro gyro;
@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric, markStraight;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric;
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
     
@@ -63,6 +63,8 @@ public class Robot extends IterativeRobot {
     		zGyroCalibration;
     
     double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
+    
+    PIDController armController;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -76,6 +78,7 @@ public class Robot extends IterativeRobot {
         frontRight = new Talon(4);
         backLeft = new Talon(2);
         backRight = new Talon(3);
+        armTalon = new Talon(5);
         realFrontLeft = new MotorWrapper(frontLeft);
         realFrontRight = new MotorWrapper(frontRight);
         realBackLeft = new MotorWrapper(backLeft);
@@ -84,6 +87,7 @@ public class Robot extends IterativeRobot {
         backLeftEncoder = new Encoder(4, 5);
         frontRightEncoder = new Encoder(6, 7);
         backRightEncoder = new Encoder(8, 9);
+        armEncoder = new Encoder(1, 10);
         driveTrain = new RobotDrive(realFrontLeft, realBackLeft, realFrontRight, realBackRight);
         driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
@@ -105,7 +109,6 @@ public class Robot extends IterativeRobot {
         driveStyle = false; // False == traditional
         rotate90Left = new ButtonTracker(chasis, 3);
         rotate90Right = new ButtonTracker(chasis, 4);
-        markStraight = new ButtonTracker(chasis, 1);
         rotating = false;
         fieldcentric = true;
         
@@ -114,6 +117,9 @@ public class Robot extends IterativeRobot {
         
         xAccelCalibration = new double[500]; yAccelCalibration = new double[500]; zAccelCalibration = new double[500];
         xGyroCalibration = new double[500]; yGyroCalibration = new double[500]; zGyroCalibration = new double[500];
+        
+        armController = new PIDController(0.0, 0.0, 0.0, armEncoder, armTalon, 50.0);
+        armController.enable();
     }
     
     public void autonomousInit() {
@@ -123,6 +129,8 @@ public class Robot extends IterativeRobot {
     	xGyroMean = mean(xGyroCalibration);
     	yGyroMean = mean(yGyroCalibration);
     	zGyroMean = mean(zGyroCalibration);
+    	
+    	armController.setSetpoint(0);
     }
 
     /**
@@ -152,10 +160,13 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+    	System.out.println("Entered Teleop");
+    	System.out.println(timeOut.get());
     	// Put currents and temperature on the smartDashboard
     	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
     	SmartDashboard.putNumber("PowerDistribution Total Motor Current", powerDistribution.getCurrent(12) + powerDistribution.getCurrent(13) + powerDistribution.getCurrent(14) + powerDistribution.getCurrent(15));
     	SmartDashboard.putNumber("PowerDistribution Back Right Motor Current", powerDistribution.getCurrent(12));
+    	
     	SmartDashboard.putNumber("PowerDistribution Front Right Motor Current", powerDistribution.getCurrent(13));
     	SmartDashboard.putNumber("PowerDistribution Back Left Motor Current", powerDistribution.getCurrent(14));
     	SmartDashboard.putNumber("PowerDistribution Front Left Motor Current", powerDistribution.getCurrent(15));
@@ -169,21 +180,18 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("Current Z Displacement", zDisplacement.mDisplacementIntegral);
     	SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
     	SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
+    	System.out.println(timeOut.get());
     	
     	// Drive style determines weather left and right are turn or strafe.
         if (changeDriveStyle.justPressedp()) {
             driveStyle = !driveStyle;
         }
         
-        if (markStraight.justPressedp()) {
-        	gyro.free();
-        	gyro = new Gyro(0);
-        }
         
         // Temporary variables
         double x, y, rotate, turned, sensitivity, temp;
         turned = gyro.getAngle();
-        sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.25 + 0.5;
+        sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
         
         if (driveStyle) {
             x = chasis.getAxis(Joystick.AxisType.kZ);
@@ -261,10 +269,9 @@ public class Robot extends IterativeRobot {
         
         // Update button trackers
         changeDriveStyle.update();
-        rotate90Right.update();
-        rotate90Left.update();
+        //rotate90Right.update();
+        //rotate90Left.update();
         fieldCentric.update();
-        markStraight.update();
     }
     
     /**
