@@ -267,6 +267,12 @@ public class Robot extends IterativeRobot {
         yDisplacement.update(accelY);
         zDisplacement.update(accel.getZAcceleration());
         
+        //Manual gyro reseting
+        if (chasis.getPOV() != -1) {
+        	gyro.set(chasis.getPOV());
+        }
+        	
+        
         // Update button trackers
         changeDriveStyle.update();
         //rotate90Right.update();
