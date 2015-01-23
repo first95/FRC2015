@@ -42,7 +42,7 @@ public class Robot extends IterativeRobot {
     Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder, armEncoder;
     RobotDrive driveTrain;
     
-    Gyro gyro;
+    ResetableGyro gyro;
     ADXL345_I2C extraAccel;
     BuiltInAccelerometer builtinAccel;
     CommonFilter accel;
@@ -92,7 +92,7 @@ public class Robot extends IterativeRobot {
         driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
         
-        gyro = new Gyro(0);
+        gyro = new ResetableGyro(0);
         extraAccel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k8G);
         builtinAccel = new BuiltInAccelerometer();
         accel = new CommonFilter(extraAccel, builtinAccel);

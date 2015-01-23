@@ -22,7 +22,7 @@ public class ResetableGyro extends Gyro {
 		offset = thatway - super.getAngle();
 	}
 	
-	public double getAngle; {
+	public double getAngle() {
 		return super.getAngle() + offset;
 	}
 
