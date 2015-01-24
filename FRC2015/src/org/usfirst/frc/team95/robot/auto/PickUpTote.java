@@ -21,7 +21,7 @@ public class PickUpTote extends AutoMove {
 	}
 
 	public Status periodic() {
-		if (fingerController.onTarget()) {
+		if (fingerController.onTarget() || true) {
 			return Status.isNotAbleToContinue;
 		}
 		else {

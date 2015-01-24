@@ -1,7 +1,5 @@
 package org.usfirst.frc.team95.robot.auto;
 
-import java.util.Vector;
-
 import org.usfirst.frc.team95.robot.Robot;
 
 public class TakeToteRight extends AutoMove {
@@ -13,11 +11,8 @@ public class TakeToteRight extends AutoMove {
 		PickUpTote tote;
 		tote = new PickUpTote(robot, null);
 		MoveRelative move;
-		move = new MoveRelative(robot, 0.75, 0.0, 0.0, 2.0);
-		Vector<AutoMove> vector;
-		vector = new Vector<AutoMove>();
-		vector.add(tote);
-		vector.add(move);
+		move = new MoveRelative(robot, -0.75, 0.0, 0.0, 1);
+		AutoMove[] vector = {tote, move};
 		sequence = new SequentialMove(vector);
 	}
 
