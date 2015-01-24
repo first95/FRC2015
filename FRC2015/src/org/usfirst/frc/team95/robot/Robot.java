@@ -8,6 +8,7 @@
 package org.usfirst.frc.team95.robot;
 
 
+import org.usfirst.frc.team95.robot.auto.*;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -67,6 +68,10 @@ public class Robot extends IterativeRobot {
     public PIDController armController, fingerController;
     
     public Solenoid armPistons;
+    
+    AutoMove autoMove;
+    
+    SendableChooser chooser;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -140,6 +145,10 @@ public class Robot extends IterativeRobot {
         fingerController.enable();
         
         armPistons = new Solenoid(RobotConstants.kArmPistons);
+        
+        chooser = new SendableChooser();
+        chooser.addDefault("TakeToteRight", new TakeToteRight(this));
+        SmartDashboard.putData("Autonomous Move", chooser);
     }
     
     public void autonomousInit() {
@@ -148,6 +157,8 @@ public class Robot extends IterativeRobot {
     	zAccelMean = mean(zAccelCalibration);
     	
     	armController.setSetpoint(0);
+    	
+    	autoMove = (AutoMove) chooser.getSelected();
     }
 
     /**
@@ -155,7 +166,7 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
     	//System.out.println(accel.getXAcceleration() + "," + accel.getYAcceleration() + "," + accel.getZAcceleration());
-
+    	autoMove.periodic();
     }
     
     public void disabledPeriodic() {
