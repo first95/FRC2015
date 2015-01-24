@@ -21,17 +21,17 @@ public class SequentialMove extends AutoMove {
 			moves.get(index).stop();
 			index += 1;
 			if (index >= moves.size()) {
-				this.stop();
-				return Status.isNotAbleToContinue;
+				return this.stop();
 			}
 		} else if (status == Status.emergency) {
 			moves.get(index).stop();
 			return Status.emergency;
 		}
+		return Status.needsToContinue;
 	}
 	
 	public Status stop() {
-		;
+		return Status.isNotAbleToContinue;
 	}
 
 }
