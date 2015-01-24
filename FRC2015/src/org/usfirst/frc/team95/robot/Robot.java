@@ -73,29 +73,29 @@ public class Robot extends IterativeRobot {
     	/*
     	 * This sets up everything's values.
     	 */
-        frontLeft = new Talon(1);
-        frontRight = new Talon(4);
-        backLeft = new Talon(2);
-        backRight = new Talon(3);
-        armTalon = new Talon(5);
-        fingerTalon = new Talon(6);
+        frontLeft = new Talon(RobotConstants.kFrontLeftMotor);
+        frontRight = new Talon(RobotConstants.kFrontRightMotor);
+        backLeft = new Talon(RobotConstants.kBackLeftMotor);
+        backRight = new Talon(RobotConstants.kBackRightMotor);
+        armTalon = new Talon(RobotConstants.kArmMotor);
+        fingerTalon = new Talon(RobotConstants.kFingerMotor);
         realFrontLeft = new MotorWrapper(frontLeft);
         realFrontRight = new MotorWrapper(frontRight);
         realBackLeft = new MotorWrapper(backLeft);
         realBackRight = new MotorWrapper(backRight);
-        frontLeftEncoder = new Encoder(2, 3);
-        backLeftEncoder = new Encoder(4, 5);
-        frontRightEncoder = new Encoder(6, 7);
-        backRightEncoder = new Encoder(8, 9);
-        armEncoder = new Encoder(1, 10);
+        frontLeftEncoder = new Encoder(RobotConstants.kFrontLeftEncoder, RobotConstants.kFrontLeftEncoder + 1);
+        backLeftEncoder = new Encoder(RobotConstants.kBackLeftEncoder, RobotConstants.kBackLeftEncoder + 1);
+        frontRightEncoder = new Encoder(RobotConstants.kFrontRightEncoder, RobotConstants.kFrontRightEncoder + 1);
+        backRightEncoder = new Encoder(RobotConstants.kBackRightEncoder, RobotConstants.kBackRightEncoder + 1);
+        armEncoder = new Encoder(RobotConstants.kArmEncoder, RobotConstants.kArmEncoder + 1);
         armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
-        fingerEncoder = new Encoder(42, 43);
+        fingerEncoder = new Encoder(RobotConstants.kFingerEncoder, RobotConstants.kFingerEncoder + 1);
         fingerEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         driveTrain = new RobotDrive(realFrontLeft, realBackLeft, realFrontRight, realBackRight);
         driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
         
-        gyro = new ResetableGyro(0);
+        gyro = new ResetableGyro(RobotConstants.kGyro);
         extraAccel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k8G);
         builtinAccel = new BuiltInAccelerometer();
         accel = new CommonFilter(extraAccel, builtinAccel);
@@ -104,14 +104,14 @@ public class Robot extends IterativeRobot {
         yDisplacement = new PositionTracker();
         zDisplacement = new PositionTracker();
         
-        chasis = new Joystick(0);
-        weapons = new Joystick(1);
+        chasis = new Joystick(RobotConstants.kChasis);
+        weapons = new Joystick(RobotConstants.kWeapons);
 
-        changeDriveStyle = new ButtonTracker(chasis, 2);
-        fieldCentric = new ButtonTracker(chasis, 5);
+        changeDriveStyle = new ButtonTracker(chasis, RobotConstants.kChangeDriveStyle);
+        fieldCentric = new ButtonTracker(chasis, RobotConstants.kFieldCentric);
         driveStyle = false; // False == traditional
-        rotate90Left = new ButtonTracker(chasis, 3);
-        rotate90Right = new ButtonTracker(chasis, 4);
+        rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
+        rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
         blue1 = new ButtonTracker(weapons, 1);
         blue2 = new ButtonTracker(weapons, 2);
         blue3 = new ButtonTracker(weapons, 3);
@@ -124,13 +124,16 @@ public class Robot extends IterativeRobot {
         timeOut = new Timer();
         powerDistribution = new PowerDistributionPanel();
         
-        xAccelCalibration = new double[500]; yAccelCalibration = new double[500]; zAccelCalibration = new double[500];
-        xGyroCalibration = new double[500]; yGyroCalibration = new double[500]; zGyroCalibration = new double[500];
+        xAccelCalibration = new double[RobotConstants.kCalibrationLength]; 
+        yAccelCalibration = new double[RobotConstants.kCalibrationLength]; 
+        zAccelCalibration = new double[RobotConstants.kCalibrationLength];
         
-        armController = new PIDController(0.0, 0.0, 0.0, armEncoder, armTalon, 50.0);
+        armController = new PIDController(RobotConstants.kArmP, RobotConstants.kArmI, RobotConstants.kArmD, 
+        		armEncoder, armTalon, RobotConstants.kPIDUpdateInterval);
         armController.enable();
         
-        fingerController = new PIDController(0.0, 0.0, 0.0, fingerEncoder, fingerTalon, 50.0);
+        fingerController = new PIDController(RobotConstants.kFingerP, RobotConstants.kFingerI, 
+        		RobotConstants.kFingerD, fingerEncoder, fingerTalon, RobotConstants.kPIDUpdateInterval);
         fingerController.enable();
     }
     
@@ -138,9 +141,6 @@ public class Robot extends IterativeRobot {
     	xAccelMean = mean(xAccelCalibration);
     	yAccelMean = mean(yAccelCalibration);
     	zAccelMean = mean(zAccelCalibration);
-    	xGyroMean = mean(xGyroCalibration);
-    	yGyroMean = mean(yGyroCalibration);
-    	zGyroMean = mean(zGyroCalibration);
     	
     	armController.setSetpoint(0);
     }
@@ -158,9 +158,6 @@ public class Robot extends IterativeRobot {
     	xAccelCalibration = shift(xAccelCalibration);
     	yAccelCalibration = shift(yAccelCalibration);
     	zAccelCalibration = shift(zAccelCalibration);
-    	xGyroCalibration = shift(xGyroCalibration);
-    	yGyroCalibration = shift(yGyroCalibration);
-    	zGyroCalibration = shift(zGyroCalibration);
     	
     	xAccelCalibration[0] = accel.getXAcceleration();
     	yAccelCalibration[0] = accel.getYAcceleration();
@@ -196,17 +193,17 @@ public class Robot extends IterativeRobot {
     	
     	armController.setSetpoint(weapons.getX());
     	if (blue1.justPressedp()) {
-    		fingerController.setSetpoint(0);
+    		fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
     	} else if (blue1.justPressedp()) {
-    		fingerController.setSetpoint(0);
+    		fingerController.setSetpoint(RobotConstants.kFingerSetpoints[1]);
     	} else if (blue1.justPressedp()) {
-    		fingerController.setSetpoint(0);
+    		fingerController.setSetpoint(RobotConstants.kFingerSetpoints[2]);
     	} else if (blue1.justPressedp()) {
-    		fingerController.setSetpoint(0);
+    		fingerController.setSetpoint(RobotConstants.kFingerSetpoints[3]);
     	} else if (blue1.justPressedp()) {
-    		fingerController.setSetpoint(0);
+    		fingerController.setSetpoint(RobotConstants.kFingerSetpoints[4]);
     	} else if (blue1.justPressedp()) {
-    		fingerController.setSetpoint(0);
+    		fingerController.setSetpoint(RobotConstants.kFingerSetpoints[5]);
     	}
     	
     	// Drive style determines weather left and right are turn or strafe.
@@ -235,15 +232,15 @@ public class Robot extends IterativeRobot {
         rotate *= sensitivity;
         
         // Deadbanding
-        if (Math.abs(x) < 0.04) {
+        if (Math.abs(x) < RobotConstants.kDeadband) {
             x = 0;
         }
         
-        if (Math.abs(y) < 0.04) {
+        if (Math.abs(y) < RobotConstants.kDeadband) {
             y = 0;
         }
         
-        if (Math.abs(rotate) < 0.04) {
+        if (Math.abs(rotate) < RobotConstants.kDeadband) {
             rotate = 0;
         }
         
@@ -271,8 +268,8 @@ public class Robot extends IterativeRobot {
         }
         
         // Turning stop condition
-        if (Math.abs(gyro.getAngle() - targetAngle) < 1 ||
-        		timeOut.get() > 5) {
+        if (Math.abs(gyro.getAngle() - targetAngle) < RobotConstants.kTurningCloseness ||
+        		timeOut.get() > RobotConstants.kTurningTimeoute) {
         	rotating = false;
         	timeOut.stop();
         	timeOut.reset();
