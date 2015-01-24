@@ -147,7 +147,9 @@ public class Robot extends IterativeRobot {
         armPistons = new Solenoid(RobotConstants.kArmPistons);
         
         chooser = new SendableChooser();
-        chooser.addDefault("TakeToteRight", new TakeToteRight(this));
+        chooser.addDefault("Zombie", new NoMove(this));
+        chooser.addObject("TakeToteRight", new TakeToteRight(this));
+        chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
         SmartDashboard.putData("Autonomous Move", chooser);
     }
     
