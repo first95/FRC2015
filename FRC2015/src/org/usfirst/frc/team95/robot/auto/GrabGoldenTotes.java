@@ -15,7 +15,7 @@ public class GrabGoldenTotes extends AutoMove {
 		vector.add(new TakeToteRight(robot));
 		vector.add(new TakeToteRight(robot));
 		vector.add(new TakeToteRight(robot));
-		vector.add(new GoBack(robot));
+		vector.add(new GoBackward(robot));
 		sequential = new SequentialMove(vector);
 	}
 
