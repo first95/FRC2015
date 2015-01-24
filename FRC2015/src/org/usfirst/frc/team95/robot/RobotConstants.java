@@ -33,4 +33,8 @@ public class RobotConstants {
 	public static double kDeadband = 0.04;
 	public static double kTurningCloseness = 1;
 	public static double kTurningTimeoute = 5;
+	public static double kArmPositionGrab = 0.0;
+	public static double kArmPositionZenith = 1.0;
+	public static int kArmPistons = 0;
+	public static int kArmPistonsButton = 7;
 }

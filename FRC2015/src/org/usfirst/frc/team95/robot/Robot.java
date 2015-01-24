@@ -11,6 +11,7 @@ package org.usfirst.frc.team95.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
@@ -64,6 +65,8 @@ public class Robot extends IterativeRobot {
     double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
     
     public PIDController armController, fingerController;
+    
+    public Solenoid armPistons;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -135,6 +138,8 @@ public class Robot extends IterativeRobot {
         fingerController = new PIDController(RobotConstants.kFingerP, RobotConstants.kFingerI, 
         		RobotConstants.kFingerD, fingerEncoder, fingerTalon, RobotConstants.kPIDUpdateInterval);
         fingerController.enable();
+        
+        armPistons = new Solenoid(RobotConstants.kArmPistons);
     }
     
     public void autonomousInit() {
@@ -213,7 +218,7 @@ public class Robot extends IterativeRobot {
       
         
         // Temporary variables
-        double x, y, rotate, turned, sensitivity, temp;
+        double x, y, rotate, turned, sensitivity;
         turned = (gyro.getAngle() / 180.0 * Math.PI);
         sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
         
@@ -303,6 +308,12 @@ public class Robot extends IterativeRobot {
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
         	gyro.set(chasis.getPOV());
+        }
+        
+        if (weapons.getRawButton(RobotConstants.kArmPistonsButton)) {
+        	armPistons.set(true);
+        } else {
+        	armPistons.set(false);
         }
         	
         
