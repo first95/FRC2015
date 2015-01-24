@@ -1,6 +1,8 @@
 package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
+import org.usfirst.frc.team95.robot.RobotConstants;
+
 import edu.wpi.first.wpilibj.PIDController;
 
 public class PickUpTote extends AutoMove {
@@ -14,7 +16,7 @@ public class PickUpTote extends AutoMove {
 	}
 	
 	public Status init() {
-		fingerController.setSetpoint(fingerController.get() + 1);
+		fingerController.setSetpoint(findSetpoint(fingerController.get()) + 1);
 		return Status.wantsToContinue;
 	}
 
@@ -29,6 +31,16 @@ public class PickUpTote extends AutoMove {
 
 	public Status stop() {
 		return Status.isNotAbleToContinue;
+	}
+	
+	private int findSetpoint(double point) {
+		int index = -1;
+		for (int i = 0; i < RobotConstants.kFingerSetpoints.length; i++) {
+			if (Math.abs(point - RobotConstants.kFingerSetpoints[i]) < 0.01) {
+				index = i;
+			}
+		}
+		return index;
 	}
 		
 }
