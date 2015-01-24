@@ -13,11 +13,11 @@ public class MotorWrapper implements SpeedController, PIDOutput {
 	public void set(double speed) {
 		double currentSpeed;
 		currentSpeed = wrappedMotor.get();
-		if (Math.abs(speed - currentSpeed) >= .5) {
+		if (Math.abs(speed - currentSpeed) >= RobotConstants.kMotorSpeedChangeMaximum) {
 			if ((speed - currentSpeed) > 0) {
-				wrappedMotor.set(currentSpeed + 0.5);
+				wrappedMotor.set(currentSpeed + RobotConstants.kMotorSpeedChangeMaximum);
 			} else {
-				wrappedMotor.set(currentSpeed - 0.5);
+				wrappedMotor.set(currentSpeed - RobotConstants.kMotorSpeedChangeMaximum);
 			}
 		} else {
 			wrappedMotor.set(speed);
