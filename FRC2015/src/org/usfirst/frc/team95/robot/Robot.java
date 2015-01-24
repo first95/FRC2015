@@ -38,14 +38,14 @@ public class Robot extends IterativeRobot {
 	 */
 	
     Talon frontLeft, frontRight, backLeft, backRight, armTalon, fingerTalon;
-    MotorWrapper realFrontLeft, realFrontRight, realBackLeft, realBackRight;
-    Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder, armEncoder, fingerEncoder;
-    RobotDrive driveTrain;
+    public MotorWrapper realFrontLeft, realFrontRight, realBackLeft, realBackRight;
+    public Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder, armEncoder, fingerEncoder;
+    public RobotDrive driveTrain;
     
-    ResetableGyro gyro;
+    public ResetableGyro gyro;
     ADXL345_I2C extraAccel;
     BuiltInAccelerometer builtinAccel;
-    CommonFilter accel;
+    public CommonFilter accel;
     
     PositionTracker xDisplacement, yDisplacement, zDisplacement;
     
@@ -64,7 +64,7 @@ public class Robot extends IterativeRobot {
     
     double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
     
-    PIDController armController, fingerController;
+    public PIDController armController, fingerController;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -313,6 +313,8 @@ public class Robot extends IterativeRobot {
         blue4.update();
         blue5.update();
         blue6.update();
+        
+        
     }
     
     /**
