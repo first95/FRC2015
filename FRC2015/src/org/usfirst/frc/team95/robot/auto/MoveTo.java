@@ -5,18 +5,25 @@ import org.usfirst.frc.team95.robot.Robot;
 public class MoveTo extends AutoMove {
 
 	Robot robot;
-	double targetX, targetY;
+	double targetX, targetY, targetRotation;
 	
-	public MoveTo(Robot robo, double x, double y) {
+	public MoveTo(Robot robo, double x, double y, double rotation) {
 		robot = robo;
 		targetX = x;
 		targetY = y;
-		
+		targetRotation = rotation
 	}
 	
 	public Status init() {
 		return Status.wantsToContinue;
 	}
 	
+	public Status periodic() {
+		
+	}
+	
+	public Status stop() {
+		
+	}
 	
 }
