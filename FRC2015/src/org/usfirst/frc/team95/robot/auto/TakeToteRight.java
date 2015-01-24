@@ -9,7 +9,7 @@ public class TakeToteRight extends AutoMove {
 	public TakeToteRight(Robot robo) {
 		robot = robo;
 		PickUpTote tote;
-		tote = new PickUpTote(robot, null);
+		tote = new PickUpTote(robot);
 		MoveRelative move;
 		move = new MoveRelative(robot, -0.75, 0.0, 0.0, 1);
 		AutoMove[] vector = {tote, move};

@@ -152,6 +152,7 @@ public class Robot extends IterativeRobot {
         chooser.addDefault("Zombie", new NoMove(this));
         chooser.addObject("TakeToteRight", new TakeToteRight(this));
         chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
+        chooser.addObject("Dance", new Dance(this));
         SmartDashboard.putData("Autonomous Move", chooser);
     }
     

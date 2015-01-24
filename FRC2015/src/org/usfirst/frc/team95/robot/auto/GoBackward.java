@@ -8,10 +8,7 @@ public class GoBackward extends AutoMove {
 	
 	public GoBackward(Robot robo) {
 		robot = robo;
-		MoveRelative move;
-		move = new MoveRelative(robot, 0.0, -0.75, 0.0, 2.0);
-		AutoMove[] vector = {move};
-		sequence = new SequentialMove(vector);
+		sequence = new MoveRelative(robot, 0.0, 0.75, 0.0, 2.0);
 	}
 
 	@Override
