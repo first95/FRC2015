@@ -13,7 +13,7 @@ public class RobotConstants {
 	public static int kBackLeftEncoder = 5;
 	public static int kBackRightEncoder = 7;
 	public static int kArmEncoder = 9;
-	public static int kFingerEncoder = 99999;
+	public static int kFingerEncoder = 23;
 	public static int kGyro = 0;
 	public static int kChasis = 0;
 	public static int kWeapons = 1;
@@ -37,4 +37,6 @@ public class RobotConstants {
 	public static double kArmPositionZenith = 1.0;
 	public static int kArmPistons = 0;
 	public static int kArmPistonsButton = 7;
+	public static double kArmTolerance = 0.1;
+	public static double kFingerTolerance = 0.2;
 }

@@ -1,21 +1,14 @@
 package org.usfirst.frc.team95.robot.auto;
 
-import java.util.Vector;
-
 import org.usfirst.frc.team95.robot.Robot;
 
 public class GrabGoldenTotes extends AutoMove {
 	Robot robot;
-	Vector<AutoMove> vector;
 	SequentialMove sequential;
 	
 	public GrabGoldenTotes(Robot robo) {
 		robot = robo;
-		vector = new Vector<AutoMove>();
-		vector.add(new TakeToteRight(robot));
-		vector.add(new TakeToteRight(robot));
-		vector.add(new TakeToteRight(robot));
-		vector.add(new GoBackward(robot));
+		AutoMove[] vector = {new TakeToteRight(robot), new TakeToteRight(robot), new TakeToteRight(robot), new GoBackward(robot)};
 		sequential = new SequentialMove(vector);
 	}
 

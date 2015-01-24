@@ -16,7 +16,8 @@ public class NoMove extends AutoMove {
 	}
 	
 	public Status periodic() {
-		return Status.isNotAbleToContinue;
+		robot.driveTrain.mecanumDrive_Cartesian(0, 0, 0, 0);
+		return Status.isAbleToContinue;
 	}
 	
 	public Status stop() {

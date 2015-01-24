@@ -1,6 +1,5 @@
 package org.usfirst.frc.team95.robot.auto;
 
-import java.util.Vector;
 import org.usfirst.frc.team95.robot.Robot;
 
 public class GoForward extends AutoMove {
@@ -11,9 +10,7 @@ public class GoForward extends AutoMove {
 		robot = robo;
 		MoveRelative move;
 		move = new MoveRelative(robot, 0.0, 0.75, 0.0, 2.0);
-		Vector<AutoMove> vector;
-		vector = new Vector<AutoMove>();
-		vector.add(move);
+		AutoMove[] vector = {move};
 		sequence = new SequentialMove(vector);
 	}
 

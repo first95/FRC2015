@@ -21,11 +21,12 @@ public class MoveRelative extends AutoMove {
 	
 	public Status init() {
 		timeOut.start();
+		System.out.println("I was started.");
 		return Status.needsToContinue;
 	}
 	
 	public Status periodic() {
-		if (timeOut.get() > t) {
+		if (timeOut.get() >= t) {
 			return stop();
 		} else {
 			robot.driveTrain.mecanumDrive_Cartesian(x, y, r, 0);
@@ -34,7 +35,6 @@ public class MoveRelative extends AutoMove {
 	}
 	
 	public Status stop() {
-		timeOut.stop();
 		return Status.isNotAbleToContinue;
 	}
 

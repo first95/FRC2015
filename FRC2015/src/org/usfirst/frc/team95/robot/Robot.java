@@ -138,10 +138,12 @@ public class Robot extends IterativeRobot {
         
         armController = new PIDController(RobotConstants.kArmP, RobotConstants.kArmI, RobotConstants.kArmD, 
         		armEncoder, armTalon, RobotConstants.kPIDUpdateInterval);
+        armController.setAbsoluteTolerance(RobotConstants.kArmTolerance);
         armController.enable();
         
         fingerController = new PIDController(RobotConstants.kFingerP, RobotConstants.kFingerI, 
         		RobotConstants.kFingerD, fingerEncoder, fingerTalon, RobotConstants.kPIDUpdateInterval);
+        fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
         fingerController.enable();
         
         armPistons = new Solenoid(RobotConstants.kArmPistons);
@@ -161,6 +163,7 @@ public class Robot extends IterativeRobot {
     	armController.setSetpoint(0);
     	
     	autoMove = (AutoMove) chooser.getSelected();
+    	autoMove.init();
     }
 
     /**
@@ -187,8 +190,8 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-    	System.out.println("Entered Teleop");
-    	System.out.println(timeOut.get());
+    	//System.out.println("Entered Teleop");
+    	//System.out.println(timeOut.get());
     	// Put currents and temperature on the smartDashboard
     	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
     	SmartDashboard.putNumber("PowerDistribution Total Motor Current", powerDistribution.getCurrent(12) + powerDistribution.getCurrent(13) + powerDistribution.getCurrent(14) + powerDistribution.getCurrent(15));
@@ -207,7 +210,7 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("Current Z Displacement", zDisplacement.mDisplacementIntegral);
     	SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
     	SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
-    	System.out.println(timeOut.get());
+    	//System.out.println(timeOut.get());
     	
     	armController.setSetpoint(weapons.getX());
     	if (blue1.justPressedp()) {
@@ -237,11 +240,11 @@ public class Robot extends IterativeRobot {
         
         if (driveStyle) {
             x = chasis.getAxis(Joystick.AxisType.kZ);
-            y = chasis.getAxis(Joystick.AxisType.kY);
+            y = -chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kX);
         } else {
             x = chasis.getAxis(Joystick.AxisType.kX);
-            y = chasis.getAxis(Joystick.AxisType.kY);
+            y = -chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kZ);
         }
         
@@ -296,15 +299,15 @@ public class Robot extends IterativeRobot {
         	}
         	
         	if (fieldcentric) {
-        		driveTrain.mecanumDrive_Cartesian(x, y, turnSpeed, turned);
+        		driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, turned);
         	} else {
-        		driveTrain.mecanumDrive_Cartesian(x, y, turnSpeed, 0.0);
+        		driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, 0.0);
         	}
         } else {
         	if (fieldcentric) {
-        		driveTrain.mecanumDrive_Cartesian(x, y, rotate, turned);
+        		driveTrain.mecanumDrive_Cartesian(y, x, rotate, turned);
         	} else {
-        		driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0);
+        		driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
         	}
         }
         
@@ -367,5 +370,7 @@ public class Robot extends IterativeRobot {
     	}
     	return sum / table.length;
     }
+    
+    
     
 }
