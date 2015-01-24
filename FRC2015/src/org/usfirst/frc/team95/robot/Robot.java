@@ -37,9 +37,9 @@ public class Robot extends IterativeRobot {
 	 * that need to persist are declared to exist.
 	 */
 	
-    Talon frontLeft, frontRight, backLeft, backRight, armTalon;
+    Talon frontLeft, frontRight, backLeft, backRight, armTalon, fingerTalon;
     MotorWrapper realFrontLeft, realFrontRight, realBackLeft, realBackRight;
-    Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder, armEncoder;
+    Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder, armEncoder, fingerEncoder;
     RobotDrive driveTrain;
     
     ResetableGyro gyro;
@@ -51,7 +51,7 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric, blue1, blue2, blue3, blue4, blue5, blue6;
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
     
@@ -64,7 +64,7 @@ public class Robot extends IterativeRobot {
     
     double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
     
-    PIDController armController;
+    PIDController armController, fingerController;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -79,6 +79,7 @@ public class Robot extends IterativeRobot {
         backLeft = new Talon(2);
         backRight = new Talon(3);
         armTalon = new Talon(5);
+        fingerTalon = new Talon(6);
         realFrontLeft = new MotorWrapper(frontLeft);
         realFrontRight = new MotorWrapper(frontRight);
         realBackLeft = new MotorWrapper(backLeft);
@@ -88,6 +89,9 @@ public class Robot extends IterativeRobot {
         frontRightEncoder = new Encoder(6, 7);
         backRightEncoder = new Encoder(8, 9);
         armEncoder = new Encoder(1, 10);
+        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        fingerEncoder = new Encoder(42, 43);
+        fingerEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         driveTrain = new RobotDrive(realFrontLeft, realBackLeft, realFrontRight, realBackRight);
         driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
@@ -109,6 +113,12 @@ public class Robot extends IterativeRobot {
         driveStyle = false; // False == traditional
         rotate90Left = new ButtonTracker(chasis, 3);
         rotate90Right = new ButtonTracker(chasis, 4);
+        blue1 = new ButtonTracker(weapons, 1);
+        blue2 = new ButtonTracker(weapons, 2);
+        blue3 = new ButtonTracker(weapons, 3);
+        blue4 = new ButtonTracker(weapons, 4);
+        blue5 = new ButtonTracker(weapons, 5);
+        blue6 = new ButtonTracker(weapons, 6);
         rotating = false;
         fieldcentric = true;
         
@@ -120,6 +130,9 @@ public class Robot extends IterativeRobot {
         
         armController = new PIDController(0.0, 0.0, 0.0, armEncoder, armTalon, 50.0);
         armController.enable();
+        
+        fingerController = new PIDController(0.0, 0.0, 0.0, fingerEncoder, fingerTalon, 50.0);
+        fingerController.enable();
     }
     
     public void autonomousInit() {
@@ -182,11 +195,26 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
     	System.out.println(timeOut.get());
     	
+    	armController.setSetpoint(weapons.getX());
+    	if (blue1.justPressedp()) {
+    		fingerController.setSetpoint(0);
+    	} else if (blue1.justPressedp()) {
+    		fingerController.setSetpoint(0);
+    	} else if (blue1.justPressedp()) {
+    		fingerController.setSetpoint(0);
+    	} else if (blue1.justPressedp()) {
+    		fingerController.setSetpoint(0);
+    	} else if (blue1.justPressedp()) {
+    		fingerController.setSetpoint(0);
+    	} else if (blue1.justPressedp()) {
+    		fingerController.setSetpoint(0);
+    	}
+    	
     	// Drive style determines weather left and right are turn or strafe.
         if (changeDriveStyle.justPressedp()) {
             driveStyle = !driveStyle;
         }
-        
+      
         
         // Temporary variables
         double x, y, rotate, turned, sensitivity, temp;
@@ -275,9 +303,16 @@ public class Robot extends IterativeRobot {
         
         // Update button trackers
         changeDriveStyle.update();
-        //rotate90Right.update();
-        //rotate90Left.update();
+        rotate90Right.update();
+        rotate90Left.update();
         fieldCentric.update();
+        
+        blue1.update();
+        blue2.update();
+        blue3.update();
+        blue4.update();
+        blue5.update();
+        blue6.update();
     }
     
     /**
