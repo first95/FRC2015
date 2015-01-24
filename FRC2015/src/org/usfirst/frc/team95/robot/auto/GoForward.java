@@ -7,11 +7,8 @@ public class GoForward extends AutoMove {
 	AutoMove sequence;
 	
 	public GoForward(Robot robo) {
-		robot = robo;
-		MoveRelative move;
-		move = new MoveRelative(robot, 0.0, 0.75, 0.0, 2.0);
-		AutoMove[] vector = {move};
-		sequence = new SequentialMove(vector);
+		robot = robo;;
+		sequence = new MoveRelative(robot, 0.0, -0.75, 0.0, 2.0);
 	}
 
 	@Override

@@ -8,7 +8,10 @@ public class GrabGoldenTotes extends AutoMove {
 	
 	public GrabGoldenTotes(Robot robo) {
 		robot = robo;
-		AutoMove[] vector = {new TakeToteRight(robot), new TakeToteRight(robot), new TakeToteRight(robot), new GoBackward(robot)};
+		AutoMove[] vector = {new PickUpTote(robot), new MoveRelative(robot, 0.75, 0, 0, 1), 
+				new PickUpTote(robot), new MoveRelative(robot, 0.75, 0, 0, 1),
+				new PickUpTote(robot), new MoveRelative(robot, 0.75, 0, 0, 1),
+				new GoBackward(robot), new NoMove(robot)};
 		sequential = new SequentialMove(vector);
 	}
 
