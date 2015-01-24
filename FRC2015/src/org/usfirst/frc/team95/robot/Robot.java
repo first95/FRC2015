@@ -244,12 +244,6 @@ public class Robot extends IterativeRobot {
             rotate = 0;
         }
         
-        if (fieldcentric) {
-        	temp = Math.cos(turned) * x + Math.sin(turned) * y;
-        	y = Math.sin(turned) * x + Math.cos(turned) * y;
-        	x = temp;
-        }
-        
         if (fieldCentric.justPressedp()) {
         	fieldcentric = !fieldcentric;
         }
@@ -276,9 +270,24 @@ public class Robot extends IterativeRobot {
         }
         
         if (rotating) {
-        	driveTrain.mecanumDrive_Cartesian(x, y, targetAngle, gyro.getAngle());
+        	double turnSpeed = 0;
+        	if ((targetAngle - turned) > 0) {
+        		turnSpeed = 1;
+        	} else {
+        		turnSpeed = -1;
+        	}
+        	
+        	if (fieldcentric) {
+        		driveTrain.mecanumDrive_Cartesian(x, y, turnSpeed, turned);
+        	} else {
+        		driveTrain.mecanumDrive_Cartesian(x, y, turnSpeed, 0.0);
+        	}
         } else {
-        	driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0.0); // Change once hay gyroscope.
+        	if (fieldcentric) {
+        		driveTrain.mecanumDrive_Cartesian(x, y, rotate, turned);
+        	} else {
+        		driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0);
+        	}
         }
         
         // Track acceleration.
