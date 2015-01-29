@@ -26,6 +26,7 @@ public class MoveRelative extends AutoMove {
 	}
 	
 	public Status periodic() {
+		System.out.println("Moving day . . . ");
 		if (timeOut.get() >= t) {
 			return stop();
 		} else {

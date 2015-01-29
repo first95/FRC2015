@@ -16,12 +16,14 @@ public class PickUpTote extends AutoMove {
 	}
 	
 	public Status init() {
+		System.out.print("Pick tote initialization.");
 		fingerController.setSetpoint(findSetpoint(fingerController.get()) + 1);
 		return Status.wantsToContinue;
 	}
 
 	public Status periodic() {
-		if (fingerController.onTarget() || true) {
+		System.out.println("Pick Tote");
+		if (true || fingerController.onTarget()) {
 			return Status.isNotAbleToContinue;
 		}
 		else {

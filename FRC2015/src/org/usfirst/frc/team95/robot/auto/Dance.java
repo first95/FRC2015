@@ -2,17 +2,14 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 
-public class TakeToteRight extends AutoMove {
+public class Dance extends AutoMove {
 	Robot robot;
-	AutoMove sequence;
+	SequentialMove sequence;
 	
-	public TakeToteRight(Robot robo) {
+	public Dance(Robot robo) {
 		robot = robo;
-		PickUpTote tote;
-		tote = new PickUpTote(robot, null);
-		MoveRelative move;
-		move = new MoveRelative(robot, -0.75, 0.0, 0.0, 1);
-		AutoMove[] vector = {tote, move};
+		AutoMove[] vector = {new MoveRelative(robot, 0.5, 0, 0, 1), new MoveRelative(robot, -0.5, 0, 0, 1),
+				new MoveRelative(robot, 0, 0.5, 0, 1), new MoveRelative(robot, 0, -0.5, 0, 1)};
 		sequence = new SequentialMove(vector);
 	}
 
@@ -23,7 +20,6 @@ public class TakeToteRight extends AutoMove {
 
 	@Override
 	public Status periodic() {
-		System.out.println("Take Totes!");
 		return sequence.periodic();
 	}
 
@@ -31,5 +27,7 @@ public class TakeToteRight extends AutoMove {
 	public Status stop() {
 		return sequence.stop();
 	}
+	
+	
 
 }
