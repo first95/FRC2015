@@ -2,7 +2,7 @@ package org.usfirst.frc.team95.robot.auto;
 
 public class ParallelMove extends AutoMove {
 	AutoMove[] moves;
-	
+
 	public ParallelMove(AutoMove[] moves) {
 		this.moves = moves;
 	}

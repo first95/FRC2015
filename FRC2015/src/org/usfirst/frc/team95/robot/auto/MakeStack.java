@@ -8,7 +8,7 @@ public class MakeStack extends AutoMove {
 	Robot robot;
 	Timer timeOut;
 	int stage = 0;
-	
+
 	public MakeStack(Robot robo) {
 		robot = robo;
 	}
@@ -35,7 +35,7 @@ public class MakeStack extends AutoMove {
 		} else if (stage == 2) {
 			return Status.isAbleToContinue;
 		}
-		
+
 		return Status.wantsToContinue;
 	}
 

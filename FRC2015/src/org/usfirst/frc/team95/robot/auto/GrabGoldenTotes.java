@@ -10,11 +10,12 @@ public class GrabGoldenTotes extends AutoMove {
 	Robot robot;
 	SequentialMove sequential;
 	boolean stopped;
-	
+
 	public GrabGoldenTotes(Robot robo) {
 		robot = robo;
-		AutoMove[] vector = {new TakeToteRight(robot), new TakeToteRight(robot), 
-				new TakeToteRight(robot), new GoBackward(robot), new MakeStack(robot), new NoMove(robot)};
+		AutoMove[] vector = { new TakeToteRight(robot),
+				new TakeToteRight(robot), new TakeToteRight(robot),
+				new GoBackward(robot), new MakeStack(robot), new NoMove(robot) };
 		sequential = new SequentialMove(vector);
 		stopped = false;
 	}
@@ -31,7 +32,8 @@ public class GrabGoldenTotes extends AutoMove {
 		if (!stopped) {
 			status = sequential.periodic();
 		}
-		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue) {
+		if (status == Status.isNotAbleToContinue
+				|| status == Status.isAbleToContinue) {
 			stopped = true;
 		}
 		return Status.wantsToContinue;
