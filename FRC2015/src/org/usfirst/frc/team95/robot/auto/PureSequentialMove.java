@@ -2,14 +2,15 @@ package org.usfirst.frc.team95.robot.auto;
 
 /**
  * Parent of auto-moves that are merely packaged sequential moves.
+ * 
  * @author daroc
- *
+ * 
  */
 
 public class PureSequentialMove extends AutoMove {
 
 	SequentialMove sequence = null;
-	
+
 	@Override
 	public Status init() {
 		return sequence.init();
@@ -24,5 +25,5 @@ public class PureSequentialMove extends AutoMove {
 	public Status stop() {
 		return sequence.stop();
 	}
-	
+
 }
