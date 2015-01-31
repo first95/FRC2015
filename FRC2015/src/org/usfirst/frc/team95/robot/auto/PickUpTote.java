@@ -15,7 +15,7 @@ public class PickUpTote extends AutoMove {
 	Robot robot;
 	PIDController fingerController;
 	
-	public PickUpTote(Robot robo, PIDController fingers){
+	public PickUpTote(Robot robo){
 		robot = robo;
 		fingerController = robo.fingerController;
 	}
