@@ -2,33 +2,17 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 
-public class TakeCanRight extends AutoMove {
-	Robot robot;
-	AutoMove sequence;
-	
-	public TakeCanRight(Robot robo) {
-		robot = robo;
-		PickUpCan can;
-		can = new PickUpCan(robot);
-		MoveRelative move;
-		move = new MoveRelative(robot, 0.75, 0.0, 0.0, 2.0);
-		AutoMove[] vector = {can, move};
-		sequence = new SequentialMove(vector);
-	}
+/**
+ * Takes a can, and then moves right.
+ * 
+ * @author daroc
+ * 
+ */
+public class TakeCanRight extends PureSequentialMove {
 
-	@Override
-	public Status init() {
-		return sequence.init();
-	}
-
-	@Override
-	public Status periodic() {
-		return sequence.periodic();
-	}
-
-	@Override
-	public Status stop() {
-		return sequence.stop();
+	public TakeCanRight(Robot robot) {
+		AutoMove[] moves = { new PickUpCan(robot), new GoRight(robot) };
+		sequence = new SequentialMove(moves);
 	}
 
 }
