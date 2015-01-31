@@ -11,7 +11,7 @@ import org.usfirst.frc.team95.robot.Robot;
 public class TakeToteRight extends PureSequentialMove {
 	
 	public TakeToteRight(Robot robot) {
-		AutoMove[] moves = {new PickUpTote(robot), new MoveRelative(robot, -0.75, 0, 0, 1)};
+		AutoMove[] moves = {new PickUpTote(robot), new GoRight(robot)};
 		sequence = new SequentialMove(moves);
 	}
 

@@ -10,7 +10,7 @@ import org.usfirst.frc.team95.robot.Robot;
 public class TakeCanRight extends PureSequentialMove {
 	
 	public TakeCanRight(Robot robot) {
-		AutoMove[] moves = {new PickUpCan(robot), new MoveRelative(robot, 0.75, 0.0, 0.0, 2.0)};
+		AutoMove[] moves = {new PickUpCan(robot), new GoRight(robot)};
 		sequence = new SequentialMove(moves);
 	}
 
