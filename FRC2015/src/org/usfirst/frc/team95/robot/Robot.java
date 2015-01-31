@@ -151,10 +151,17 @@ public class Robot extends IterativeRobot {
         chooser = new SendableChooser();
         chooser.addDefault("Zombie", new NoMove(this));
         //chooser.addObject("TakeToteRight", new TakeToteRight(this));
-        chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
-        chooser.addObject("TakeMaximumFront", new GrabMaximumFront(this));
-        chooser.addObject("GrabLeftCentralCan", new GrabLeftCentralCan(this));
-        chooser.addObject("GrabRightCentralCan", new GrabRightCentralCan(this));
+        chooser.addObject("Take Golden Totes", new GrabGoldenTotes(this));
+        chooser.addObject("Take Maximum from Front", new GrabMaximumFront(this));
+        chooser.addObject("Take Maximum from Front And Stack", new GrabMaximumFrontAndStack(this));
+        chooser.addObject("Grab Left Central Can", new GrabLeftCentralCan(this));
+        chooser.addObject("Grab Right Central Can", new GrabRightCentralCan(this));
+        chooser.addObject("Dance", new Dance(this));
+        chooser.addObject("To the record, baby . . .", new Dance(this));
+        chooser.addObject("Doot do doot do do", new Dance(this));
+        chooser.addObject("Just Dance", new Dance(this));
+        chooser.addObject("Self Destruct", null);
+        
         SmartDashboard.putData("Autonomous Move", chooser);
     }
     
