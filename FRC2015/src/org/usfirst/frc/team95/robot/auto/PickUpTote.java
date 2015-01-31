@@ -2,8 +2,13 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 import org.usfirst.frc.team95.robot.RobotConstants;
-
 import edu.wpi.first.wpilibj.PIDController;
+
+/**
+ * Picks up a tote from the ground.
+ * @author daroc
+ *
+ */
 
 public class PickUpTote extends AutoMove {
 	

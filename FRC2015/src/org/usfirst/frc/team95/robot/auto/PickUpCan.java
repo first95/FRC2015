@@ -3,6 +3,12 @@ package org.usfirst.frc.team95.robot.auto;
 import org.usfirst.frc.team95.robot.Robot;
 import org.usfirst.frc.team95.robot.RobotConstants;
 
+/**
+ * Pick up a can from the set grabbing position.
+ * @author daroc
+ *
+ */
+
 public class PickUpCan extends AutoMove {
 	Robot robot;
 

@@ -1,5 +1,9 @@
 package org.usfirst.frc.team95.robot.auto;
 
+/**
+ * Move directly backwards
+ */
+
 import org.usfirst.frc.team95.robot.Robot;
 
 public class GoBackward extends AutoMove {

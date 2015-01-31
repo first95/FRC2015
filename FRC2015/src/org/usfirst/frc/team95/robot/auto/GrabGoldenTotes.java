@@ -1,5 +1,9 @@
 package org.usfirst.frc.team95.robot.auto;
 
+/**
+ * Grab all the golden totes.
+ */
+
 import org.usfirst.frc.team95.robot.Robot;
 
 public class GrabGoldenTotes extends AutoMove {

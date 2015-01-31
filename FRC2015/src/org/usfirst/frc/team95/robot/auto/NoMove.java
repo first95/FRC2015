@@ -2,6 +2,11 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 
+/**
+ * Stay still.
+ * @author daroc
+ *
+ */
 
 public class NoMove extends AutoMove {
 

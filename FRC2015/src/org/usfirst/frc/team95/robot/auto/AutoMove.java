@@ -1,5 +1,11 @@
 package org.usfirst.frc.team95.robot.auto;
 
+/**
+ * Parent of all autonomous moves. Requires certain basic functionalities.
+ * @author daroc
+ *
+ */
+
 public abstract class AutoMove {
 	
 	public abstract Status init();
