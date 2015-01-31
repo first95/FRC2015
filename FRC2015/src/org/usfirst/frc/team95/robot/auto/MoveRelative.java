@@ -1,5 +1,9 @@
 package org.usfirst.frc.team95.robot.auto;
 
+/**
+ * Move in a certain way for a period of time.
+ */
+
 import org.usfirst.frc.team95.robot.Robot;
 
 import edu.wpi.first.wpilibj.Timer;

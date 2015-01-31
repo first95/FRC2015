@@ -2,34 +2,17 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 
-public class TakeToteRight extends AutoMove {
-	Robot robot;
-	AutoMove sequence;
+/**
+ * Takes a tote, and then moves right.
+ * @author daroc
+ *
+ */
+
+public class TakeToteRight extends PureSequentialMove {
 	
-	public TakeToteRight(Robot robo) {
-		robot = robo;
-		PickUpTote tote;
-		tote = new PickUpTote(robot, null);
-		MoveRelative move;
-		move = new MoveRelative(robot, -0.75, 0.0, 0.0, 1);
-		AutoMove[] vector = {tote, move};
-		sequence = new SequentialMove(vector);
-	}
-
-	@Override
-	public Status init() {
-		return sequence.init();
-	}
-
-	@Override
-	public Status periodic() {
-		System.out.println("Take Totes!");
-		return sequence.periodic();
-	}
-
-	@Override
-	public Status stop() {
-		return sequence.stop();
+	public TakeToteRight(Robot robot) {
+		AutoMove[] moves = {new PickUpTote(robot, null), new MoveRelative(robot, -0.75, 0, 0, 1)};
+		sequence = new SequentialMove(moves);
 	}
 
 }
