@@ -8,13 +8,13 @@ import org.usfirst.frc.team95.robot.Robot;
  *
  */
 
-public class GrabMaximumFront extends PureSequentialMove {
+public class GrabMaximumFrontAndStack extends PureSequentialMove {
 	
-	public GrabMaximumFront(Robot robot) {
+	public GrabMaximumFrontAndStack(Robot robot) {
 		AutoMove[] moves = {new PickUpTote(robot), new MoveRelative(robot, -0.75, 0, 0, 0.5),
 				new PickUpCan(robot), new MoveRelative(robot, -0.75, 0, 0, 1.5),
 				new PickUpTote(robot), new MoveRelative(robot, -0.75, 0, 0, 2),
-				new PickUpTote(robot), new GoBackward(robot),
+				new PickUpTote(robot), new GoBackward(robot), new MakeStack(robot),
 				new NoMove(robot)};
 		sequence = new SequentialMove(moves);
 	}

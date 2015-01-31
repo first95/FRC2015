@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Solenoid;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -150,8 +151,11 @@ public class Robot extends IterativeRobot {
         
         chooser = new SendableChooser();
         chooser.addDefault("Zombie", new NoMove(this));
-        chooser.addObject("TakeToteRight", new TakeToteRight(this));
+        //chooser.addObject("TakeToteRight", new TakeToteRight(this));
         chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
+        chooser.addObject("TakeMaximumFront", new GrabMaximumFront(this));
+        chooser.addObject("GrabLeftCentralCan", new GrabLeftCentralCan(this));
+        chooser.addObject("GrabRightCentralCan", new GrabRightCentralCan(this));
         SmartDashboard.putData("Autonomous Move", chooser);
     }
     
