@@ -3,6 +3,13 @@ package org.usfirst.frc.team95.robot.auto;
 import org.usfirst.frc.team95.robot.Robot;
 import org.usfirst.frc.team95.robot.RobotConstants;
 
+/**
+ * Pick up a can from the set grabbing position.
+ * 
+ * @author daroc
+ * 
+ */
+
 public class PickUpCan extends AutoMove {
 	Robot robot;
 
@@ -18,13 +25,13 @@ public class PickUpCan extends AutoMove {
 
 	@Override
 	public Status periodic() {
-		if (robot.armController.onTarget() && 
-				robot.armController.getSetpoint() == RobotConstants.kArmPositionGrab) {
+		if (robot.armController.onTarget()
+				&& robot.armController.getSetpoint() == RobotConstants.kArmPositionGrab) {
 			robot.armPistons.set(true);
 			robot.armController.setSetpoint(RobotConstants.kArmPositionZenith);
 			return Status.needsToContinue;
-		} else if (robot.armController.onTarget() && 
-				robot.armController.getSetpoint() == RobotConstants.kArmPositionZenith) {
+		} else if (robot.armController.onTarget()
+				&& robot.armController.getSetpoint() == RobotConstants.kArmPositionZenith) {
 			return Status.isNotAbleToContinue;
 		} else {
 			return Status.needsToContinue;

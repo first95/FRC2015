@@ -29,7 +29,7 @@ public class RobotConstants {
 	public static double kFingerI = 0.0;
 	public static double kFingerD = 0.0;
 	public static double kPIDUpdateInterval = 50.0;
-	public static double[] kFingerSetpoints = {0, 0, 0, 0, 0, 0};
+	public static double[] kFingerSetpoints = { 0, 0, 0, 0, 0, 0 };
 	public static double kDeadband = 0.04;
 	public static double kTurningCloseness = 1;
 	public static double kTurningTimeoute = 5;
