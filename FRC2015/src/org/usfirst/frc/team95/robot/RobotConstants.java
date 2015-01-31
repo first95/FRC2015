@@ -2,10 +2,10 @@ package org.usfirst.frc.team95.robot;
 
 public class RobotConstants {
 	public static double kMotorSpeedChangeMaximum = 0.5;
-	public static int kFrontLeftMotor = 1;
-	public static int kFrontRightMotor = 2;
-	public static int kBackLeftMotor = 4;
-	public static int kBackRightMotor = 3;
+	public static int kFrontLeftMotor = 9;
+	public static int kFrontRightMotor = 0;
+	public static int kBackLeftMotor = 8;
+	public static int kBackRightMotor = 1;
 	public static int kArmMotor = 5;
 	public static int kFingerMotor = 6;
 	public static int kFrontLeftEncoder = 1;
