@@ -246,11 +246,11 @@ public class Robot extends IterativeRobot {
         
         if (driveStyle) {
             y = chasis.getAxis(Joystick.AxisType.kZ);
-            x = -chasis.getAxis(Joystick.AxisType.kY);
+            x = chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kX);
         } else {
             y = chasis.getAxis(Joystick.AxisType.kX);
-            x = -chasis.getAxis(Joystick.AxisType.kY);
+            x = chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kZ);
         }
         
