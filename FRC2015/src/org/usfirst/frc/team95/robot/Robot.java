@@ -9,6 +9,8 @@ package org.usfirst.frc.team95.robot;
 
 
 import org.usfirst.frc.team95.robot.auto.*;
+
+import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -148,7 +150,7 @@ public class Robot extends IterativeRobot {
         fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
         fingerController.enable();
         
-        armPistons = new Solenoid(RobotConstants.kArmPistons);
+        armPistons = new Solenoid(RobotConstants.kPCMId,RobotConstants.kArmPistons);
         
         chooser = new SendableChooser();
         chooser.addDefault("Zombie", new NoMove(this));
@@ -196,7 +198,7 @@ public class Robot extends IterativeRobot {
     	//System.out.println("Entered Teleop");
     	//System.out.println(timeOut.get());
     	// Put currents and temperature on the smartDashboard
-    	System.out.println("Telleop begins" + timeLag.get());
+    	//System.out.println("Telleop begins" + timeLag.get());
     	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
     	SmartDashboard.putNumber("PowerDistribution Total Motor Current", powerDistribution.getCurrent(12) + powerDistribution.getCurrent(13) + powerDistribution.getCurrent(14) + powerDistribution.getCurrent(15));
     	SmartDashboard.putNumber("PowerDistribution Back Right Motor Current", powerDistribution.getCurrent(12));
@@ -215,7 +217,7 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
     	SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
     	SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
-    	System.out.println("End SmartDashboard" + timeLag.get());
+    	//System.out.println("End SmartDashboard" + timeLag.get());
     	
     	armController.setSetpoint(weapons.getX());
     	if (blue1.justPressedp()) {
@@ -241,7 +243,7 @@ public class Robot extends IterativeRobot {
         
         // Temporary variables
         double x, y, rotate, turned, sensitivity;
-        turned = (gyro.getAngle() / 180.0 * Math.PI);
+        turned = ((gyro.getAngle()));// / 180.0) * Math.PI);
         sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
         
         if (driveStyle) {
@@ -260,6 +262,8 @@ public class Robot extends IterativeRobot {
         y *= sensitivity;
         rotate *= sensitivity;
         
+        
+        System.out.println("Field Centric " + fieldcentric + "\n Gyro " + gyro.getAngle());
         // Deadbanding
         if (Math.abs(x) < RobotConstants.kDeadband) {
             x = 0;
@@ -319,7 +323,7 @@ public class Robot extends IterativeRobot {
         		driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
         	}
         }
-        System.out.println("End Middle Teleop" + timeLag.get());
+      //  System.out.println("End Middle Teleop" + timeLag.get());
         
         // Track acceleration.
         double accelX, accelY;
@@ -327,12 +331,12 @@ public class Robot extends IterativeRobot {
                  Math.sin(turned);// * (accel.getYAcceleration() - yAccelMean);
         accelY = Math.cos(turned) * //(accel.getYAcceleration() - yAccelMean) +
                  Math.sin(turned);// * (accel.getXAcceleration() - xAccelMean);
-        System.out.println("In Trig" + timeLag.get());
+      //  System.out.println("In Trig" + timeLag.get());
         xDisplacement.update(accelX);
         yDisplacement.update(accelY);
         zDisplacement.update(accel.getZAcceleration());
         
-        System.out.println("After Accelerometer" + timeLag.get());
+      //  System.out.println("After Accelerometer" + timeLag.get());
         
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
@@ -345,7 +349,7 @@ public class Robot extends IterativeRobot {
         	armPistons.set(false);
         }
         	
-        System.out.println("After Arm pistons" + timeLag.get());
+       // System.out.println("After Arm pistons" + timeLag.get());
         
         // Update button trackers
         changeDriveStyle.update();
@@ -359,9 +363,9 @@ public class Robot extends IterativeRobot {
         blue4.update();
         blue5.update();
         blue6.update();
-        System.out.println("Telleop Ends" + timeLag.get());
+     //   System.out.println("Telleop Ends" + timeLag.get());
         
-        System.out.println("After Button updates" + timeLag.get());
+       // System.out.println("After Button updates" + timeLag.get());
         
     }
     

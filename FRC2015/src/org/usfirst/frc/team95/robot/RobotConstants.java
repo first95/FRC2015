@@ -6,7 +6,7 @@ public class RobotConstants {
 	public static int kFrontRightMotor = 0;
 	public static int kBackLeftMotor = 8;
 	public static int kBackRightMotor = 1;
-	public static int kArmMotor = 5;
+	public static int kArmMotor = 7;
 	public static int kFingerMotor = 6;
 	public static int kFrontLeftEncoder = 1;
 	public static int kFrontRightEncoder = 3;
@@ -39,4 +39,6 @@ public class RobotConstants {
 	public static int kArmPistonsButton = 7;
 	public static double kArmTolerance = 0.1;
 	public static double kFingerTolerance = 0.2;
+	public static int kPCMId = 1;
+	public static int kPDPId = 0;
 }
