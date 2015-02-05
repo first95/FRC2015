@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
@@ -40,10 +41,12 @@ public class Robot extends IterativeRobot {
 	 * that need to persist are declared to exist.
 	 */
 	
-    Talon frontLeft, frontRight, backLeft, backRight, armTalon, fingerTalon;
+    Talon frontLeft, frontRight, backLeft, backRight, leftArmTalon, rightArmTalon, fingerTalon;
     public MotorWrapper realFrontLeft, realFrontRight, realBackLeft, realBackRight;
     public Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder, backRightEncoder, armEncoder, fingerEncoder;
     public RobotDrive driveTrain;
+    
+    SyncGroup armMotors;
     
     public ResetableGyro gyro;
     ADXL345_I2C extraAccel;
@@ -88,7 +91,8 @@ public class Robot extends IterativeRobot {
         frontRight = new Talon(RobotConstants.kFrontRightMotor);
         backLeft = new Talon(RobotConstants.kBackLeftMotor);
         backRight = new Talon(RobotConstants.kBackRightMotor);
-        armTalon = new Talon(RobotConstants.kArmMotor);
+        leftArmTalon = new Talon(RobotConstants.kLeftArmMotor);
+        rightArmTalon = new Talon(RobotConstants.kRightArmMotor);
         fingerTalon = new Talon(RobotConstants.kFingerMotor);
         realFrontLeft = new MotorWrapper(frontLeft);
         realFrontRight = new MotorWrapper(frontRight);
@@ -140,8 +144,11 @@ public class Robot extends IterativeRobot {
         yAccelCalibration = new double[RobotConstants.kCalibrationLength]; 
         zAccelCalibration = new double[RobotConstants.kCalibrationLength];
         
+        SpeedController[] table = {leftArmTalon, rightArmTalon};
+        armMotors = new SyncGroup(table);
+        
         armController = new PIDController(RobotConstants.kArmP, RobotConstants.kArmI, RobotConstants.kArmD, 
-        		armEncoder, armTalon, RobotConstants.kPIDUpdateInterval);
+        		armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
         armController.setAbsoluteTolerance(RobotConstants.kArmTolerance);
         armController.enable();
         
