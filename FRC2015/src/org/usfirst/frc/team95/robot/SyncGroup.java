@@ -23,6 +23,7 @@ public class SyncGroup implements PIDOutput {
     public SyncGroup (SpeedController[] SpeedControllers) {
         mSpeedControllers = SpeedControllers;
         mReversed = new boolean[mSpeedControllers.length]; //Initializes to false
+        System.out.println("I'm initializing.");
     }
     
     public SyncGroup (Solenoid[] Solenoids) {
@@ -42,6 +43,7 @@ public class SyncGroup implements PIDOutput {
     
     
     public void set(double d) {
+    	System.out.println("Set");
         for (int i = 0; i < mSpeedControllers.length;  i++) {
             if (mReversed[i]) {
                 mSpeedControllers[i].set(-d);
