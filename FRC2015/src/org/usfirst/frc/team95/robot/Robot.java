@@ -8,25 +8,29 @@
 package org.usfirst.frc.team95.robot;
 
 
-import org.usfirst.frc.team95.robot.auto.*;
-
-import edu.wpi.first.wpilibj.Gyro;
+import org.usfirst.frc.team95.robot.auto.AutoMove;
+import org.usfirst.frc.team95.robot.auto.Dance;
+import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
+import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
+import org.usfirst.frc.team95.robot.auto.NoMove;
+import org.usfirst.frc.team95.robot.auto.TakeToteRight;
+import edu.wpi.first.wpilibj.ADXL345_I2C;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
-import edu.wpi.first.wpilibj.RobotDrive.MotorType;
-import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
-import edu.wpi.first.wpilibj.smartdashboard.*;
-import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -187,7 +191,8 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
     	//System.out.println(accel.getXAcceleration() + "," + accel.getYAcceleration() + "," + accel.getZAcceleration());
-    	autoMove.periodic();
+    	Status status = autoMove.periodic();
+    	if 
     }
     
     public void disabledPeriodic() {
