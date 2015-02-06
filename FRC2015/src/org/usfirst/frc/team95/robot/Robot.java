@@ -57,7 +57,7 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric, blue1, blue2, blue3, blue4, blue5, blue6;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
     
@@ -104,8 +104,10 @@ public class Robot extends IterativeRobot {
         backRightEncoder = new Encoder(RobotConstants.kBackRightEncoder, RobotConstants.kBackRightEncoder + 1);
         armEncoder = new Encoder(RobotConstants.kArmEncoder, RobotConstants.kArmEncoder + 1);
         armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        armEncoder.setDistancePerPulse(RobotConstants.kArmEncoderPulseDistance);
         fingerEncoder = new Encoder(RobotConstants.kFingerEncoder, RobotConstants.kFingerEncoder + 1);
         fingerEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        fingerEncoder.setDistancePerPulse(RobotConstants.kFingerEncoderPulseDistance);
         driveTrain = new RobotDrive(realFrontLeft, realBackLeft, realFrontRight, realBackRight);
         driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
         driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
@@ -123,7 +125,7 @@ public class Robot extends IterativeRobot {
         weapons = new Joystick(RobotConstants.kWeapons);
 
         changeDriveStyle = new ButtonTracker(chasis, RobotConstants.kChangeDriveStyle);
-        fieldCentric = new ButtonTracker(chasis, RobotConstants.kFieldCentric);
+        fieldCentricTracker = new ButtonTracker(chasis, RobotConstants.kFieldCentric);
         driveStyle = false; // False == traditional
         rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
         rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
@@ -145,7 +147,8 @@ public class Robot extends IterativeRobot {
         zAccelCalibration = new double[RobotConstants.kCalibrationLength];
         
         SpeedController[] table = {leftArmTalon, rightArmTalon};
-        armMotors = new SyncGroup(table);
+        boolean[] reversed = {false, true};
+        armMotors = new SyncGroup(table, reversed);
         
         armController = new PIDController(RobotConstants.kArmP, RobotConstants.kArmI, RobotConstants.kArmD, 
         		armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
@@ -163,6 +166,8 @@ public class Robot extends IterativeRobot {
         chooser.addDefault("Zombie", new NoMove(this));
         chooser.addObject("TakeToteRight", new TakeToteRight(this));
         chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
+        chooser.addObject("Dance", new Dance(this));
+        chooser.addObject("GrabMaximumFrontAndStack", new GrabMaximumFrontAndStack(this));
         SmartDashboard.putData("Autonomous Move", chooser);
     }
     
@@ -226,7 +231,7 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
     	//System.out.println("End SmartDashboard" + timeLag.get());
     	
-    	armController.setSetpoint(weapons.getX());
+    	
     	if (blue1.justPressedp()) {
     		fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
     	} else if (blue1.justPressedp()) {
@@ -263,7 +268,8 @@ public class Robot extends IterativeRobot {
             rotate = -chasis.getAxis(Joystick.AxisType.kZ);
         }
         
-        armController.setSetpoint(weapons.getY());
+        //armController.setSetpoint(weapons.getY()*100);
+        armMotors.set(weapons.getY());
         
         x *= sensitivity;
         y *= sensitivity;
@@ -284,18 +290,23 @@ public class Robot extends IterativeRobot {
             rotate = 0;
         }
         
-        if (fieldCentric.justPressedp()) {
+        if (fieldCentricTracker.justPressedp()) {
         	fieldcentric = !fieldcentric;
         }
         //System.out.println("True Middle Teleop" + timeLag.get());
         
         if (rotate90Right.justPressedp()) {
+        	timeOut.stop();
+        	timeOut.reset();
         	targetAngle = gyro.getAngle() - 90;
         	System.out.println(targetAngle);
         	rotating = true;
         	timeOut.start();
         }
-        else if(rotate90Left.justPressedp()){
+        
+        if(rotate90Left.justPressedp()){
+        	timeOut.stop();
+        	timeOut.reset();
         	targetAngle = gyro.getAngle() + 90;
         	System.out.println(targetAngle);
         	rotating = true;
@@ -362,7 +373,7 @@ public class Robot extends IterativeRobot {
         changeDriveStyle.update();
         rotate90Right.update();
         rotate90Left.update();
-        fieldCentric.update();
+        fieldCentricTracker.update();
         
         blue1.update();
         blue2.update();
