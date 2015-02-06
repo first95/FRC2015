@@ -18,12 +18,12 @@ public class NoMove extends AutoMove {
 	}
 
 	public Status init() {
-		return Status.isAbleToContinue;
+		return Status.wantsToContinue;
 	}
 
 	public Status periodic() {
 		robot.driveTrain.mecanumDrive_Cartesian(0, 0, 0, 0);
-		return Status.isAbleToContinue;
+		return Status.wantsToContinue;
 	}
 
 	public Status stop() {
