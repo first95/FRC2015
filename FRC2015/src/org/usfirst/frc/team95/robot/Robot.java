@@ -76,7 +76,7 @@ public class Robot extends IterativeRobot {
     
     double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
     
-    public PIDController armController, fingerController;
+    public PIDController autoArmController, armController, fingerController;
     
     public Solenoid armPistons;
     
@@ -109,7 +109,7 @@ public class Robot extends IterativeRobot {
         frontRightEncoder = new Encoder(RobotConstants.kFrontRightEncoder, RobotConstants.kFrontRightEncoder + 1);
         backRightEncoder = new Encoder(RobotConstants.kBackRightEncoder, RobotConstants.kBackRightEncoder + 1);
         armEncoder = new Encoder(RobotConstants.kArmEncoder, RobotConstants.kArmEncoder + 1);
-        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
         armEncoder.setDistancePerPulse(RobotConstants.kArmEncoderPulseDistance);
         fingerEncoder = new Encoder(RobotConstants.kFingerEncoder, RobotConstants.kFingerEncoder + 1);
         fingerEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
@@ -159,7 +159,13 @@ public class Robot extends IterativeRobot {
         armController = new PIDController(RobotConstants.kArmP, RobotConstants.kArmI, RobotConstants.kArmD, 
         		armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
         armController.setAbsoluteTolerance(RobotConstants.kArmTolerance);
-        armController.enable();
+        armController.disable();
+        
+        autoArmController = new PIDController(RobotConstants.kArmDistanceP, RobotConstants.kArmDistanceI, 
+        		RobotConstants.kArmDistanceD, armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
+        autoArmController.enable();
+        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        
         
         fingerController = new PIDController(RobotConstants.kFingerP, RobotConstants.kFingerI, 
         		RobotConstants.kFingerD, fingerEncoder, fingerTalon, RobotConstants.kPIDUpdateInterval);
@@ -213,6 +219,11 @@ public class Robot extends IterativeRobot {
     	zAccelCalibration[0] = accel.getZAcceleration();
     	//xGyroCalibration = gyro.getRate();
     	timeLag.start();
+    }
+    
+    @Override
+    public void teleopInit() {
+    	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
     }
 
     /**
@@ -282,14 +293,15 @@ public class Robot extends IterativeRobot {
         
         
         //Limits on arm positions
-        if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
+        armMotors.set(weapons.getY()*0.5);
+        /*if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
         	armController.setSetpoint(RobotConstants.kArmPositionBehind);
         } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
         	armController.setSetpoint(RobotConstants.kArmPositionGrab);
         } else {
         	//armController.setSetpoint(weapons.getY()*100);
             armMotors.set(weapons.getY());
-        }
+        }*/
         
         x *= sensitivity;
         y *= sensitivity;
