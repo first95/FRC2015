@@ -26,9 +26,9 @@ public class RobotConstants {
 	public static int kAutoStackCan = 8;
 	public static int kAutoGrabCan = 9;
 	public static int kCalibrationLength = 500;
-	public static double kArmP = 0.0;
-	public static double kArmI = 0.0;
-	public static double kArmD = 0.0;
+	public static double kArmP = 1;
+	public static double kArmI = 0.1;
+	public static double kArmD = 0.01;
 	public static double kFingerP = 0.0;
 	public static double kFingerI = 0.0;
 	public static double kFingerD = 0.0;
@@ -46,9 +46,9 @@ public class RobotConstants {
 	public static double kFingerTolerance = 0.2;
 	public static int kPCMId = 1;
 	public static int kPDPId = 0;
-	public static double kArmEncoderPulseDistance = 1;
+	public static double kArmEncoderPulseDistance = Math.PI / 256;
 	public static double kFingerEncoderPulseDistance = 1;
-	public static double kArmLimitedSpeed = 0.5;
+	public static double kArmLimitedSpeed = Math.PI / 8;
 	public static double kArmDistanceP = 0;
 	public static double kArmDistanceI = 0;
 	public static double kArmDistanceD = 0;
