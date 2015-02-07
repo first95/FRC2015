@@ -22,7 +22,6 @@ public class RobotConstants {
 	public static int kFieldCentric = 5;
 	public static int kRotate90Left = 3;
 	public static int kRotate90Right = 4;
-	public static int kAutoStack = 7;
 	public static int kCalibrationLength = 500;
 	public static double kArmP = 0.0;
 	public static double kArmI = 0.0;
