@@ -196,6 +196,8 @@ public class Robot extends IterativeRobot {
     	yAccelMean = mean(yAccelCalibration);
     	zAccelMean = mean(zAccelCalibration);
     	
+    	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+    	
     	armController.setSetpoint(0);
     	
     	autoMove = (AutoMove) chooser.getSelected();
@@ -255,6 +257,8 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopInit() {
     	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
+    	armController.disable();
+    	autoArmController.disable();
     }
 
     /**
@@ -324,14 +328,16 @@ public class Robot extends IterativeRobot {
         
         
         //Limits on arm positions
-        armMotors.set(weapons.getY()*0.5);
+        //armMotors.setMaxSpeed(1.0);
+        //armMotors.set(weapons.getY());
         /*if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
         	armController.setSetpoint(RobotConstants.kArmPositionBehind);
         } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
         	armController.setSetpoint(RobotConstants.kArmPositionGrab);
         } else {
-        	//armController.setSetpoint(weapons.getY()*100);
-            armMotors.set(weapons.getY());
+        	// Because Math.PI makes unit into radians
+        	armController.setSetpoint(Math.pow(weapons.getY(), 2)*Math.PI/4);
+            //armMotors.set(Math.pow(weapons.getY(), 2));
         }*/
         
         x *= sensitivity;
@@ -434,7 +440,7 @@ public class Robot extends IterativeRobot {
         	armMotors.setMaxSpeed(RobotConstants.kArmLimitedSpeed);
         	armPistons.set(true);
         } else {
-        	armMotors.setMaxSpeed(1.0);
+        	armMotors.setMaxSpeed(Math.PI / 4);
         	armPistons.set(false);
         }
         
