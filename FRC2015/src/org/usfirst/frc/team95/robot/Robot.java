@@ -9,6 +9,7 @@ package org.usfirst.frc.team95.robot;
 
 
 import org.usfirst.frc.team95.robot.auto.AutoMove;
+import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
 import org.usfirst.frc.team95.robot.auto.Dance;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
@@ -82,6 +83,7 @@ public class Robot extends IterativeRobot {
     AutoMove autoMove;
     
     SendableChooser chooser;
+	private boolean autoStopped;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -191,8 +193,13 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
     	//System.out.println(accel.getXAcceleration() + "," + accel.getYAcceleration() + "," + accel.getZAcceleration());
-    	Status status = autoMove.periodic();
-    	if 
+    	
+    	if (!autoStopped) {
+    		Status status = autoMove.periodic();
+    		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+    			autoStopped = true;
+    		}
+    	}
     }
     
     public void disabledPeriodic() {
@@ -367,8 +374,11 @@ public class Robot extends IterativeRobot {
         }
         
         if (weapons.getRawButton(RobotConstants.kArmPistonsButton)) {
+        	// So that the arm can't go too fast with cans.
+        	armMotors.setMaxSpeed(RobotConstants.kArmLimitedSpeed);
         	armPistons.set(true);
         } else {
+        	armMotors.setMaxSpeed(1.0);
         	armPistons.set(false);
         }
         	
