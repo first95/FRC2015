@@ -17,6 +17,7 @@ public class MakeStack extends AutoMove {
 	public Status init() {
 		robot.fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		stage = 0;
+		timeOut = new Timer();
 		timeOut.stop();
 		timeOut.reset();
 		return Status.needsToContinue;
