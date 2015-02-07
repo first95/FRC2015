@@ -10,15 +10,18 @@ package org.usfirst.frc.team95.robot;
 
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
+import org.usfirst.frc.team95.robot.auto.CanStack;
 import org.usfirst.frc.team95.robot.auto.Dance;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
 import org.usfirst.frc.team95.robot.auto.MakeStack;
 import org.usfirst.frc.team95.robot.auto.NoMove;
+import org.usfirst.frc.team95.robot.auto.PickUpCan;
 import org.usfirst.frc.team95.robot.auto.TakeToteRight;
 
 import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -64,7 +67,11 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
+<<<<<<< local
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, autoStackCan, autoGrabCan, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
+=======
     ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
+>>>>>>> other
 
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
@@ -79,7 +86,7 @@ public class Robot extends IterativeRobot {
     
     double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
     
-    public PIDController armController, fingerController;
+    public PIDController autoArmController, armController, fingerController;
     
     public Solenoid armPistons;
     
@@ -87,6 +94,8 @@ public class Robot extends IterativeRobot {
     
     SendableChooser chooser;
 	private boolean autoStopped;
+	
+	Compressor compressor;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -112,7 +121,7 @@ public class Robot extends IterativeRobot {
         frontRightEncoder = new Encoder(RobotConstants.kFrontRightEncoder, RobotConstants.kFrontRightEncoder + 1);
         backRightEncoder = new Encoder(RobotConstants.kBackRightEncoder, RobotConstants.kBackRightEncoder + 1);
         armEncoder = new Encoder(RobotConstants.kArmEncoder, RobotConstants.kArmEncoder + 1);
-        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
         armEncoder.setDistancePerPulse(RobotConstants.kArmEncoderPulseDistance);
         fingerEncoder = new Encoder(RobotConstants.kFingerEncoder, RobotConstants.kFingerEncoder + 1);
         fingerEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
@@ -139,6 +148,8 @@ public class Robot extends IterativeRobot {
         rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
         rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
         autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
+        autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
+        autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
         blue1 = new ButtonTracker(weapons, 1);
         blue2 = new ButtonTracker(weapons, 2);
         blue3 = new ButtonTracker(weapons, 3);
@@ -163,7 +174,13 @@ public class Robot extends IterativeRobot {
         armController = new PIDController(RobotConstants.kArmP, RobotConstants.kArmI, RobotConstants.kArmD, 
         		armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
         armController.setAbsoluteTolerance(RobotConstants.kArmTolerance);
-        armController.enable();
+        armController.disable();
+        
+        autoArmController = new PIDController(RobotConstants.kArmDistanceP, RobotConstants.kArmDistanceI, 
+        		RobotConstants.kArmDistanceD, armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
+        autoArmController.enable();
+        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        
         
         fingerController = new PIDController(RobotConstants.kFingerP, RobotConstants.kFingerI, 
         		RobotConstants.kFingerD, fingerEncoder, fingerTalon, RobotConstants.kPIDUpdateInterval);
@@ -171,6 +188,9 @@ public class Robot extends IterativeRobot {
         fingerController.enable();
         
         armPistons = new Solenoid(RobotConstants.kPCMId,RobotConstants.kArmPistons);
+        
+        compressor = new Compressor();
+        compressor.start();
         
         chooser = new SendableChooser();
         chooser.addDefault("Zombie", new NoMove(this));
@@ -217,6 +237,11 @@ public class Robot extends IterativeRobot {
     	zAccelCalibration[0] = accel.getZAcceleration();
     	//xGyroCalibration = gyro.getRate();
     	timeLag.start();
+    }
+    
+    @Override
+    public void teleopInit() {
+    	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
     }
 
     /**
@@ -286,14 +311,15 @@ public class Robot extends IterativeRobot {
         
         
         //Limits on arm positions
-        if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
+        armMotors.set(weapons.getY()*0.5);
+        /*if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
         	armController.setSetpoint(RobotConstants.kArmPositionBehind);
         } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
         	armController.setSetpoint(RobotConstants.kArmPositionGrab);
         } else {
         	//armController.setSetpoint(weapons.getY()*100);
             armMotors.set(weapons.getY());
-        }
+        }*/
         
         x *= sensitivity;
         y *= sensitivity;
@@ -396,6 +422,38 @@ public class Robot extends IterativeRobot {
         	
         }
         
+        //Auto Can Grabber on 9
+        if(autoGrabCan.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new PickUpCan(this);
+        	autoMove.init();
+        }
+        if(autoGrabCan.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
+        	
+        }
+        
+        //Auto Can Stacker on 8 (when ready)
+        /*if(autoStackCan.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new CanStack(this);
+        	autoMove.init();
+        }
+        if(autoStackCan.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
+        	
+        }*/
+        
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
         	gyro.set(chasis.getPOV());
@@ -424,6 +482,9 @@ public class Robot extends IterativeRobot {
         blue4.update();
         blue5.update();
         blue6.update();
+        autoStack.update();
+        autoGrabCan.update();
+        autoStackCan.update();
      //   System.out.println("Telleop Ends" + timeLag.get());
         
        // System.out.println("After Button updates" + timeLag.get());
