@@ -21,6 +21,7 @@ import org.usfirst.frc.team95.robot.auto.TakeToteRight;
 
 import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -68,6 +69,7 @@ public class Robot extends IterativeRobot {
     
     ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, autoStackCan, autoGrabCan, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
 
+
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
     
@@ -89,6 +91,8 @@ public class Robot extends IterativeRobot {
     
     SendableChooser chooser;
 	private boolean autoStopped;
+	
+	Compressor compressor;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -181,6 +185,9 @@ public class Robot extends IterativeRobot {
         fingerController.enable();
         
         armPistons = new Solenoid(RobotConstants.kPCMId,RobotConstants.kArmPistons);
+        
+        compressor = new Compressor();
+        compressor.start();
         
         chooser = new SendableChooser();
         chooser.addDefault("Zombie", new NoMove(this));
