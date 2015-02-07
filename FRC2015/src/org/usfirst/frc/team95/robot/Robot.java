@@ -280,8 +280,16 @@ public class Robot extends IterativeRobot {
             rotate = -chasis.getAxis(Joystick.AxisType.kZ);
         }
         
-        //armController.setSetpoint(weapons.getY()*100);
-        armMotors.set(weapons.getY());
+        
+        //Limits on arm positions
+        if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
+        	armController.setSetpoint(RobotConstants.kArmPositionBehind);
+        } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
+        	armController.setSetpoint(RobotConstants.kArmPositionGrab);
+        } else {
+        	//armController.setSetpoint(weapons.getY()*100);
+            armMotors.set(weapons.getY());
+        }
         
         x *= sensitivity;
         y *= sensitivity;
