@@ -50,4 +50,5 @@ public class RobotConstants {
 	public static double kArmDistanceP = 0;
 	public static double kArmDistanceI = 0;
 	public static double kArmDistanceD = 0;
+	public static double kTippynessTolerance = 20;
 }

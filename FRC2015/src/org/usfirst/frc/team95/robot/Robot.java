@@ -88,6 +88,8 @@ public class Robot extends IterativeRobot {
 	private boolean autoStopped;
 	
 	Compressor compressor;
+	
+	TippynessMeasure tippyFrontBack, tippyLeftRight;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -181,6 +183,9 @@ public class Robot extends IterativeRobot {
         
         compressor = new Compressor();
         compressor.start();
+        
+        tippyFrontBack = new TippynessMeasure();
+        tippyLeftRight = new TippynessMeasure();
         
         chooser = new SendableChooser();
         chooser.addDefault("Zombie", new NoMove(this));
@@ -429,6 +434,9 @@ public class Robot extends IterativeRobot {
         blue4.update();
         blue5.update();
         blue6.update();
+        
+        tippyFrontBack.update(gyro.getAngle());
+        tippyLeftRight.update(gyro.getAngle());
      //   System.out.println("Telleop Ends" + timeLag.get());
         
        // System.out.println("After Button updates" + timeLag.get());
