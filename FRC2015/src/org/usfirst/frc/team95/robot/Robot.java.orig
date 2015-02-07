@@ -13,8 +13,10 @@ import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
 import org.usfirst.frc.team95.robot.auto.Dance;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
+import org.usfirst.frc.team95.robot.auto.MakeStack;
 import org.usfirst.frc.team95.robot.auto.NoMove;
 import org.usfirst.frc.team95.robot.auto.TakeToteRight;
+
 import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
@@ -62,7 +64,8 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
+
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
     
@@ -76,7 +79,7 @@ public class Robot extends IterativeRobot {
     
     double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
     
-    public PIDController autoArmController, armController, fingerController;
+    public PIDController armController, fingerController;
     
     public Solenoid armPistons;
     
@@ -109,7 +112,7 @@ public class Robot extends IterativeRobot {
         frontRightEncoder = new Encoder(RobotConstants.kFrontRightEncoder, RobotConstants.kFrontRightEncoder + 1);
         backRightEncoder = new Encoder(RobotConstants.kBackRightEncoder, RobotConstants.kBackRightEncoder + 1);
         armEncoder = new Encoder(RobotConstants.kArmEncoder, RobotConstants.kArmEncoder + 1);
-        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
+        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         armEncoder.setDistancePerPulse(RobotConstants.kArmEncoderPulseDistance);
         fingerEncoder = new Encoder(RobotConstants.kFingerEncoder, RobotConstants.kFingerEncoder + 1);
         fingerEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
@@ -135,6 +138,7 @@ public class Robot extends IterativeRobot {
         driveStyle = false; // False == traditional
         rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
         rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
+        autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
         blue1 = new ButtonTracker(weapons, 1);
         blue2 = new ButtonTracker(weapons, 2);
         blue3 = new ButtonTracker(weapons, 3);
@@ -159,13 +163,7 @@ public class Robot extends IterativeRobot {
         armController = new PIDController(RobotConstants.kArmP, RobotConstants.kArmI, RobotConstants.kArmD, 
         		armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
         armController.setAbsoluteTolerance(RobotConstants.kArmTolerance);
-        armController.disable();
-        
-        autoArmController = new PIDController(RobotConstants.kArmDistanceP, RobotConstants.kArmDistanceI, 
-        		RobotConstants.kArmDistanceD, armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
-        autoArmController.enable();
-        armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
-        
+        armController.enable();
         
         fingerController = new PIDController(RobotConstants.kFingerP, RobotConstants.kFingerI, 
         		RobotConstants.kFingerD, fingerEncoder, fingerTalon, RobotConstants.kPIDUpdateInterval);
@@ -219,11 +217,6 @@ public class Robot extends IterativeRobot {
     	zAccelCalibration[0] = accel.getZAcceleration();
     	//xGyroCalibration = gyro.getRate();
     	timeLag.start();
-    }
-    
-    @Override
-    public void teleopInit() {
-    	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
     }
 
     /**
@@ -293,15 +286,14 @@ public class Robot extends IterativeRobot {
         
         
         //Limits on arm positions
-        armMotors.set(weapons.getY()*0.5);
-        /*if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
+        if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
         	armController.setSetpoint(RobotConstants.kArmPositionBehind);
         } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
         	armController.setSetpoint(RobotConstants.kArmPositionGrab);
         } else {
         	//armController.setSetpoint(weapons.getY()*100);
             armMotors.set(weapons.getY());
-        }*/
+        }
         
         x *= sensitivity;
         y *= sensitivity;
@@ -387,6 +379,22 @@ public class Robot extends IterativeRobot {
         zDisplacement.update(accel.getZAcceleration());
         
       //  System.out.println("After Accelerometer" + timeLag.get());
+        
+      //Auto stack on hold 7
+        if(autoStack.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new MakeStack(this);
+        	autoMove.init();
+        }
+        if(autoStack.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
+        	
+        }
         
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
