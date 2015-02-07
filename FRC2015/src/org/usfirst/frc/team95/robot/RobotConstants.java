@@ -35,12 +35,16 @@ public class RobotConstants {
 	public static double kDeadband = 0.04;
 	public static double kTurningCloseness = 1;
 	public static double kTurningTimeoute = 5;
-	public static double kArmPositionGrab = 0.0;
+	public static double kArmPositionGrab = -0.1;
 	public static double kArmPositionZenith = 1.0;
+	public static double kArmPositionBehind = 2.0;
 	public static int kArmPistons = 0;
 	public static int kArmPistonsButton = 7;
 	public static double kArmTolerance = 0.1;
 	public static double kFingerTolerance = 0.2;
 	public static int kPCMId = 1;
 	public static int kPDPId = 0;
+	public static double kArmEncoderPulseDistance = 1;
+	public static double kFingerEncoderPulseDistance = 1;
+	public static double kArmLimitedSpeed = 0.5;
 }

@@ -15,7 +15,7 @@ public abstract class AutoMove {
 
 	public abstract Status stop();
 
-	enum Status {
+	public enum Status {
 		needsToContinue, wantsToContinue, isAbleToContinue, isNotAbleToContinue, emergency
 	}
 

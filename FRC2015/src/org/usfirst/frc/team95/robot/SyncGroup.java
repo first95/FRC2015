@@ -6,8 +6,6 @@
 
 package org.usfirst.frc.team95.robot;
 
-import edu.wpi.first.wpilibj.Jaguar;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.PIDOutput;
 
@@ -17,17 +15,14 @@ import edu.wpi.first.wpilibj.PIDOutput;
  */
 public class SyncGroup implements PIDOutput {
     SpeedController[] mSpeedControllers;
-    Solenoid[] mSolenoids;
     boolean[] mReversed;
+    double maxSpeed = 1.0;
+    
     
     public SyncGroup (SpeedController[] SpeedControllers) {
         mSpeedControllers = SpeedControllers;
         mReversed = new boolean[mSpeedControllers.length]; //Initializes to false
-    }
-    
-    public SyncGroup (Solenoid[] Solenoids) {
-        mSolenoids = Solenoids;
-        mReversed = new boolean[mSolenoids.length]; //Initializes to false
+        System.out.println("I'm initializing.");
     }
     
     public SyncGroup (SpeedController[] SpeedControllers, boolean[] Reversed) {
@@ -35,13 +30,14 @@ public class SyncGroup implements PIDOutput {
         mReversed = Reversed;
     }
     
-    public SyncGroup (Solenoid[] Solenoids, boolean[] Reversed) {
-        mSolenoids = Solenoids;
-        mReversed = Reversed;
-    }
-    
     
     public void set(double d) {
+    	if (d > maxSpeed) {
+    		d = maxSpeed;
+    	} else if (d < -maxSpeed) {
+    		d = -maxSpeed;
+    	}
+    	
         for (int i = 0; i < mSpeedControllers.length;  i++) {
             if (mReversed[i]) {
                 mSpeedControllers[i].set(-d);
@@ -55,22 +51,12 @@ public class SyncGroup implements PIDOutput {
     	set(bob);
     }
     
-    public void set(boolean b) {
-        for (int i = 0; i < mSolenoids.length; i++) {
-            if (mReversed[i]) {
-                mSolenoids[i].set(!b);
-            } else {
-                mSolenoids[i].set(b);
-            }
-        }
-    }
-    
-    public boolean getPiston() {
-        return mSolenoids[0].get();
-    }
-    
     public double getMotor() {
         return mSpeedControllers[0].get();
+    }
+    
+    public void setMaxSpeed(double speed) {
+    	maxSpeed = speed;
     }
     
 }
