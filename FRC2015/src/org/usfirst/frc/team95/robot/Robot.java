@@ -57,7 +57,7 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, fieldCentric, blue1, blue2, blue3, blue4, blue5, blue6;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, fieldCentric, blue1, blue2, blue3, blue4, blue5, blue6;
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
     
@@ -127,6 +127,7 @@ public class Robot extends IterativeRobot {
         driveStyle = false; // False == traditional
         rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
         rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
+        autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
         blue1 = new ButtonTracker(weapons, 1);
         blue2 = new ButtonTracker(weapons, 2);
         blue3 = new ButtonTracker(weapons, 3);
@@ -344,6 +345,11 @@ public class Robot extends IterativeRobot {
         zDisplacement.update(accel.getZAcceleration());
         
       //  System.out.println("After Accelerometer" + timeLag.get());
+        
+      //Auto stack on hold 7
+        if(autoStack.Pressedp()) {
+        	
+        }
         
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
