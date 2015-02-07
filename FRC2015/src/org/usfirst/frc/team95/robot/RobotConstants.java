@@ -9,11 +9,11 @@ public class RobotConstants {
 	public static int kLeftArmMotor = 7;
 	public static int kRightArmMotor = 2;
 	public static int kFingerMotor = 6;
-	public static int kFrontLeftEncoder = 1;
-	public static int kFrontRightEncoder = 3;
-	public static int kBackLeftEncoder = 5;
-	public static int kBackRightEncoder = 7;
-	public static int kArmEncoder = 9;
+	public static int kFrontLeftEncoder = 0;
+	public static int kFrontRightEncoder = 2;
+	public static int kBackLeftEncoder = 4;
+	public static int kBackRightEncoder = 6;
+	public static int kArmEncoder = 8;
 	public static int kFingerEncoder = 23;
 	public static int kGyro = 0;
 	public static int kChasis = 0;
@@ -23,6 +23,8 @@ public class RobotConstants {
 	public static int kRotate90Left = 3;
 	public static int kRotate90Right = 4;
 	public static int kAutoStack = 7;
+	public static int kAutoStackCan = 8;
+	public static int kAutoGrabCan = 9;
 	public static int kCalibrationLength = 500;
 	public static double kArmP = 0.0;
 	public static double kArmI = 0.0;
