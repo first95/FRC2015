@@ -44,4 +44,5 @@ public class RobotConstants {
 	public static int kPDPId = 0;
 	public static double kArmEncoderPulseDistance = 1;
 	public static double kFingerEncoderPulseDistance = 1;
+	public static double kArmLimitedSpeed = 0.5;
 }
