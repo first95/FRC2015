@@ -226,7 +226,30 @@ public class Robot extends IterativeRobot {
     	yAccelCalibration[0] = accel.getYAcceleration();
     	zAccelCalibration[0] = accel.getZAcceleration();
     	//xGyroCalibration = gyro.getRate();
-    	timeLag.start();
+    	//timeLag.start();
+    	//System.out.println("Entered Teleop");
+    	//System.out.println(timeOut.get());
+    	// Put currents and temperature on the smartDashboard
+    	//System.out.println("Telleop begins" + timeLag.get());
+    	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
+    	SmartDashboard.putNumber("PowerDistribution Total Motor Current", powerDistribution.getCurrent(12) + powerDistribution.getCurrent(13) + powerDistribution.getCurrent(14) + powerDistribution.getCurrent(15));
+    	SmartDashboard.putNumber("PowerDistribution Back Right Motor Current", powerDistribution.getCurrent(12));
+    	
+    	SmartDashboard.putNumber("PowerDistribution Front Right Motor Current", powerDistribution.getCurrent(13));
+    	SmartDashboard.putNumber("PowerDistribution Back Left Motor Current", powerDistribution.getCurrent(14));
+    	SmartDashboard.putNumber("PowerDistribution Front Left Motor Current", powerDistribution.getCurrent(15));
+    	
+    	// Put accelerations and positions
+    	//SmartDashboard.putNumber("Current X Acceleration", accel.getXAcceleration() - xAccelMean);
+    	//SmartDashboard.putNumber("Current Y Acceleration", accel.getYAcceleration() - yAccelMean);
+    	SmartDashboard.putNumber("Current Z Acceleration", accel.getZAcceleration() - zAccelMean);
+    	SmartDashboard.putNumber("Current X Displacement", xDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Current Y Displacement", yDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Current Z Displacement", zDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
+    	SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
+    	SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
+    	//System.out.println("End SmartDashboard" + timeLag.get());
     }
     
     @Override
@@ -414,6 +437,8 @@ public class Robot extends IterativeRobot {
         	armMotors.setMaxSpeed(1.0);
         	armPistons.set(false);
         }
+        
+        
         	
        // System.out.println("After Arm pistons" + timeLag.get());
         
@@ -429,6 +454,7 @@ public class Robot extends IterativeRobot {
         blue4.update();
         blue5.update();
         blue6.update();
+        
      //   System.out.println("Telleop Ends" + timeLag.get());
         
        // System.out.println("After Button updates" + timeLag.get());
