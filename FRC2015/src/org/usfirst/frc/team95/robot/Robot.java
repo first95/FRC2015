@@ -21,6 +21,7 @@ import org.usfirst.frc.team95.robot.auto.TakeToteRight;
 
 import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -66,7 +67,7 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, autoStackCan, autoGrabCan, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
 
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
@@ -89,6 +90,10 @@ public class Robot extends IterativeRobot {
     
     SendableChooser chooser;
 	private boolean autoStopped;
+	
+	Compressor compressor;
+	
+	TippynessMeasure tipsyness, swayfulness;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -182,6 +187,9 @@ public class Robot extends IterativeRobot {
         
         armPistons = new Solenoid(RobotConstants.kPCMId,RobotConstants.kArmPistons);
         
+        compressor = new Compressor();
+        compressor.start();
+        
         chooser = new SendableChooser();
         chooser.addDefault("Zombie", new NoMove(this));
         chooser.addObject("TakeToteRight", new TakeToteRight(this));
@@ -189,12 +197,17 @@ public class Robot extends IterativeRobot {
         chooser.addObject("Dance", new Dance(this));
         chooser.addObject("GrabMaximumFrontAndStack", new GrabMaximumFrontAndStack(this));
         SmartDashboard.putData("Autonomous Move", chooser);
+        
+        tipsyness = new TippynessMeasure();
+        swayfulness = new TippynessMeasure();
     }
     
     public void autonomousInit() {
     	xAccelMean = mean(xAccelCalibration);
     	yAccelMean = mean(yAccelCalibration);
     	zAccelMean = mean(zAccelCalibration);
+    	
+    	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
     	
     	armController.setSetpoint(0);
     	
@@ -226,12 +239,37 @@ public class Robot extends IterativeRobot {
     	yAccelCalibration[0] = accel.getYAcceleration();
     	zAccelCalibration[0] = accel.getZAcceleration();
     	//xGyroCalibration = gyro.getRate();
-    	timeLag.start();
+    	//timeLag.start();
+    	//System.out.println("Entered Teleop");
+    	//System.out.println(timeOut.get());
+    	// Put currents and temperature on the smartDashboard
+    	//System.out.println("Telleop begins" + timeLag.get());
+    	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
+    	SmartDashboard.putNumber("PowerDistribution Total Motor Current", powerDistribution.getCurrent(12) + powerDistribution.getCurrent(13) + powerDistribution.getCurrent(14) + powerDistribution.getCurrent(15));
+    	SmartDashboard.putNumber("PowerDistribution Back Right Motor Current", powerDistribution.getCurrent(12));
+    	
+    	SmartDashboard.putNumber("PowerDistribution Front Right Motor Current", powerDistribution.getCurrent(13));
+    	SmartDashboard.putNumber("PowerDistribution Back Left Motor Current", powerDistribution.getCurrent(14));
+    	SmartDashboard.putNumber("PowerDistribution Front Left Motor Current", powerDistribution.getCurrent(15));
+    	
+    	// Put accelerations and positions
+    	//SmartDashboard.putNumber("Current X Acceleration", accel.getXAcceleration() - xAccelMean);
+    	//SmartDashboard.putNumber("Current Y Acceleration", accel.getYAcceleration() - yAccelMean);
+    	SmartDashboard.putNumber("Current Z Acceleration", accel.getZAcceleration() - zAccelMean);
+    	SmartDashboard.putNumber("Current X Displacement", xDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Current Y Displacement", yDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Current Z Displacement", zDisplacement.mDisplacementIntegral);
+    	SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
+    	SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
+    	SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
+    	//System.out.println("End SmartDashboard" + timeLag.get());
     }
     
     @Override
     public void teleopInit() {
     	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
+    	armController.disable();
+    	autoArmController.disable();
     }
 
     /**
@@ -301,22 +339,27 @@ public class Robot extends IterativeRobot {
         
         
         //Limits on arm positions
-        armMotors.set(weapons.getY()*0.5);
+        //armMotors.setMaxSpeed(1.0);
+        //armMotors.set(weapons.getY());
         /*if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
         	armController.setSetpoint(RobotConstants.kArmPositionBehind);
         } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
         	armController.setSetpoint(RobotConstants.kArmPositionGrab);
         } else {
-        	//armController.setSetpoint(weapons.getY()*100);
-            armMotors.set(weapons.getY());
+        	// Because Math.PI makes unit into radians
+        	armController.setSetpoint(Math.pow(weapons.getY(), 2)*Math.PI/4);
+            //armMotors.set(Math.pow(weapons.getY(), 2));
         }*/
         
         x *= sensitivity;
         y *= sensitivity;
         rotate *= sensitivity;
         
+        y += tipsyness.tipped();
+        x += swayfulness.tipped();
         
-        System.out.println("Field Centric " + fieldcentric + "\n Gyro " + gyro.getAngle());
+        
+        // System.out.println("Field Centric " + fieldcentric + "\n Gyro " + gyro.getAngle());
         // Deadbanding
         if (Math.abs(x) < RobotConstants.kDeadband) {
             x = 0;
@@ -451,10 +494,8 @@ public class Robot extends IterativeRobot {
         
         if (weapons.getRawButton(RobotConstants.kArmPistonsButton)) {
         	// So that the arm can't go too fast with cans.
-        	armMotors.setMaxSpeed(RobotConstants.kArmLimitedSpeed);
         	armPistons.set(true);
         } else {
-        	armMotors.setMaxSpeed(1.0);
         	armPistons.set(false);
         }
         	
@@ -475,10 +516,27 @@ public class Robot extends IterativeRobot {
         autoStack.update();
         autoGrabCan.update();
         autoStackCan.update();
+
+        armMotors.setMaxSpeed(Math.min(Math.PI / 4, armPistons.get() ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
+        armMotors.setMinSpeed(Math.max(-Math.PI / 4, armPistons.get() ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
+
+
      //   System.out.println("Telleop Ends" + timeLag.get());
         
        // System.out.println("After Button updates" + timeLag.get());
         
+    }
+    
+    public double reccomendedSpeed() {
+    	double theta1 = tipsyness.tipped();
+		double theta2 = armEncoder.getDistance();
+    	if (theta2 > Math.PI / 4) {
+    		double inside = Math.sin(Math.PI / 4 - theta1 + theta2);
+    		double outside = 1 / Math.tan(Math.PI - theta1);
+    		return armEncoder.getRate() - ((85 - 43.25 * inside - 17.3 * inside * outside) / ((5 * inside - 2 * inside * outside) * 8.65 * 5));
+    	} else {
+    		return armEncoder.getRate() + 0.39306 / Math.cos(theta1) - 1;
+    	}
     }
     
     /**
