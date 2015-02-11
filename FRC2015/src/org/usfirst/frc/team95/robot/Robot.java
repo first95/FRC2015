@@ -82,7 +82,7 @@ public class Robot extends IterativeRobot {
     
     double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
     
-    public PIDController autoArmController, armController, fingerController;
+    public PIDController armController, fingerController;
     
     public Solenoid armPistons;
     
@@ -169,14 +169,9 @@ public class Robot extends IterativeRobot {
         boolean[] reversed = {false, true};
         armMotors = new SyncGroup(table, reversed);
         
-        armController = new PIDController(RobotConstants.kArmP, RobotConstants.kArmI, RobotConstants.kArmD, 
-        		armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
-        armController.setAbsoluteTolerance(RobotConstants.kArmTolerance);
-        armController.disable();
-        
-        autoArmController = new PIDController(RobotConstants.kArmDistanceP, RobotConstants.kArmDistanceI, 
+        armController = new PIDController(RobotConstants.kArmDistanceP, RobotConstants.kArmDistanceI, 
         		RobotConstants.kArmDistanceD, armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
-        autoArmController.enable();
+        armController.enable();
         armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         
         
@@ -209,7 +204,7 @@ public class Robot extends IterativeRobot {
     	
     	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
     	
-    	armController.setSetpoint(0);
+    	
     	
     	autoMove = (AutoMove) chooser.getSelected();
     	autoMove.init();
@@ -268,18 +263,16 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopInit() {
     	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
+    	
     	armController.disable();
-    	autoArmController.disable();
     }
 
     /**
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-    	//System.out.println("Entered Teleop");
-    	//System.out.println(timeOut.get());
+    	
     	// Put currents and temperature on the smartDashboard
-    	//System.out.println("Telleop begins" + timeLag.get());
     	SmartDashboard.putNumber("PowerDistributionTemperature", powerDistribution.getTemperature());
     	SmartDashboard.putNumber("PowerDistribution Total Motor Current", powerDistribution.getCurrent(12) + powerDistribution.getCurrent(13) + powerDistribution.getCurrent(14) + powerDistribution.getCurrent(15));
     	SmartDashboard.putNumber("PowerDistribution Back Right Motor Current", powerDistribution.getCurrent(12));
@@ -289,8 +282,6 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("PowerDistribution Front Left Motor Current", powerDistribution.getCurrent(15));
     	
     	// Put accelerations and positions
-    	//SmartDashboard.putNumber("Current X Acceleration", accel.getXAcceleration() - xAccelMean);
-    	//SmartDashboard.putNumber("Current Y Acceleration", accel.getYAcceleration() - yAccelMean);
     	SmartDashboard.putNumber("Current Z Acceleration", accel.getZAcceleration() - zAccelMean);
     	SmartDashboard.putNumber("Current X Displacement", xDisplacement.mDisplacementIntegral);
     	SmartDashboard.putNumber("Current Y Displacement", yDisplacement.mDisplacementIntegral);
@@ -298,8 +289,6 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
     	SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
     	SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
-    	//System.out.println("End SmartDashboard" + timeLag.get());
-    	
     	
     	if (blue1.justPressedp()) {
     		fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
@@ -319,8 +308,20 @@ public class Robot extends IterativeRobot {
         if (changeDriveStyle.justPressedp()) {
             driveStyle = !driveStyle;
         }
-        //System.out.println("Begin Middle Teleop" + timeLag.get());
       
+        //Limits on arm positions
+        if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
+        	armMotors.setMaxSpeed(-0.1);
+            armMotors.setMinSpeed(Math.max(-Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
+        } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
+        	armMotors.setMaxSpeed(Math.min(Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
+            armMotors.setMinSpeed(0.1);
+        } else {
+        	armMotors.setMaxSpeed(Math.min(Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
+            armMotors.setMinSpeed(Math.max(-Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
+        }
+        armMotors.set(Math.pow(weapons.getY(), 2) * 0.35);
+        
         
         // Temporary variables
         double x, y, rotate, turned, sensitivity;
@@ -338,18 +339,6 @@ public class Robot extends IterativeRobot {
         }
         
         
-        //Limits on arm positions
-        //armMotors.setMaxSpeed(0.35);
-        armMotors.set(weapons.getY() * 0.35);
-        /*if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
-        	armController.setSetpoint(RobotConstants.kArmPositionBehind);
-        } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
-        	armController.setSetpoint(RobotConstants.kArmPositionGrab);
-        } else {
-        	// Because Math.PI makes unit into radians
-        	armController.setSetpoint(Math.pow(weapons.getY(), 2)*Math.PI/4);
-            //armMotors.set(Math.pow(weapons.getY(), 2));
-        }*/
         
         x *= sensitivity;
         y *= sensitivity;
@@ -516,9 +505,6 @@ public class Robot extends IterativeRobot {
         autoStack.update();
         autoGrabCan.update();
         autoStackCan.update();
-
-        armMotors.setMaxSpeed(Math.min(Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
-        armMotors.setMinSpeed(Math.max(-Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
 
 
      //   System.out.println("Telleop Ends" + timeLag.get());
