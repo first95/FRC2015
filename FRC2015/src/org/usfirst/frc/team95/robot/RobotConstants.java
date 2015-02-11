@@ -25,6 +25,7 @@ public class RobotConstants {
 	public static int kAutoStack = 7;
 	public static int kAutoStackCan = 8;
 	public static int kAutoGrabCan = 9;
+	public static int kAutoToteCan = 6;
 	public static int kCalibrationLength = 500;
 	public static double kArmP = 0.0;
 	public static double kArmI = 0.0;
@@ -52,4 +53,5 @@ public class RobotConstants {
 	public static double kArmDistanceP = 0;
 	public static double kArmDistanceI = 0;
 	public static double kArmDistanceD = 0;
+	public static double kTippynessTolerance = 20;
 }

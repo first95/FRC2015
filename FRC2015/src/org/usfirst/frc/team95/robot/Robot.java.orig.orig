@@ -67,7 +67,7 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, autoStackCan, autoGrabCan, autoToteCan, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, autoStackCan, autoGrabCan, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
 
 
     boolean driveStyle, rotating, fieldcentric;
@@ -147,7 +147,6 @@ public class Robot extends IterativeRobot {
         autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
         autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
         autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
-        autoToteCan = new ButtonTracker(chasis, RobotConstants.kAutoToteCan);
         blue1 = new ButtonTracker(weapons, 1);
         blue2 = new ButtonTracker(weapons, 2);
         blue3 = new ButtonTracker(weapons, 3);
@@ -322,11 +321,11 @@ public class Robot extends IterativeRobot {
         
         if (driveStyle) {
             y = chasis.getAxis(Joystick.AxisType.kZ);
-            x = -chasis.getAxis(Joystick.AxisType.kY);
+            x = chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kX);
         } else {
             y = chasis.getAxis(Joystick.AxisType.kX);
-            x = -chasis.getAxis(Joystick.AxisType.kY);
+            x = chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kZ);
         }
         
@@ -427,22 +426,6 @@ public class Robot extends IterativeRobot {
         
       //  System.out.println("After Accelerometer" + timeLag.get());
         
-      //Auto stack totes and can on hold 6 once can stack works
-       /* if(autoToteCan.justPressedp()){
-        	autoStopped = false;
-        	autoMove = new ;
-        	autoMove.init();
-        }
-        if(autoToteCan.Pressedp()) {
-        	if (!autoStopped) {
-        		Status status = autoMove.periodic();
-        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
-        			autoStopped = true;
-        		}
-        	}
-        	
-        }*/
-        
       //Auto stack on hold 7
         if(autoStack.justPressedp()){
         	autoStopped = false;
@@ -458,23 +441,7 @@ public class Robot extends IterativeRobot {
         	}
         	
         }
-       
-        //Auto Can Stacker on 8 (when ready)
-        /*if(autoStackCan.justPressedp()){
-        	autoStopped = false;
-        	autoMove = new CanStack(this);
-        	autoMove.init();
-        }
-        if(autoStackCan.Pressedp()) {
-        	if (!autoStopped) {
-        		Status status = autoMove.periodic();
-        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
-        			autoStopped = true;
-        		}
-        	}
-        	
-        }*/
-      
+        
         //Auto Can Grabber on 9
         if(autoGrabCan.justPressedp()){
         	autoStopped = false;
@@ -490,6 +457,22 @@ public class Robot extends IterativeRobot {
         	}
         	
         }
+        
+        //Auto Can Stacker on 8 (when ready)
+        /*if(autoStackCan.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new CanStack(this);
+        	autoMove.init();
+        }
+        if(autoStackCan.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
+        	
+        }*/
         
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
@@ -521,12 +504,13 @@ public class Robot extends IterativeRobot {
         blue4.update();
         blue5.update();
         blue6.update();
+<<<<<<< local
         autoStack.update();
         autoGrabCan.update();
         autoStackCan.update();
-
-        autoGrabCan.update();
-        autoStackCan.update();
+=======
+        
+>>>>>>> other
      //   System.out.println("Telleop Ends" + timeLag.get());
         
        // System.out.println("After Button updates" + timeLag.get());
