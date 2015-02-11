@@ -88,6 +88,8 @@ public class Robot extends IterativeRobot {
 	private boolean autoStopped;
 	
 	Compressor compressor;
+	
+	TippynessMeasure tipsyness, swayfulness;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -189,6 +191,9 @@ public class Robot extends IterativeRobot {
         chooser.addObject("Dance", new Dance(this));
         chooser.addObject("GrabMaximumFrontAndStack", new GrabMaximumFrontAndStack(this));
         SmartDashboard.putData("Autonomous Move", chooser);
+        
+        tipsyness = new TippynessMeasure();
+        swayfulness = new TippynessMeasure();
     }
     
     public void autonomousInit() {
@@ -344,8 +349,11 @@ public class Robot extends IterativeRobot {
         y *= sensitivity;
         rotate *= sensitivity;
         
+        y += tipsyness.tipped();
+        x += swayfulness.tipped();
         
-        System.out.println("Field Centric " + fieldcentric + "\n Gyro " + gyro.getAngle());
+        
+        // System.out.println("Field Centric " + fieldcentric + "\n Gyro " + gyro.getAngle());
         // Deadbanding
         if (Math.abs(x) < RobotConstants.kDeadband) {
             x = 0;
@@ -437,12 +445,12 @@ public class Robot extends IterativeRobot {
         
         if (weapons.getRawButton(RobotConstants.kArmPistonsButton)) {
         	// So that the arm can't go too fast with cans.
-        	armMotors.setMaxSpeed(RobotConstants.kArmLimitedSpeed);
         	armPistons.set(true);
         } else {
-        	armMotors.setMaxSpeed(Math.PI / 4);
         	armPistons.set(false);
         }
+        
+        
         
         
         	
@@ -461,10 +469,25 @@ public class Robot extends IterativeRobot {
         blue5.update();
         blue6.update();
         
+        armMotors.setMaxSpeed(Math.min(Math.PI / 4, armPistons.get() ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
+        armMotors.setMinSpeed(Math.max(-Math.PI / 4, armPistons.get() ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
+        
      //   System.out.println("Telleop Ends" + timeLag.get());
         
        // System.out.println("After Button updates" + timeLag.get());
         
+    }
+    
+    public double reccomendedSpeed() {
+    	double theta1 = tipsyness.tipped();
+		double theta2 = armEncoder.getDistance();
+    	if (theta2 > Math.PI / 4) {
+    		double inside = Math.sin(Math.PI / 4 - theta1 + theta2);
+    		double outside = 1 / Math.tan(Math.PI - theta1);
+    		return armEncoder.getRate() - ((85 - 43.25 * inside - 17.3 * inside * outside) / ((5 * inside - 2 * inside * outside) * 8.65 * 5));
+    	} else {
+    		return armEncoder.getRate() + 0.39306 / Math.cos(theta1) - 1;
+    	}
     }
     
     /**
