@@ -339,8 +339,8 @@ public class Robot extends IterativeRobot {
         
         
         //Limits on arm positions
-        //armMotors.setMaxSpeed(1.0);
-        //armMotors.set(weapons.getY());
+        //armMotors.setMaxSpeed(0.35);
+        armMotors.set(weapons.getY() * 0.35);
         /*if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
         	armController.setSetpoint(RobotConstants.kArmPositionBehind);
         } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
@@ -517,8 +517,8 @@ public class Robot extends IterativeRobot {
         autoGrabCan.update();
         autoStackCan.update();
 
-        armMotors.setMaxSpeed(Math.min(Math.PI / 4, armPistons.get() ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
-        armMotors.setMinSpeed(Math.max(-Math.PI / 4, armPistons.get() ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
+        armMotors.setMaxSpeed(Math.min(Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
+        armMotors.setMinSpeed(Math.max(-Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
 
 
      //   System.out.println("Telleop Ends" + timeLag.get());
@@ -528,6 +528,7 @@ public class Robot extends IterativeRobot {
     }
     
     public double reccomendedSpeed() {
+    	System.out.println("Reccomendation made.");
     	double theta1 = tipsyness.tipped();
 		double theta2 = armEncoder.getDistance();
     	if (theta2 > Math.PI / 4) {
