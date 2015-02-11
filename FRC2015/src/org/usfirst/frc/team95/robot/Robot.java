@@ -411,7 +411,7 @@ public class Robot extends IterativeRobot {
         	}
         	
         }
-        
+           ;
         //Auto Can Grabber on 9
         if(autoGrabCan.justPressedp()){
         	autoStopped = false;
