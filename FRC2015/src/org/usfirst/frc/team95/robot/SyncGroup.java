@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.PIDOutput;
 public class SyncGroup implements PIDOutput {
     SpeedController[] mSpeedControllers;
     boolean[] mReversed;
-    double maxSpeed = 1.0;
+    double maxSpeed = Math.PI / 4;
+    double minSpeed = -Math.PI / 4;
     
     
     public SyncGroup (SpeedController[] SpeedControllers) {
@@ -34,8 +35,8 @@ public class SyncGroup implements PIDOutput {
     public void set(double d) {
     	if (d > maxSpeed) {
     		d = maxSpeed;
-    	} else if (d < -maxSpeed) {
-    		d = -maxSpeed;
+    	} else if (d < minSpeed) {
+    		d = minSpeed;
     	}
     	
         for (int i = 0; i < mSpeedControllers.length;  i++) {
@@ -57,6 +58,10 @@ public class SyncGroup implements PIDOutput {
     
     public void setMaxSpeed(double speed) {
     	maxSpeed = speed;
+    }
+    
+    public void setMinSpeed(double speed) {
+    	minSpeed = speed;
     }
     
 }
