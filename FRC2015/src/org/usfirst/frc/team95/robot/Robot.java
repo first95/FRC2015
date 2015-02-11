@@ -67,8 +67,7 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, autoStackCan, autoGrabCan, autoToteCan, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
-
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6, autoStackCan, autoGrabCan;
 
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
@@ -93,6 +92,8 @@ public class Robot extends IterativeRobot {
 	private boolean autoStopped;
 	
 	Compressor compressor;
+	
+	TippynessMeasure tipsyness, swayfulness;
     
     /**
      * This function is run when the robot is first started up and should be
@@ -147,7 +148,6 @@ public class Robot extends IterativeRobot {
         autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
         autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
         autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
-        autoToteCan = new ButtonTracker(chasis, RobotConstants.kAutoToteCan);
         blue1 = new ButtonTracker(weapons, 1);
         blue2 = new ButtonTracker(weapons, 2);
         blue3 = new ButtonTracker(weapons, 3);
@@ -197,12 +197,17 @@ public class Robot extends IterativeRobot {
         chooser.addObject("Dance", new Dance(this));
         chooser.addObject("GrabMaximumFrontAndStack", new GrabMaximumFrontAndStack(this));
         SmartDashboard.putData("Autonomous Move", chooser);
+        
+        tipsyness = new TippynessMeasure();
+        swayfulness = new TippynessMeasure();
     }
     
     public void autonomousInit() {
     	xAccelMean = mean(xAccelCalibration);
     	yAccelMean = mean(yAccelCalibration);
     	zAccelMean = mean(zAccelCalibration);
+    	
+    	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
     	
     	armController.setSetpoint(0);
     	
@@ -263,6 +268,8 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopInit() {
     	armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
+    	armController.disable();
+    	autoArmController.disable();
     }
 
     /**
@@ -322,32 +329,37 @@ public class Robot extends IterativeRobot {
         
         if (driveStyle) {
             y = chasis.getAxis(Joystick.AxisType.kZ);
-            x = -chasis.getAxis(Joystick.AxisType.kY);
+            x = chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kX);
         } else {
             y = chasis.getAxis(Joystick.AxisType.kX);
-            x = -chasis.getAxis(Joystick.AxisType.kY);
+            x = chasis.getAxis(Joystick.AxisType.kY);
             rotate = -chasis.getAxis(Joystick.AxisType.kZ);
         }
         
         
         //Limits on arm positions
-        armMotors.set(weapons.getY()*0.5);
+        //armMotors.setMaxSpeed(1.0);
+        //armMotors.set(weapons.getY());
         /*if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
         	armController.setSetpoint(RobotConstants.kArmPositionBehind);
         } else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
         	armController.setSetpoint(RobotConstants.kArmPositionGrab);
         } else {
-        	//armController.setSetpoint(weapons.getY()*100);
-            armMotors.set(weapons.getY());
+        	// Because Math.PI makes unit into radians
+        	armController.setSetpoint(Math.pow(weapons.getY(), 2)*Math.PI/4);
+            //armMotors.set(Math.pow(weapons.getY(), 2));
         }*/
         
         x *= sensitivity;
         y *= sensitivity;
         rotate *= sensitivity;
         
+        y += tipsyness.tipped();
+        x += swayfulness.tipped();
         
-        System.out.println("Field Centric " + fieldcentric + "\n Gyro " + gyro.getAngle());
+        
+        // System.out.println("Field Centric " + fieldcentric + "\n Gyro " + gyro.getAngle());
         // Deadbanding
         if (Math.abs(x) < RobotConstants.kDeadband) {
             x = 0;
@@ -427,22 +439,6 @@ public class Robot extends IterativeRobot {
         
       //  System.out.println("After Accelerometer" + timeLag.get());
         
-      //Auto stack totes and can on hold 6 once can stack works
-       /* if(autoToteCan.justPressedp()){
-        	autoStopped = false;
-        	autoMove = new ;
-        	autoMove.init();
-        }
-        if(autoToteCan.Pressedp()) {
-        	if (!autoStopped) {
-        		Status status = autoMove.periodic();
-        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
-        			autoStopped = true;
-        		}
-        	}
-        	
-        }*/
-        
       //Auto stack on hold 7
         if(autoStack.justPressedp()){
         	autoStopped = false;
@@ -458,23 +454,7 @@ public class Robot extends IterativeRobot {
         	}
         	
         }
-       
-        //Auto Can Stacker on 8 (when ready)
-        /*if(autoStackCan.justPressedp()){
-        	autoStopped = false;
-        	autoMove = new CanStack(this);
-        	autoMove.init();
-        }
-        if(autoStackCan.Pressedp()) {
-        	if (!autoStopped) {
-        		Status status = autoMove.periodic();
-        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
-        			autoStopped = true;
-        		}
-        	}
-        	
-        }*/
-      
+           ;
         //Auto Can Grabber on 9
         if(autoGrabCan.justPressedp()){
         	autoStopped = false;
@@ -491,6 +471,22 @@ public class Robot extends IterativeRobot {
         	
         }
         
+        //Auto Can Stacker on 8 (when ready)
+        /*if(autoStackCan.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new CanStack(this);
+        	autoMove.init();
+        }
+        if(autoStackCan.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
+        	
+        }*/
+        
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
         	gyro.set(chasis.getPOV());
@@ -498,14 +494,10 @@ public class Robot extends IterativeRobot {
         
         if (weapons.getRawButton(RobotConstants.kArmPistonsButton)) {
         	// So that the arm can't go too fast with cans.
-        	armMotors.setMaxSpeed(RobotConstants.kArmLimitedSpeed);
         	armPistons.set(true);
         } else {
-        	armMotors.setMaxSpeed(1.0);
         	armPistons.set(false);
         }
-        
-        
         	
        // System.out.println("After Arm pistons" + timeLag.get());
         
@@ -525,12 +517,26 @@ public class Robot extends IterativeRobot {
         autoGrabCan.update();
         autoStackCan.update();
 
-        autoGrabCan.update();
-        autoStackCan.update();
+        armMotors.setMaxSpeed(Math.min(Math.PI / 4, armPistons.get() ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
+        armMotors.setMinSpeed(Math.max(-Math.PI / 4, armPistons.get() ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
+
+
      //   System.out.println("Telleop Ends" + timeLag.get());
         
        // System.out.println("After Button updates" + timeLag.get());
         
+    }
+    
+    public double reccomendedSpeed() {
+    	double theta1 = tipsyness.tipped();
+		double theta2 = armEncoder.getDistance();
+    	if (theta2 > Math.PI / 4) {
+    		double inside = Math.sin(Math.PI / 4 - theta1 + theta2);
+    		double outside = 1 / Math.tan(Math.PI - theta1);
+    		return armEncoder.getRate() - ((85 - 43.25 * inside - 17.3 * inside * outside) / ((5 * inside - 2 * inside * outside) * 8.65 * 5));
+    	} else {
+    		return armEncoder.getRate() + 0.39306 / Math.cos(theta1) - 1;
+    	}
     }
     
     /**

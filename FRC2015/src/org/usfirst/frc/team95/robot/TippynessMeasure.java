@@ -2,6 +2,7 @@ package org.usfirst.frc.team95.robot;
 
 public class TippynessMeasure {
 	double average;
+	double recentAverage;
 	double total;
 	double measures;
 	double[] window;
@@ -18,10 +19,15 @@ public class TippynessMeasure {
 		total += angle;
 		measures += 1;
 		average = total / measures;
+		recentAverage = mean(window);
 	}
 	
-	public boolean tipped() {
-		return Math.abs(mean(window) - average) > RobotConstants.kTippynessTolerance;
+	public boolean tippedp() {
+		return Math.abs(recentAverage - average) > RobotConstants.kTippynessTolerance;
+	}
+	
+	public double tipped() {
+		return recentAverage - average;
 	}
 	
 	private double[] shift(double[] table) {
