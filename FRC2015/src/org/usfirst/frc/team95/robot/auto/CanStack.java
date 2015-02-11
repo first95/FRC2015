@@ -14,12 +14,12 @@ public class CanStack extends AutoMove {
 
 	@Override
 	public Status init() {
-		
+		return null;
 	}
 
 	@Override
 	public Status periodic() {
-	
+		return null;
 	}
 
 	@Override
