@@ -10,11 +10,15 @@ package org.usfirst.frc.team95.robot;
 
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
+import org.usfirst.frc.team95.robot.auto.CanStack;
 import org.usfirst.frc.team95.robot.auto.Dance;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
+import org.usfirst.frc.team95.robot.auto.MakeStack;
 import org.usfirst.frc.team95.robot.auto.NoMove;
+import org.usfirst.frc.team95.robot.auto.PickUpCan;
 import org.usfirst.frc.team95.robot.auto.TakeToteRight;
+
 import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Compressor;
@@ -142,6 +146,8 @@ public class Robot extends IterativeRobot {
         rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
         rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
         autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
+        autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
+        autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
         blue1 = new ButtonTracker(weapons, 1);
         blue2 = new ButtonTracker(weapons, 2);
         blue3 = new ButtonTracker(weapons, 3);
@@ -434,9 +440,52 @@ public class Robot extends IterativeRobot {
       //  System.out.println("After Accelerometer" + timeLag.get());
         
       //Auto stack on hold 7
+        if(autoStack.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new MakeStack(this);
+        	autoMove.init();
+        }
         if(autoStack.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
         	
         }
+           ;
+        //Auto Can Grabber on 9
+        if(autoGrabCan.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new PickUpCan(this);
+        	autoMove.init();
+        }
+        if(autoGrabCan.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
+        	
+        }
+        
+        //Auto Can Stacker on 8 (when ready)
+        /*if(autoStackCan.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new CanStack(this);
+        	autoMove.init();
+        }
+        if(autoStackCan.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
+        	
+        }*/
         
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
@@ -449,10 +498,6 @@ public class Robot extends IterativeRobot {
         } else {
         	armPistons.set(false);
         }
-        
-        
-        
-        
         	
        // System.out.println("After Arm pistons" + timeLag.get());
         
@@ -468,10 +513,14 @@ public class Robot extends IterativeRobot {
         blue4.update();
         blue5.update();
         blue6.update();
-        
+        autoStack.update();
+        autoGrabCan.update();
+        autoStackCan.update();
+
         armMotors.setMaxSpeed(Math.min(Math.PI / 4, armPistons.get() ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
         armMotors.setMinSpeed(Math.max(-Math.PI / 4, armPistons.get() ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
-        
+
+
      //   System.out.println("Telleop Ends" + timeLag.get());
         
        // System.out.println("After Button updates" + timeLag.get());
