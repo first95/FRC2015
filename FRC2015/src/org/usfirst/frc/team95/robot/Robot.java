@@ -54,8 +54,7 @@ public class Robot extends IterativeRobot {
 			rightArmTalon, fingerTalon;
 	public MotorWrapper realFrontLeft, realFrontRight, realBackLeft,
 			realBackRight;
-	public Encoder frontLeftEncoder, frontRightEncoder, backLeftEncoder,
-			backRightEncoder, fingerEncoder;
+	public Encoder fingerEncoder;
 	public ResetableEncoder armEncoder;
 	public RobotDrive driveTrain;
 
@@ -121,14 +120,6 @@ public class Robot extends IterativeRobot {
 		realFrontRight = new MotorWrapper(frontRight);
 		realBackLeft = new MotorWrapper(backLeft);
 		realBackRight = new MotorWrapper(backRight);
-		frontLeftEncoder = new Encoder(RobotConstants.kFrontLeftEncoder,
-				RobotConstants.kFrontLeftEncoder + 1);
-		backLeftEncoder = new Encoder(RobotConstants.kBackLeftEncoder,
-				RobotConstants.kBackLeftEncoder + 1);
-		frontRightEncoder = new Encoder(RobotConstants.kFrontRightEncoder,
-				RobotConstants.kFrontRightEncoder + 1);
-		backRightEncoder = new Encoder(RobotConstants.kBackRightEncoder,
-				RobotConstants.kBackRightEncoder + 1);
 		armEncoder = new ResetableEncoder(RobotConstants.kArmEncoder,
 				RobotConstants.kArmEncoder + 1);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
@@ -166,7 +157,7 @@ public class Robot extends IterativeRobot {
 		autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
 		autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
 		autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
-		blue1 = new ButtonTracker(weapons, 1);
+		blue1 = new ButtonTracker(weapons, 7);
 		blue2 = new ButtonTracker(weapons, 2);
 		blue3 = new ButtonTracker(weapons, 3);
 		blue4 = new ButtonTracker(weapons, 4);
@@ -357,7 +348,7 @@ public class Robot extends IterativeRobot {
 			}
 		}
 
-		if (blue1.justPressedp()) {
+		/*if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[1]);
@@ -369,7 +360,7 @@ public class Robot extends IterativeRobot {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[4]);
 		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[5]);
-		}
+		}*/
 
 		// Drive style determines weather left and right are turn or strafe.
 		if (changeDriveStyle.justPressedp()) {
@@ -403,7 +394,7 @@ public class Robot extends IterativeRobot {
 							weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed()
 									: -RobotConstants.kArmLimitedSpeed));
 		}
-		armMotors.set(Math.pow(weapons.getY(), 2) * 0.35);
+		armMotors.set(weapons.getY() * 0.35);
 
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;
@@ -411,11 +402,11 @@ public class Robot extends IterativeRobot {
 		sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
 
 		if (driveStyle) {
-			y = chasis.getAxis(Joystick.AxisType.kZ);
+			y = -chasis.getAxis(Joystick.AxisType.kZ);
 			x = chasis.getAxis(Joystick.AxisType.kY);
 			rotate = -chasis.getAxis(Joystick.AxisType.kX);
 		} else {
-			y = chasis.getAxis(Joystick.AxisType.kX);
+			y = -chasis.getAxis(Joystick.AxisType.kX);
 			x = chasis.getAxis(Joystick.AxisType.kY);
 			rotate = -chasis.getAxis(Joystick.AxisType.kZ);
 		}
@@ -561,12 +552,7 @@ public class Robot extends IterativeRobot {
 			gyro.set(chasis.getPOV());
 		}
 
-		if (weapons.getRawButton(RobotConstants.kArmPistonsButton)) {
-			// So that the arm can't go too fast with cans.
-			armPistons.set(true);
-		} else {
-			armPistons.set(false);
-		}
+		armPistons.set(weapons.getRawButton(1));
 
 		// System.out.println("After Arm pistons" + timeLag.get());
 

@@ -15,6 +15,6 @@ public class ResetableEncoder extends Encoder {
 
 	@Override
 	public double getDistance() {
-		return offset + ((Encoder) this).getDistance();
+		return offset + super.getDistance();
 	}
 }
