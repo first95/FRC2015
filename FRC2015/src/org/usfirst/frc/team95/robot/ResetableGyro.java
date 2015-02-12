@@ -19,8 +19,9 @@ public class ResetableGyro extends Gyro {
 
 	public void set(double thatway) {
 		offset = thatway + super.getAngle();
-		System.out.println("thatway" + thatway + "\n get anlge" + super.getAngle());
-		
+		System.out.println("thatway" + thatway + "\n get anlge"
+				+ super.getAngle());
+
 	}
 
 	public double getAngle() {
