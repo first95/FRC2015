@@ -73,7 +73,7 @@ public class Robot extends IterativeRobot {
 			fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6,
 			autoStackCan, autoGrabCan;
 
-	boolean driveStyle, rotating, fieldcentric;
+	boolean driveStyle, rotating, fieldcentric = false;
 	double targetAngle;
 
 	Timer timeOut;
@@ -295,8 +295,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
-
-		armController.disable();
+		
+		armMotors.manual = true;
+		//armController.disable();
+		//fingerController.disable();
 	}
 
 	/**
@@ -368,6 +370,7 @@ public class Robot extends IterativeRobot {
 		}
 
 		// Limits on arm positions
+		armMotors.manual = true;
 		if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
 			armMotors.setMaxSpeed(-0.1);
 			armMotors
@@ -402,12 +405,12 @@ public class Robot extends IterativeRobot {
 		sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
 
 		if (driveStyle) {
-			y = -chasis.getAxis(Joystick.AxisType.kZ);
-			x = chasis.getAxis(Joystick.AxisType.kY);
+			y = -chasis.getAxis(Joystick.AxisType.kY);
+			x = chasis.getAxis(Joystick.AxisType.kZ);
 			rotate = -chasis.getAxis(Joystick.AxisType.kX);
 		} else {
-			y = -chasis.getAxis(Joystick.AxisType.kX);
-			x = chasis.getAxis(Joystick.AxisType.kY);
+			y = -chasis.getAxis(Joystick.AxisType.kY);
+			x = chasis.getAxis(Joystick.AxisType.kX);
 			rotate = -chasis.getAxis(Joystick.AxisType.kZ);
 		}
 
@@ -415,8 +418,8 @@ public class Robot extends IterativeRobot {
 		y *= sensitivity;
 		rotate *= sensitivity;
 
-		y += tipsyness.tipped();
-		x += swayfulness.tipped();
+		//y += tipsyness.tipped();
+		//x += swayfulness.tipped();
 
 		// System.out.println("Field Centric " + fieldcentric + "\n Gyro " +
 		// gyro.getAngle());
@@ -587,9 +590,9 @@ public class Robot extends IterativeRobot {
 			double outside = 1 / Math.tan(Math.PI - theta1);
 			return armEncoder.getRate()
 					- ((85 - 43.25 * inside - 17.3 * inside * outside) / ((5 * inside - 2
-							* inside * outside) * 8.65 * 5));
+							* inside * outside) * 8.65 * 5)) + 0.1;
 		} else {
-			return armEncoder.getRate() + 0.39306 / Math.cos(theta1) - 1;
+			return armEncoder.getRate() + 0.39306 / Math.cos(theta1) - 1 + 0.1;
 		}
 	}
 
