@@ -17,6 +17,7 @@ import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
 import org.usfirst.frc.team95.robot.auto.MakeStack;
 import org.usfirst.frc.team95.robot.auto.NoMove;
 import org.usfirst.frc.team95.robot.auto.PickUpCan;
+import org.usfirst.frc.team95.robot.auto.PickUpTote;
 import org.usfirst.frc.team95.robot.auto.TakeToteRight;
 
 import edu.wpi.first.wpilibj.ADXL345_I2C;
@@ -67,7 +68,7 @@ public class Robot extends IterativeRobot {
     
     Joystick chasis, weapons;
     
-    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6, autoStackCan, autoGrabCan;
+    ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack, autoStackBoth, autoStackCan, autoGrabCan, autoTakeTote, fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6;
 
     boolean driveStyle, rotating, fieldcentric;
     double targetAngle;
@@ -148,6 +149,8 @@ public class Robot extends IterativeRobot {
         autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
         autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
         autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
+        autoStackBoth = new ButtonTracker(chasis, RobotConstants.kAutoStackBoth);
+        autoTakeTote = new ButtonTracker(chasis, RobotConstants.kAutoTakeTote);
         blue1 = new ButtonTracker(weapons, 1);
         blue2 = new ButtonTracker(weapons, 2);
         blue3 = new ButtonTracker(weapons, 3);
@@ -438,6 +441,22 @@ public class Robot extends IterativeRobot {
         zDisplacement.update(accel.getZAcceleration());
         
       //  System.out.println("After Accelerometer" + timeLag.get());
+      
+      //Auto all stacker on 6 (once we can auto can stack)
+        /*if(autoStackBoth.justPressedp()){
+        	autoStopped = false;
+        	autoMove = new [insert auto move name here](this);
+        	autoMove.init();
+        }
+        if(autoStackBoth.Pressedp()) {
+        	if (!autoStopped) {
+        		Status status = autoMove.periodic();
+        		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+        			autoStopped = true;
+        		}
+        	}
+        	
+        }*/
         
       //Auto stack on hold 7
         if(autoStack.justPressedp()){
@@ -454,7 +473,23 @@ public class Robot extends IterativeRobot {
         	}
         	
         }
-           ;
+           
+           //Auto Can Stacker on 8 (when ready)
+           /*if(autoStackCan.justPressedp()){
+           	autoStopped = false;
+           	autoMove = new CanStack(this);
+           	autoMove.init();
+           }
+           if(autoStackCan.Pressedp()) {
+           	if (!autoStopped) {
+           		Status status = autoMove.periodic();
+           		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
+           			autoStopped = true;
+           		}
+           	}
+           	
+           }*/
+           
         //Auto Can Grabber on 9
         if(autoGrabCan.justPressedp()){
         	autoStopped = false;
@@ -471,13 +506,13 @@ public class Robot extends IterativeRobot {
         	
         }
         
-        //Auto Can Stacker on 8 (when ready)
-        /*if(autoStackCan.justPressedp()){
+        //Auto Tote Grabber on 10
+        if(autoTakeTote.justPressedp()){
         	autoStopped = false;
-        	autoMove = new CanStack(this);
+        	autoMove = new PickUpTote(this);
         	autoMove.init();
         }
-        if(autoStackCan.Pressedp()) {
+        if(autoTakeTote.Pressedp()) {
         	if (!autoStopped) {
         		Status status = autoMove.periodic();
         		if (status == Status.isNotAbleToContinue || status == Status.isAbleToContinue || status == Status.emergency) {
@@ -485,7 +520,7 @@ public class Robot extends IterativeRobot {
         		}
         	}
         	
-        }*/
+        }
         
         //Manual gyro reseting
         if (chasis.getPOV() != -1) {
@@ -516,6 +551,8 @@ public class Robot extends IterativeRobot {
         autoStack.update();
         autoGrabCan.update();
         autoStackCan.update();
+        autoStackBoth.update();
+        autoTakeTote.update();
 
         armMotors.setMaxSpeed(Math.min(Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : RobotConstants.kArmLimitedSpeed));
         armMotors.setMinSpeed(Math.max(-Math.PI / 4, weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed() : -RobotConstants.kArmLimitedSpeed));
