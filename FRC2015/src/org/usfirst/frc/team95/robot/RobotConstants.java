@@ -33,7 +33,7 @@ public class RobotConstants {
 	public static double kDeadband = 0.1;
 	public static double kTurningCloseness = 1;
 	public static double kTurningTimeoute = 5;
-	public static double kArmPositionGrab = 0;
+	public static double kArmPositionGrab = -0.1;
 	public static double kArmPositionZenith = Math.PI / 4;
 	public static double kArmPositionBehind = Math.PI / 2;
 	public static int kArmPistons = 0;

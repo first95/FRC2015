@@ -18,6 +18,7 @@ public class SyncGroup implements PIDOutput {
 	boolean[] mReversed;
 	double maxSpeed = Math.PI / 4;
 	double minSpeed = -Math.PI / 4;
+	public boolean manual = false;
 
 	public SyncGroup(SpeedController[] SpeedControllers) {
 		mSpeedControllers = SpeedControllers;
@@ -32,6 +33,8 @@ public class SyncGroup implements PIDOutput {
 	}
 
 	public void set(double d) {
+		//throw new ArrayIndexOutOfBoundsException();
+		
 		if (d > maxSpeed) {
 			d = maxSpeed;
 		} else if (d < minSpeed) {
@@ -48,6 +51,10 @@ public class SyncGroup implements PIDOutput {
 	}
 
 	public void pidWrite(double bob) {
+		if (manual) {
+			System.out.println("Viva la revelucion!");
+			return;
+		}
 		set(bob);
 	}
 
