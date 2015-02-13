@@ -51,7 +51,7 @@ public class SyncGroup implements PIDOutput {
 	}
 
 	public void pidWrite(double bob) {
-		if (manual) {
+		if (true) {
 			System.out.println("Viva la revelucion!");
 			return;
 		}

@@ -5,12 +5,14 @@ import edu.wpi.first.wpilibj.SpeedController;
 
 public class MotorWrapper implements SpeedController, PIDOutput {
 	SpeedController wrappedMotor;
+	public double scaling = 1.0;
 
 	public MotorWrapper(SpeedController wrappedMotor) {
 		this.wrappedMotor = wrappedMotor;
 	}
 
 	public void set(double speed) {
+		speed = speed * scaling;
 		double currentSpeed;
 		currentSpeed = wrappedMotor.get();
 		if (Math.abs(speed - currentSpeed) >= RobotConstants.kMotorSpeedChangeMaximum) {

@@ -117,9 +117,12 @@ public class Robot extends IterativeRobot {
 		rightArmTalon = new Talon(RobotConstants.kRightArmMotor);
 		fingerTalon = new Talon(RobotConstants.kFingerMotor);
 		realFrontLeft = new MotorWrapper(frontLeft);
+		realFrontLeft.scaling = 0.9;
 		realFrontRight = new MotorWrapper(frontRight);
+		realFrontRight.scaling = 0.9;
 		realBackLeft = new MotorWrapper(backLeft);
 		realBackRight = new MotorWrapper(backRight);
+		realBackLeft.scaling = 0.9;
 		armEncoder = new ResetableEncoder(RobotConstants.kArmEncoder,
 				RobotConstants.kArmEncoder + 1);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
@@ -177,6 +180,7 @@ public class Robot extends IterativeRobot {
 		SpeedController[] table = { leftArmTalon, rightArmTalon };
 		boolean[] reversed = { false, true };
 		armMotors = new SyncGroup(table, reversed);
+		table = null;
 
 		armController = new PIDController(RobotConstants.kArmDistanceP,
 				RobotConstants.kArmDistanceI, RobotConstants.kArmDistanceD,
@@ -405,18 +409,18 @@ public class Robot extends IterativeRobot {
 		sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
 
 		if (driveStyle) {
-			y = -chasis.getAxis(Joystick.AxisType.kY);
-			x = chasis.getAxis(Joystick.AxisType.kZ);
+			y = -chasis.getAxis(Joystick.AxisType.kZ);
+			x = -chasis.getAxis(Joystick.AxisType.kY);
 			rotate = -chasis.getAxis(Joystick.AxisType.kX);
 		} else {
-			y = -chasis.getAxis(Joystick.AxisType.kY);
-			x = chasis.getAxis(Joystick.AxisType.kX);
+			y = -chasis.getAxis(Joystick.AxisType.kX);
+			x = -chasis.getAxis(Joystick.AxisType.kY);
 			rotate = -chasis.getAxis(Joystick.AxisType.kZ);
 		}
 
 		x *= sensitivity;
 		y *= sensitivity;
-		rotate *= sensitivity;
+		rotate *= sensitivity * 0.5;
 
 		//y += tipsyness.tipped();
 		//x += swayfulness.tipped();
@@ -475,13 +479,13 @@ public class Robot extends IterativeRobot {
 				turnSpeed = -1;
 			}
 
-			if (fieldcentric) {
+			if (false) { // fieldcentric
 				driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, turned);
 			} else {
 				driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, 0.0);
 			}
 		} else {
-			if (fieldcentric) {
+			if (false) { // fieldcentric
 				driveTrain.mecanumDrive_Cartesian(y, x, rotate, turned);
 			} else {
 				driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
@@ -555,7 +559,7 @@ public class Robot extends IterativeRobot {
 			gyro.set(chasis.getPOV());
 		}
 
-		armPistons.set(weapons.getRawButton(1));
+		armPistons.set(blue2.Pressedp());
 
 		// System.out.println("After Arm pistons" + timeLag.get());
 
@@ -590,9 +594,9 @@ public class Robot extends IterativeRobot {
 			double outside = 1 / Math.tan(Math.PI - theta1);
 			return armEncoder.getRate()
 					- ((85 - 43.25 * inside - 17.3 * inside * outside) / ((5 * inside - 2
-							* inside * outside) * 8.65 * 5)) + 0.1;
+							* inside * outside) * 8.65 * 5)) + 0.01;
 		} else {
-			return armEncoder.getRate() + 0.39306 / Math.cos(theta1) - 1 + 0.1;
+			return armEncoder.getRate() + 0.39306 / Math.cos(theta1) - 1 + 0.01;
 		}
 	}
 
