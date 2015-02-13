@@ -74,7 +74,7 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
 			fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			autoStackCan, autoGrabCan;
+			autoStackCan, autoGrabCan, autoTakeTote;
 
 	boolean driveStyle, rotating, fieldcentric = false;
 	double targetAngle;
@@ -163,6 +163,7 @@ public class Robot extends IterativeRobot {
 		autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
 		autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
 		autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
+		autoTakeTote = new ButtonTracker(chasis, RobotConstants.kAutoTakeTote);
 		blue1 = new ButtonTracker(weapons, 7);
 		blue2 = new ButtonTracker(weapons, 2);
 		blue3 = new ButtonTracker(weapons, 3);
