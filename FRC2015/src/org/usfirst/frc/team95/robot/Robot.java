@@ -7,14 +7,17 @@
 
 package org.usfirst.frc.team95.robot;
 
+
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
+import org.usfirst.frc.team95.robot.auto.CanStack;
 import org.usfirst.frc.team95.robot.auto.Dance;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
 import org.usfirst.frc.team95.robot.auto.MakeStack;
 import org.usfirst.frc.team95.robot.auto.NoMove;
 import org.usfirst.frc.team95.robot.auto.PickUpCan;
+import org.usfirst.frc.team95.robot.auto.PickUpTote;
 import org.usfirst.frc.team95.robot.auto.TakeToteRight;
 
 import edu.wpi.first.wpilibj.ADXL345_I2C;
@@ -507,6 +510,17 @@ public class Robot extends IterativeRobot {
 
 		// System.out.println("After Accelerometer" + timeLag.get());
 
+		// Auto all stacker on 6 (once we can auto can stack)
+		/*
+		 * if(autoStackBoth.justPressedp()){ autoStopped = false; autoMove = new
+		 * [insert auto move name here](this); autoMove.init(); }
+		 * if(autoStackBoth.Pressedp()) { if (!autoStopped) { Status status =
+		 * autoMove.periodic(); if (status == Status.isNotAbleToContinue ||
+		 * status == Status.isAbleToContinue || status == Status.emergency) {
+		 * autoStopped = true; } }
+		 * 
+		 * }
+		 */
 		// Auto stack on hold 7
 		if (autoStack.justPressedp()) {
 			autoStopped = false;
@@ -525,6 +539,16 @@ public class Robot extends IterativeRobot {
 
 		}
 		;
+		// Auto Can Stacker on 8 (when ready)
+		/*
+		 * if(autoStackCan.justPressedp()){ autoStopped = false; autoMove = new
+		 * CanStack(this); autoMove.init(); } if(autoStackCan.Pressedp()) { if
+		 * (!autoStopped) { Status status = autoMove.periodic(); if (status ==
+		 * Status.isNotAbleToContinue || status == Status.isAbleToContinue ||
+		 * status == Status.emergency) { autoStopped = true; } }
+		 * 
+		 * }
+		 */
 		// Auto Can Grabber on 9
 		if (autoGrabCan.justPressedp()) {
 			autoStopped = false;
@@ -543,16 +567,23 @@ public class Robot extends IterativeRobot {
 
 		}
 
-		// Auto Can Stacker on 8 (when ready)
-		/*
-		 * if(autoStackCan.justPressedp()){ autoStopped = false; autoMove = new
-		 * CanStack(this); autoMove.init(); } if(autoStackCan.Pressedp()) { if
-		 * (!autoStopped) { Status status = autoMove.periodic(); if (status ==
-		 * Status.isNotAbleToContinue || status == Status.isAbleToContinue ||
-		 * status == Status.emergency) { autoStopped = true; } }
-		 * 
-		 * }
-		 */
+		// Auto Tote Grabber on 10
+		if (autoTakeTote.justPressedp()) {
+			autoStopped = false;
+			autoMove = new PickUpTote(this);
+			autoMove.init();
+		}
+		if (autoTakeTote.Pressedp()) {
+			if (!autoStopped) {
+				Status status = autoMove.periodic();
+				if (status == Status.isNotAbleToContinue
+						|| status == Status.isAbleToContinue
+						|| status == Status.emergency) {
+					autoStopped = true;
+				}
+			}
+
+		}
 
 		// Manual gyro reseting
 		if (chasis.getPOV() != -1) {
