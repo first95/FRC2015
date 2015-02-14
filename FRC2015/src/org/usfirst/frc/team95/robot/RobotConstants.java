@@ -28,8 +28,8 @@ public class RobotConstants {
 	public static int kAutoTakeTote = 10;
 	public static int kCalibrationLength = 500;
 	public static double kArmP = 1;
-	public static double kArmI = 0.1;
-	public static double kArmD = 0.01;
+	public static double kArmI = 0;
+	public static double kArmD = 0;
 	public static double kFingerP = 0.0;
 	public static double kFingerI = 0.0;
 	public static double kFingerD = 0.0;
