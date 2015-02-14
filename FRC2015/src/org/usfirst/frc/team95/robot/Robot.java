@@ -196,7 +196,7 @@ public class Robot extends IterativeRobot {
 				RobotConstants.kArmDistanceI, RobotConstants.kArmDistanceD,
 				armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
 		armController.enable();
-		armController.setTolerance( new PIDController.PercentageTolerance(5));
+		armController.setTolerance(1.0);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
 
 		fingerController = new PIDController(RobotConstants.kFingerP,
