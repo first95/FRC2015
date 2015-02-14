@@ -167,12 +167,12 @@ public class Robot extends IterativeRobot {
 		autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
 		autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
 		autoTakeTote = new ButtonTracker(chasis, RobotConstants.kAutoTakeTote);
-		blue1 = new ButtonTracker(weapons, 7);
-		blue2 = new ButtonTracker(weapons, 2);
-		blue3 = new ButtonTracker(weapons, 3);
-		blue4 = new ButtonTracker(weapons, 4);
-		blue5 = new ButtonTracker(weapons, 5);
-		blue6 = new ButtonTracker(weapons, 6);
+		blue1 = new ButtonTracker(weapons, 11);
+		blue2 = new ButtonTracker(weapons, 12);
+		blue3 = new ButtonTracker(weapons, 13);
+		blue4 = new ButtonTracker(weapons, 16);
+		blue5 = new ButtonTracker(weapons, 15);
+		blue6 = new ButtonTracker(weapons, 14);
 		triggerButton = new ButtonTracker(weapons, RobotConstants.kArmPistonsButton);
 		stopSpin = new ButtonTracker(chasis, RobotConstants.kResetRateButton);
 		rotating = false;
@@ -372,7 +372,7 @@ public class Robot extends IterativeRobot {
 			}
 		}
 
-		/*if (blue1.justPressedp()) {
+		if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[1]);
@@ -384,7 +384,7 @@ public class Robot extends IterativeRobot {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[4]);
 		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[5]);
-		}*/
+		}
 
 		// Drive style determines weather left and right are turn or strafe.
 		if (changeDriveStyle.justPressedp()) {
