@@ -56,6 +56,9 @@ public class RobotConstants {
 	public static double kTippynessTolerance = 20;
 	public static int kArmLimitSwitch = 0;
 	public static double kArmLimitSwitchSloppyness = 0.1;
-	public static double kRotationTolerance = 0.1;
+	public static double kRotationTolerance = 5;
 	public static double kMaxRotationSpeed = 1800 / Math.PI; // degrees / sec
+	public static int kLeftArmMotorCurrent = 15;
+	public static int kRightArmMotorCurrent = 0;
+	public static double kArmMotorDifferenceTolerance = 0.1;
 }

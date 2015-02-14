@@ -349,6 +349,15 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
 		SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
 		SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
+		
+		// Listen to arguments
+		double leftMotorCurrent = powerDistribution.getCurrent(RobotConstants.kLeftArmMotorCurrent);
+		double rightMotorCurrent = powerDistribution.getCurrent(RobotConstants.kRightArmMotorCurrent);
+		
+		SmartDashboard.putBoolean("Arm Motors' Fighting", !(Math.abs(leftMotorCurrent - rightMotorCurrent) > 
+		RobotConstants.kArmMotorDifferenceTolerance));
+		SmartDashboard.putNumber("Arm Motors' Disagreement Measure", 
+				Math.abs(leftMotorCurrent - rightMotorCurrent));
 
 		if (armLimitSwitch.get()) {
 			if (armEncoder.getRate() > 0) {
