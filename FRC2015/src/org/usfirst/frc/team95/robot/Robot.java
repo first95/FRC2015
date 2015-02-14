@@ -389,10 +389,14 @@ public class Robot extends IterativeRobot {
 			armMotors.setMinSpeed(0.1);
 		} else {
 			armMotors.setMaxSpeed(triggerButton.Pressedp() ? RobotConstants.kArmLimitedSpeed : 1.0);
-			armMotors.setMinSpeed(triggerButton.Pressedp() ? -RobotConstants.kArmLimitedSpeed : 1.0);
+			armMotors.setMinSpeed(triggerButton.Pressedp() ? -RobotConstants.kArmLimitedSpeed : -1.0);
 		}
 		
-		armMotors.jamesBond(weapons.getY() * -0.5);
+		if (Math.abs(weapons.getY()) < RobotConstants.kDeadband) {
+			armMotors.setIrrespective(0);
+		} else {
+			armMotors.jamesBond(weapons.getY() * -0.5);
+		}
 
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;
@@ -412,6 +416,12 @@ public class Robot extends IterativeRobot {
 		x *= sensitivity;
 		y *= sensitivity;
 		rotate *= sensitivity * 0.5;
+		
+		double rotationRate = gyro.getRate();
+		if (rotationRate < (rotate * RobotConstants.kMaxRotationSpeed + RobotConstants.kRotationTolerance) && 
+				rotationRate > (rotate * RobotConstants.kMaxRotationSpeed - RobotConstants.kRotationTolerance)) {
+			rotate += (rotationRate - rotate);
+		}
 
 		//y += tipsyness.tipped();
 		//x += swayfulness.tipped();
@@ -597,6 +607,7 @@ public class Robot extends IterativeRobot {
 		autoStack.update();
 		autoGrabCan.update();
 		autoStackCan.update();
+		triggerButton.update();
 
 		// System.out.println("Telleop Ends" + timeLag.get());
 

@@ -62,6 +62,17 @@ public class SyncGroup implements PIDOutput {
 			}
 		}
 	}
+	
+	public void setIrrespective(double speed) {
+
+		for (int i = 0; i < mSpeedControllers.length; i++) {
+			if (mReversed[i]) {
+				mSpeedControllers[i].set(-speed);
+			} else {
+				mSpeedControllers[i].set(speed);
+			}
+		}
+	}
 
 	public double getMotor() {
 		return mSpeedControllers[0].get();
