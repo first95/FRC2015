@@ -74,7 +74,7 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
 			fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			autoStackCan, autoGrabCan, autoTakeTote;
+			autoStackCan, autoGrabCan, autoTakeTote, triggerButton;
 
 	boolean driveStyle, rotating, fieldcentric = false;
 	double targetAngle;
@@ -173,6 +173,7 @@ public class Robot extends IterativeRobot {
 		blue4 = new ButtonTracker(weapons, 4);
 		blue5 = new ButtonTracker(weapons, 5);
 		blue6 = new ButtonTracker(weapons, 6);
+		triggerButton = new ButtonTracker(weapons, RobotConstants.kArmPistonsButton);
 		rotating = false;
 		fieldcentric = true;
 
@@ -382,37 +383,16 @@ public class Robot extends IterativeRobot {
 
 		// Limits on arm positions
 		armMotors.manual = true;
-		if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind) {
+		if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind && blue2.Pressedp()) {
 			armMotors.setMaxSpeed(-0.1);
-			armMotors
-					.setMinSpeed(Math.max(
-							-Math.PI / 4,
-							weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed()
-									: -RobotConstants.kArmLimitedSpeed));
-		} else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab) {
-			armMotors
-					.setMaxSpeed(Math.min(
-							Math.PI / 4,
-							weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed()
-									: RobotConstants.kArmLimitedSpeed));
+		} else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab && blue2.Pressedp()) {
 			armMotors.setMinSpeed(0.1);
 		} else {
-			armMotors
-					.setMaxSpeed(Math.min(
-							Math.PI / 4,
-							weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed()
-									: RobotConstants.kArmLimitedSpeed));
-			armMotors
-					.setMinSpeed(Math.max(
-							-Math.PI / 4,
-							weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed()
-									: -RobotConstants.kArmLimitedSpeed));
+			armMotors.setMaxSpeed(triggerButton.Pressedp() ? RobotConstants.kArmLimitedSpeed : 1.0);
+			armMotors.setMinSpeed(triggerButton.Pressedp() ? -RobotConstants.kArmLimitedSpeed : 1.0);
 		}
-		realLeftArmMotor.scaling = 1;
-		realRightArmMotor.scaling = 1;
-		armMotors.jamesBond(weapons.getY() * 0.35);
-		realLeftArmMotor.scaling = 0;
-		realRightArmMotor.scaling = 0;
+		
+		armMotors.jamesBond(weapons.getY() * -0.5);
 
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;
@@ -598,7 +578,7 @@ public class Robot extends IterativeRobot {
 			gyro.set(chasis.getPOV());
 		}
 
-		armPistons.set(blue2.Pressedp());
+		armPistons.set(triggerButton.Pressedp());
 
 		// System.out.println("After Arm pistons" + timeLag.get());
 
