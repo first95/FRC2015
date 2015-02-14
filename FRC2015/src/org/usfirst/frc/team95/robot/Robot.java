@@ -74,7 +74,7 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
 			fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			autoStackCan, autoGrabCan, autoTakeTote, triggerButton;
+			autoStackCan, autoGrabCan, autoTakeTote, triggerButton, stopSpin;
 
 	boolean driveStyle, rotating, fieldcentric = false;
 	double targetAngle;
@@ -174,6 +174,7 @@ public class Robot extends IterativeRobot {
 		blue5 = new ButtonTracker(weapons, 5);
 		blue6 = new ButtonTracker(weapons, 6);
 		triggerButton = new ButtonTracker(weapons, RobotConstants.kArmPistonsButton);
+		stopSpin = new ButtonTracker(chasis, RobotConstants.kResetRateButton);
 		rotating = false;
 		fieldcentric = true;
 
@@ -598,6 +599,10 @@ public class Robot extends IterativeRobot {
 		}
 
 		armPistons.set(triggerButton.Pressedp());
+		
+		if (stopSpin.Pressedp()) {
+			gyro.resetRate();
+		}
 
 		// System.out.println("After Arm pistons" + timeLag.get());
 
