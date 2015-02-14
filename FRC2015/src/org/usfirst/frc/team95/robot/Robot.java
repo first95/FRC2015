@@ -56,7 +56,7 @@ public class Robot extends IterativeRobot {
 	Talon frontLeft, frontRight, backLeft, backRight, leftArmTalon,
 			rightArmTalon, fingerTalon;
 	public MotorWrapper realFrontLeft, realFrontRight, realBackLeft,
-			realBackRight;
+			realBackRight, realLeftArmMotor, realRightArmMotor;
 	public Encoder fingerEncoder;
 	public ResetableEncoder armEncoder;
 	public RobotDrive driveTrain;
@@ -126,6 +126,9 @@ public class Robot extends IterativeRobot {
 		realBackLeft = new MotorWrapper(backLeft);
 		realBackRight = new MotorWrapper(backRight);
 		realBackLeft.scaling = 0.9;
+		realRightArmMotor = new MotorWrapper(rightArmTalon);
+		
+		realLeftArmMotor = new MotorWrapper(leftArmTalon);
 		armEncoder = new ResetableEncoder(RobotConstants.kArmEncoder,
 				RobotConstants.kArmEncoder + 1);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
@@ -181,7 +184,7 @@ public class Robot extends IterativeRobot {
 		yAccelCalibration = new double[RobotConstants.kCalibrationLength];
 		zAccelCalibration = new double[RobotConstants.kCalibrationLength];
 
-		SpeedController[] table = { leftArmTalon, rightArmTalon };
+		SpeedController[] table = { realLeftArmMotor, realRightArmMotor };
 		boolean[] reversed = { false, true };
 		armMotors = new SyncGroup(table, reversed);
 		table = null;
@@ -405,7 +408,11 @@ public class Robot extends IterativeRobot {
 							weapons.getRawButton(RobotConstants.kArmPistonsButton) ? reccomendedSpeed()
 									: -RobotConstants.kArmLimitedSpeed));
 		}
-		armMotors.set(weapons.getY() * 0.35);
+		realLeftArmMotor.scaling = 1;
+		realRightArmMotor.scaling = 1;
+		armMotors.jamesBond(weapons.getY() * 0.35);
+		realLeftArmMotor.scaling = 0;
+		realRightArmMotor.scaling = 0;
 
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;

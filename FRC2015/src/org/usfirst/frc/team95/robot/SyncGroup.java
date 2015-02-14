@@ -35,27 +35,32 @@ public class SyncGroup implements PIDOutput {
 	public void set(double d) {
 		//throw new ArrayIndexOutOfBoundsException();
 		
-		if (d > maxSpeed) {
-			d = maxSpeed;
-		} else if (d < minSpeed) {
-			d = minSpeed;
+		;
+	}
+
+	public void pidWrite(double bob) {
+		if (manual) {
+			System.out.println("Viva la revelucion!");
+			return;
+		}
+		System.out.println("Get the scoundrel!");
+		//jamesBond(bob);
+	}
+	
+	public void jamesBond(double speed) {
+		if (speed > maxSpeed) {
+			speed = maxSpeed;
+		} else if (speed < minSpeed) {
+			speed = minSpeed;
 		}
 
 		for (int i = 0; i < mSpeedControllers.length; i++) {
 			if (mReversed[i]) {
-				mSpeedControllers[i].set(-d);
+				mSpeedControllers[i].set(-speed);
 			} else {
-				mSpeedControllers[i].set(d);
+				mSpeedControllers[i].set(speed);
 			}
 		}
-	}
-
-	public void pidWrite(double bob) {
-		if (true) {
-			System.out.println("Viva la revelucion!");
-			return;
-		}
-		set(bob);
 	}
 
 	public double getMotor() {
