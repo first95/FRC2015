@@ -389,6 +389,10 @@ public class Robot extends IterativeRobot {
 		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[5]);
 		}*/
+		
+		fingerController.disable();
+		fingerTalon.set(weapons.getTwist());
+
 		if (blue1.justPressedp()) {
 			System.out.println("Upping p to " + (armController.getP() + 0.1));
 			armController.setPID(armController.getP() + 0.1, armController.getI(), armController.getD());
