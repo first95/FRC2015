@@ -62,4 +62,5 @@ public class RobotConstants {
 	public static int kRightArmMotorCurrent = 0;
 	public static double kArmMotorDifferenceTolerance = 0.1;
 	public static int kResetRateButton = 1;
+	public static double kPIDTolerance = 0.5;
 }
