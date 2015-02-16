@@ -65,6 +65,10 @@ public class FauxPID extends AutoMove {
 		mSetpoint = setpoint;
 	}
 	
+	public double getSetpoint() {
+		return mSetpoint;
+	}
+	
 	public boolean onTarget() {
 		return Math.abs(mSetpoint - mSource.pidGet()) < RobotConstants.kPIDTolerance;
 	}
