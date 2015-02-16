@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.PIDSource;
 
 public class FauxPID extends AutoMove {
 	public double mP, mI, mD, mSetpoint;
+	public boolean enabled;
 	double mIntegral, mPrevError;
 	PIDSource mSource;
 	PIDOutput mOutput;
@@ -17,6 +18,7 @@ public class FauxPID extends AutoMove {
 		mD = d;
 		mSource = source;
 		mOutput = output;
+		enabled = true;
 	}
 	
 
@@ -29,6 +31,10 @@ public class FauxPID extends AutoMove {
 
 	@Override
 	public Status periodic() {
+		if (!enabled) {
+			return Status.wantsToContinue;
+		}
+		
 		double input = mSource.pidGet();
 		double error = mSetpoint - input;
 		if (mI != 0) {

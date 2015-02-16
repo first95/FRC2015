@@ -12,6 +12,7 @@ import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
 import org.usfirst.frc.team95.robot.auto.CanStack;
 import org.usfirst.frc.team95.robot.auto.Dance;
+import org.usfirst.frc.team95.robot.auto.FauxPID;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabLeftCentralCan;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
@@ -90,7 +91,7 @@ public class Robot extends IterativeRobot {
 
 	double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
 
-	public PIDController armController, fingerController;
+	public FauxPID armController, fingerController;
 
 	public Solenoid armPistons;
 
@@ -192,18 +193,18 @@ public class Robot extends IterativeRobot {
 		armMotors = new SyncGroup(table, reversed);
 		table = null;
 
-		armController = new PIDController(RobotConstants.kArmDistanceP,
+		armController = new FauxPID(RobotConstants.kArmDistanceP,
 				RobotConstants.kArmDistanceI, RobotConstants.kArmDistanceD,
 				armEncoder, armMotors);
-		armController.enable();
-		armController.setTolerance(1.0);
+		//armController.enable();
+		//armController.setTolerance(1.0);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
 
-		fingerController = new PIDController(RobotConstants.kFingerP,
+		fingerController = new FauxPID(RobotConstants.kFingerP,
 				RobotConstants.kFingerI, RobotConstants.kFingerD,
 				fingerEncoder, fingerTalon);
-		fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
-		fingerController.enable();
+		//fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
+		//fingerController.enable();
 
 		armPistons = new Solenoid(RobotConstants.kPCMId,
 				RobotConstants.kArmPistons);
@@ -234,8 +235,12 @@ public class Robot extends IterativeRobot {
 
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
 
+		armController.init();
+		fingerController.init();
+		
 		autoMove = (AutoMove) chooser.getSelected();
 		autoMove.init();
+		
 	}
 
 	/**
@@ -244,7 +249,10 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		// System.out.println(accel.getXAcceleration() + "," +
 		// accel.getYAcceleration() + "," + accel.getZAcceleration());
-
+		
+		armController.periodic();
+		fingerController.periodic();
+		
 		if (!autoStopped) {
 			Status status = autoMove.periodic();
 			if (status == Status.isNotAbleToContinue
@@ -312,10 +320,9 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
 		
-		armMotors.manual = true;
-		armController.enable();
-		//armController.disable();
-		//fingerController.disable();
+		armMotors.manual = false;
+		armController.enabled = true;
+		fingerController.enabled = false;
 	}
 
 	/**
@@ -390,27 +397,27 @@ public class Robot extends IterativeRobot {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[5]);
 		}*/
 		
-		fingerController.disable();
+		//fingerController.enabled = false;
 		fingerTalon.set(weapons.getTwist());
 
 		if (blue1.justPressedp()) {
-			System.out.println("Upping p to " + (armController.getP() + 0.1));
-			armController.setPID(armController.getP() + 0.1, armController.getI(), armController.getD());
+			System.out.println("Upping p to " + (armController.mP + 0.1));
+			armController.mP += 0.1;
 		}
 		
 		if (blue4.justPressedp()) {
-			System.out.println("downing p to " + (armController.getP() - 0.1));
-			armController.setPID(armController.getP() - 0.1, armController.getI(), armController.getD());
+			System.out.println("downing p to " + (armController.mP - 0.1));
+			armController.mP -= 0.1;
 		}
 		
 		if (blue2.justPressedp()) {
-			System.out.println("Upping p to " + (armController.getP() + 10));
-			armController.setPID(armController.getP() + 10, armController.getI(), armController.getD());
+			System.out.println("Upping p to " + (armController.mP + 10));
+			armController.mP += 10;
 		}
 		
 		if (blue5.justPressedp()) {
-			System.out.println("Upping p to " + (armController.getP() + 10));
-			armController.setPID(armController.getP() + 10, armController.getI(), armController.getD());
+			System.out.println("Downing p to " + (armController.mP - 10));
+			armController.mP -= 10;
 		}
 
 		// Drive style determines weather left and right are turn or strafe.
