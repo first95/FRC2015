@@ -384,8 +384,11 @@ public class Robot extends IterativeRobot {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[4]);
 		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[5]);
+		}else {
+		fingerController.disable();
+		fingerTalon.set(weapons.getTwist());
 		}
-
+		
 		// Drive style determines weather left and right are turn or strafe.
 		if (changeDriveStyle.justPressedp()) {
 			driveStyle = !driveStyle;
