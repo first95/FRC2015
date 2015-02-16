@@ -11,6 +11,8 @@ package org.usfirst.frc.team95.robot;
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
 import org.usfirst.frc.team95.robot.auto.CanStack;
+import org.usfirst.frc.team95.robot.auto.CanStack2;
+import org.usfirst.frc.team95.robot.auto.CanStack3;
 import org.usfirst.frc.team95.robot.auto.Dance;
 import org.usfirst.frc.team95.robot.auto.FauxPID;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
@@ -76,7 +78,7 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
 			fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			autoStackCan, autoGrabCan, autoTakeTote, triggerButton, stopSpin;
+			autoStackCan1, autoStackCan2, autoStackCan3, autoGrabCan, autoTakeTote, triggerButton, stopSpin;
 
 	boolean driveStyle, rotating, fieldcentric = false;
 	double targetAngle;
@@ -165,10 +167,12 @@ public class Robot extends IterativeRobot {
 		driveStyle = false; // False == traditional
 		rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
 		rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
-		autoStack = new ButtonTracker(chasis, RobotConstants.kAutoStack);
-		autoStackCan = new ButtonTracker(chasis, RobotConstants.kAutoStackCan);
-		autoGrabCan = new ButtonTracker(chasis, RobotConstants.kAutoGrabCan);
-		autoTakeTote = new ButtonTracker(chasis, RobotConstants.kAutoTakeTote);
+		autoStack = new ButtonTracker(weapons, RobotConstants.kAutoStack);
+		autoStackCan1 = new ButtonTracker(weapons, RobotConstants.kAutoStackCan1);
+		autoStackCan2 = new ButtonTracker(weapons, RobotConstants.kAutoStackCan2);
+		autoStackCan3 = new ButtonTracker(weapons, RobotConstants.kAutoStackCan3);
+		autoGrabCan = new ButtonTracker(weapons, RobotConstants.kAutoGrabCan);
+		autoTakeTote = new ButtonTracker(weapons, RobotConstants.kAutoTakeTote);
 		blue1 = new ButtonTracker(weapons, 11);
 		blue2 = new ButtonTracker(weapons, 12);
 		blue3 = new ButtonTracker(weapons, 13);
@@ -552,19 +556,62 @@ public class Robot extends IterativeRobot {
 		zDisplacement.update(accel.getZAcceleration());
 
 		// System.out.println("After Accelerometer" + timeLag.get());
+		
+		// Auto Can1 Stacker on 5 (when ready)
+		if (autoStackCan1.justPressedp()) {
+			autoStopped = false;
+			autoMove = new CanStack(this);
+			autoMove.init();
+		}
+		if (autoStackCan1.Pressedp()) {
+			if (!autoStopped) {
+				Status status = autoMove.periodic();
+				if (status == Status.isNotAbleToContinue
+						|| status == Status.isAbleToContinue
+						|| status == Status.emergency) {
+					autoStopped = true;
+				}
+			}
 
-		// Auto all stacker on 6 (once we can auto can stack)
-		/*
-		 * if(autoStackBoth.justPressedp()){ autoStopped = false; autoMove = new
-		 * [insert auto move name here](this); autoMove.init(); }
-		 * if(autoStackBoth.Pressedp()) { if (!autoStopped) { Status status =
-		 * autoMove.periodic(); if (status == Status.isNotAbleToContinue ||
-		 * status == Status.isAbleToContinue || status == Status.emergency) {
-		 * autoStopped = true; } }
-		 * 
-		 * }
-		 */
-		// Auto stack on hold 7
+		}
+		
+		// Auto Can2 Stacker on 6 (when ready)
+		if (autoStackCan2.justPressedp()) {
+			autoStopped = false;
+			autoMove = new CanStack2(this);
+			autoMove.init();
+		}
+		if (autoStackCan2.Pressedp()) {
+			if (!autoStopped) {
+				Status status = autoMove.periodic();
+				if (status == Status.isNotAbleToContinue
+						|| status == Status.isAbleToContinue
+						|| status == Status.emergency) {
+					autoStopped = true;
+				}
+			}
+
+		}
+		
+		// Auto Can3 Stacker on 7 (when ready)
+		if (autoStackCan3.justPressedp()) {
+			autoStopped = false;
+			autoMove = new CanStack3(this);
+			autoMove.init();
+		}
+		if (autoStackCan3.Pressedp()) {
+			if (!autoStopped) {
+				Status status = autoMove.periodic();
+				if (status == Status.isNotAbleToContinue
+						|| status == Status.isAbleToContinue
+						|| status == Status.emergency) {
+					autoStopped = true;
+				}
+			}
+
+		}
+		
+		// Auto stack on hold 8
 		if (autoStack.justPressedp()) {
 			autoStopped = false;
 			autoMove = new MakeStack(this);
@@ -581,17 +628,7 @@ public class Robot extends IterativeRobot {
 			}
 
 		}
-		;
-		// Auto Can Stacker on 8 (when ready)
-		/*
-		 * if(autoStackCan.justPressedp()){ autoStopped = false; autoMove = new
-		 * CanStack(this); autoMove.init(); } if(autoStackCan.Pressedp()) { if
-		 * (!autoStopped) { Status status = autoMove.periodic(); if (status ==
-		 * Status.isNotAbleToContinue || status == Status.isAbleToContinue ||
-		 * status == Status.emergency) { autoStopped = true; } }
-		 * 
-		 * }
-		 */
+		
 		// Auto Can Grabber on 9
 		if (autoGrabCan.justPressedp()) {
 			autoStopped = false;
@@ -655,7 +692,9 @@ public class Robot extends IterativeRobot {
 		blue6.update();
 		autoStack.update();
 		autoGrabCan.update();
-		autoStackCan.update();
+		autoStackCan1.update();
+		autoStackCan2.update();
+		autoStackCan3.update();
 		triggerButton.update();
 
 		// System.out.println("Telleop Ends" + timeLag.get());

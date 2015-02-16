@@ -23,8 +23,6 @@ public class RobotConstants {
 	public static final int kAutoStackCan2 = 6;
 	public static final int kAutoStackCan3 = 7;
 	public static final int kAutoGrabCan = 9;
-	public static final int kAutoStackCan = 8;
-	public static final int kAutoStackBoth = 6;
 	public static final int kAutoTakeTote = 10;
 	public static final int kCalibrationLength = 500;
 	public static final double kArmP = 1;
