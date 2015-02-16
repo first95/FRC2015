@@ -194,14 +194,14 @@ public class Robot extends IterativeRobot {
 
 		armController = new PIDController(RobotConstants.kArmDistanceP,
 				RobotConstants.kArmDistanceI, RobotConstants.kArmDistanceD,
-				armEncoder, armMotors, RobotConstants.kPIDUpdateInterval);
+				armEncoder, armMotors);
 		armController.enable();
 		armController.setTolerance(1.0);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
 
 		fingerController = new PIDController(RobotConstants.kFingerP,
 				RobotConstants.kFingerI, RobotConstants.kFingerD,
-				fingerEncoder, fingerTalon, RobotConstants.kPIDUpdateInterval);
+				fingerEncoder, fingerTalon);
 		fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
 		fingerController.enable();
 
@@ -471,7 +471,7 @@ public class Robot extends IterativeRobot {
 			y = 0;
 		}
 
-		if (Math.abs(rotate) < RobotConstants.kDeadband) {
+		if (Math.abs(rotate) < (RobotConstants.kDeadband * 2)) {
 			rotate = 0;
 		}
 
