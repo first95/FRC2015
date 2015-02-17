@@ -61,8 +61,7 @@ public class Robot extends IterativeRobot {
 	Talon leftArmTalon, rightArmTalon;
 	public MotorWrapper realFrontLeft, realFrontRight, realBackLeft,
 			realBackRight, realLeftArmMotor, realRightArmMotor;
-	public Encoder fingerEncoder;
-	public ResetableEncoder armEncoder;
+	public ResetableEncoder armEncoder, fingerEncoder;
 	public RobotDrive driveTrain;
 
 	SyncGroup armMotors;
@@ -102,13 +101,14 @@ public class Robot extends IterativeRobot {
 	AutoMove autoMove;
 
 	SendableChooser chooser;
-	private boolean autoStopped;
+	private boolean autoStopped, fingerDangerousTerritory;
 
 	Compressor compressor;
 
 	TippynessMeasure tipsyness, swayfulness;
 
-	DigitalInput armLimitSwitch;
+	DigitalInput armLimitSwitch, topFingerLimitSwitch;
+	private MotorWrapper realFingerMotor;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -135,11 +135,14 @@ public class Robot extends IterativeRobot {
 		realRightArmMotor = new MotorWrapper(rightArmTalon);
 		
 		realLeftArmMotor = new MotorWrapper(leftArmTalon);
+		
+		realFingerMotor = new MotorWrapper(fingerTalon);
+		
 		armEncoder = new ResetableEncoder(RobotConstants.kArmEncoder,
 				RobotConstants.kArmEncoder + 1);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
 		armEncoder.setDistancePerPulse(RobotConstants.kArmEncoderPulseDistance);
-		fingerEncoder = new Encoder(RobotConstants.kFingerEncoder,
+		fingerEncoder = new ResetableEncoder(RobotConstants.kFingerEncoder,
 				RobotConstants.kFingerEncoder + 1);
 		fingerEncoder
 				.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
@@ -209,7 +212,7 @@ public class Robot extends IterativeRobot {
 
 		fingerController = new FauxPID(RobotConstants.kFingerP,
 				RobotConstants.kFingerI, RobotConstants.kFingerD,
-				fingerEncoder, fingerTalon);
+				fingerEncoder, realFingerMotor);
 		//fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
 		//fingerController.enable();
 
@@ -233,6 +236,7 @@ public class Robot extends IterativeRobot {
 		swayfulness = new TippynessMeasure();
 
 		armLimitSwitch = new DigitalInput(RobotConstants.kArmLimitSwitch);
+		topFingerLimitSwitch = new DigitalInput(RobotConstants.kTopFingerLimitSwitch);
 	}
 
 	public void autonomousInit() {
@@ -415,7 +419,9 @@ public class Robot extends IterativeRobot {
 		}
 		
 		//fingerController.enabled = false;
-		if (weapons.getThrottle() > 0) {
+		if (fingerDangerousTerritory) {
+			fingerTalon.set(-0.1);
+		} else if (weapons.getThrottle() > 0) {
 			fingerTalon.set(weapons.getTwist() * Math.abs(weapons.getTwist()));
 		} else {
 			fingerController.periodic();
@@ -677,6 +683,16 @@ public class Robot extends IterativeRobot {
 		
 		if (stopSpin.Pressedp()) {
 			gyro.resetRate();
+		}
+		
+		if (topFingerLimitSwitch.get()) {
+			if (fingerEncoder.getRate() > 0.05) {
+				fingerDangerousTerritory = true;
+			} else if (fingerEncoder.getRate() < 0.05) {
+				fingerDangerousTerritory = false;
+			}
+			
+			fingerEncoder.setPosition(42); // Inches
 		}
 
 		// System.out.println("After Arm pistons" + timeLag.get());

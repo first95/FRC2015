@@ -45,8 +45,8 @@ public class RobotConstants {
 	public static final double kFingerTolerance = 0.2;
 	public static final int kPCMId = 1;
 	public static final int kPDPId = 0;
-	public static final double kArmEncoderPulseDistance = -Math.PI / 256;
-	public static final double kFingerEncoderPulseDistance = 1;
+	public static final double kArmEncoderPulseDistance = -Math.PI / 256; // Radians
+	public static final double kFingerEncoderPulseDistance = 128 / Math.PI; // Inches
 	public static final double kArmLimitedSpeed = 0.7;
 	public static final double kArmDistanceP = 0;
 	public static final double kArmDistanceI = 0;
@@ -61,4 +61,5 @@ public class RobotConstants {
 	public static final double kArmMotorDifferenceTolerance = 0.1;
 	public static final int kResetRateButton = 1;
 	public static final double kPIDTolerance = 0.5;
+	public static final int kTopFingerLimitSwitch = 1;
 }
