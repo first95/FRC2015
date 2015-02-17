@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
 	Joystick chasis, weapons;
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
-			fieldCentricTracker, blue1, blue2, blue3, blue4, blue5, blue6,
+			overrideTracker, blue1, blue2, blue3, blue4, blue5, blue6,
 			autoStackCan1, autoStackCan2, autoStackCan3, autoGrabCan, autoTakeTote, triggerButton, stopSpin;
 
 	boolean driveStyle, rotating, fieldcentric = false;
@@ -162,8 +162,8 @@ public class Robot extends IterativeRobot {
 
 		changeDriveStyle = new ButtonTracker(chasis,
 				RobotConstants.kChangeDriveStyle);
-		fieldCentricTracker = new ButtonTracker(chasis,
-				RobotConstants.kFieldCentric);
+		overrideTracker = new ButtonTracker(chasis,
+				RobotConstants.kArmOverride);
 		driveStyle = false; // False == traditional
 		rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
 		rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
@@ -197,8 +197,8 @@ public class Robot extends IterativeRobot {
 		armMotors = new SyncGroup(table, reversed);
 		table = null;
 
-		armController = new FauxPID(RobotConstants.kArmDistanceP,
-				RobotConstants.kArmDistanceI, RobotConstants.kArmDistanceD,
+		armController = new FauxPID(RobotConstants.kArmP,
+				RobotConstants.kArmI, RobotConstants.kArmD,
 				armEncoder, armMotors);
 		//armController.enable();
 		//armController.setTolerance(1.0);
@@ -405,23 +405,23 @@ public class Robot extends IterativeRobot {
 		fingerTalon.set(weapons.getTwist());
 
 		if (blue1.justPressedp()) {
-			System.out.println("Upping p to " + (armController.mP + 0.1));
-			armController.mP += 0.1;
+			System.out.println("Upping i to " + (armController.mI + 0.001));
+			armController.mI += 0.001;
 		}
 		
 		if (blue4.justPressedp()) {
-			System.out.println("downing p to " + (armController.mP - 0.1));
-			armController.mP -= 0.1;
+			System.out.println("downing i to " + (armController.mI - 0.001));
+			armController.mI -= 0.001;
 		}
 		
 		if (blue2.justPressedp()) {
-			System.out.println("Upping p to " + (armController.mP + 10));
-			armController.mP += 10;
+			System.out.println("Upping i to " + (armController.mI + 0.0001));
+			armController.mI += 0.0001;
 		}
 		
 		if (blue5.justPressedp()) {
-			System.out.println("Downing p to " + (armController.mP - 10));
-			armController.mP -= 10;
+			System.out.println("Downing i to " + (armController.mI - 0.0001));
+			armController.mI -= 0.0001;
 		}
 
 		// Drive style determines weather left and right are turn or strafe.
@@ -440,7 +440,7 @@ public class Robot extends IterativeRobot {
 			armMotors.setMinSpeed(triggerButton.Pressedp() ? -RobotConstants.kArmLimitedSpeed : -1.0);
 		}
 		
-		armController.setSetpoint(weapons.getY());
+		armController.setSetpoint(weapons.getY()*10);
 		if (Math.abs(weapons.getY()) < RobotConstants.kDeadband) {
 			//armMotors.setIrrespective(0);
 		} else {
@@ -462,7 +462,7 @@ public class Robot extends IterativeRobot {
 			rotate = -chasis.getAxis(Joystick.AxisType.kZ);
 		}
 		
-		System.out.println("The Joystick Rotation: " + rotate);
+		//System.out.println("The Joystick Rotation: " + rotate);
 
 		x *= sensitivity;
 		y *= sensitivity;
@@ -492,7 +492,7 @@ public class Robot extends IterativeRobot {
 			rotate = 0;
 		}
 
-		if (fieldCentricTracker.justPressedp()) {
+		if (overrideTracker.justPressedp()) {
 			fieldcentric = !fieldcentric;
 		}
 		// System.out.println("True Middle Teleop" + timeLag.get());
@@ -684,7 +684,7 @@ public class Robot extends IterativeRobot {
 		changeDriveStyle.update();
 		rotate90Right.update();
 		rotate90Left.update();
-		fieldCentricTracker.update();
+		overrideTracker.update();
 
 		blue1.update();
 		blue2.update();
@@ -699,7 +699,13 @@ public class Robot extends IterativeRobot {
 		autoStackCan3.update();
 		triggerButton.update();
 		
-		armController.periodic();
+		
+		if (overrideTracker.Pressedp()) {
+			armMotors.jamesBond(weapons.getY() * -0.5);
+		} else {
+			
+			armController.periodic();
+		}
 
 		// System.out.println("Telleop Ends" + timeLag.get());
 
