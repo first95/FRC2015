@@ -32,7 +32,7 @@ public class RobotConstants {
 	public static final double kFingerI = 0.0;
 	public static final double kFingerD = 0.0;
 	public static final double kPIDUpdateInterval = 50.0;
-	public static final double[] kFingerSetpoints = { 0, 0, 0, 0, 0, 0 };
+	public static final double[] kFingerSetpoints = { 0, 8, 10, 23, 25, 38, 40 };
 	public static final double kDeadband = 0.1;
 	public static final double kTurningCloseness = 1;
 	public static final double kTurningTimeoute = 5;
@@ -46,7 +46,7 @@ public class RobotConstants {
 	public static final int kPCMId = 1;
 	public static final int kPDPId = 0;
 	public static final double kArmEncoderPulseDistance = -Math.PI / 256; // Radians
-	public static final double kFingerEncoderPulseDistance = 128 / Math.PI; // Inches
+	public static final double kFingerEncoderPulseDistance = Math.PI / 128; // Inches
 	public static final double kArmLimitedSpeed = 0.7;
 	public static final double kArmDistanceP = 0;
 	public static final double kArmDistanceI = 0;
