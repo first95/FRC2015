@@ -203,6 +203,7 @@ public class Robot extends IterativeRobot {
 		//armController.enable();
 		//armController.setTolerance(1.0);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+		
 
 		fingerController = new FauxPID(RobotConstants.kFingerP,
 				RobotConstants.kFingerI, RobotConstants.kFingerD,
@@ -387,7 +388,7 @@ public class Robot extends IterativeRobot {
 			}
 		}
 
-		/*if (blue1.justPressedp()) {
+		if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[1]);
@@ -399,12 +400,16 @@ public class Robot extends IterativeRobot {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[4]);
 		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[5]);
-		}*/
+		}
 		
 		//fingerController.enabled = false;
-		fingerTalon.set(weapons.getTwist());
+		if (weapons.getThrottle() > 0) {
+			fingerTalon.set(weapons.getTwist() * Math.abs(weapons.getTwist()));
+		} else {
+			fingerController.periodic();
+		}
 
-		if (blue1.justPressedp()) {
+		/*if (blue1.justPressedp()) {
 			System.out.println("Upping i to " + (armController.mI + 0.001));
 			armController.mI += 0.001;
 		}
@@ -422,7 +427,7 @@ public class Robot extends IterativeRobot {
 		if (blue5.justPressedp()) {
 			System.out.println("Downing i to " + (armController.mI - 0.0001));
 			armController.mI -= 0.0001;
-		}
+		}*/
 
 		// Drive style determines weather left and right are turn or strafe.
 		if (changeDriveStyle.justPressedp()) {
@@ -430,7 +435,6 @@ public class Robot extends IterativeRobot {
 		}
 
 		// Limits on arm positions
-		armMotors.manual = true;
 		if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind && blue2.Pressedp()) {
 			armMotors.setMaxSpeed(-0.1);
 		} else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab && blue2.Pressedp()) {
@@ -441,11 +445,6 @@ public class Robot extends IterativeRobot {
 		}
 		
 		armController.setSetpoint(weapons.getY()*10);
-		if (Math.abs(weapons.getY()) < RobotConstants.kDeadband) {
-			//armMotors.setIrrespective(0);
-		} else {
-			//armMotors.jamesBond(weapons.getY() * -0.5);
-		}
 
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;
@@ -488,13 +487,10 @@ public class Robot extends IterativeRobot {
 			y = 0;
 		}
 
-		if (Math.abs(rotate) < (RobotConstants.kDeadband * 5)) {
+		if (Math.abs(rotate) < (RobotConstants.kDeadband)) {
 			rotate = 0;
 		}
 
-		if (overrideTracker.justPressedp()) {
-			fieldcentric = !fieldcentric;
-		}
 		// System.out.println("True Middle Teleop" + timeLag.get());
 
 		if (rotate90Right.justPressedp()) {
@@ -531,17 +527,10 @@ public class Robot extends IterativeRobot {
 				turnSpeed = -1;
 			}
 
-			if (false) { // fieldcentric
-				driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, turned);
-			} else {
-				driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, 0.0);
-			}
+			driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, 0.0);
+			
 		} else {
-			if (false) { // fieldcentric
-				driveTrain.mecanumDrive_Cartesian(y, x, rotate, turned);
-			} else {
-				driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
-			}
+			driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
 		}
 		// System.out.println("End Middle Teleop" + timeLag.get());
 
