@@ -403,10 +403,6 @@ public class Robot extends IterativeRobot {
 			armBackwards = false;
 		}
 
-		if(topFingerLimitSwitch.get() & armForwards & armLimitSwitch.get()) {
-			armForwards = false;
-			armController.setSetpoint(0);
-		}
 		if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		} else if (blue1.justPressedp()) {
@@ -451,12 +447,16 @@ public class Robot extends IterativeRobot {
 		}*/
 
 		// Drive style determines weather left and right are turn or strafe.
+		
 		if (changeDriveStyle.justPressedp()) {
 			driveStyle = !driveStyle;
 		}
-
+		
 		// Limits on arm positions
-		if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind && blue2.Pressedp()) {
+		
+		if(fingerEncoder.getDistance() > 3 & armForwards & armLimitSwitch.get()) {
+			armMotors.setMaxSpeed(-0.1);
+		}else if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind && blue2.Pressedp()) {
 			armMotors.setMaxSpeed(-0.1);
 		} else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab && blue2.Pressedp()) {
 			armMotors.setMinSpeed(0.1);
@@ -466,7 +466,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 		armController.setSetpoint(weapons.getY()*10);
-
+			
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;
 		turned = ((gyro.getAngle()));// / 180.0) * Math.PI);
