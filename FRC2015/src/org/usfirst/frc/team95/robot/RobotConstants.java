@@ -15,7 +15,7 @@ public class RobotConstants {
 	public static final int kChasis = 0;
 	public static final int kWeapons = 1;
 	public static final int kChangeDriveStyle = 11;
-	public static final int kFieldCentric = 2;
+	public static final int kArmOverride = 2;
 	public static final int kRotate90Left = 3;
 	public static final int kRotate90Right = 4;
 	public static final int kAutoStack = 8;
@@ -25,7 +25,7 @@ public class RobotConstants {
 	public static final int kAutoGrabCan = 9;
 	public static final int kAutoTakeTote = 10;
 	public static final int kCalibrationLength = 500;
-	public static final double kArmP = 1;
+	public static final double kArmP = 0.042;
 	public static final double kArmI = 0;
 	public static final double kArmD = 0;
 	public static final double kFingerP = 0.0;

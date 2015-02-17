@@ -12,7 +12,7 @@ public class MotorWrapper implements SpeedController, PIDOutput {
 	}
 
 	public void set(double speed) {
-		System.out.println("MotorWrapper got to " + wrappedMotor.get());
+		//System.out.println("MotorWrapper got to " + wrappedMotor.get());
 		//System.out.println("MotorWrapper set to " + speed);
 		speed = speed * scaling;
 		double currentSpeed;
@@ -21,17 +21,17 @@ public class MotorWrapper implements SpeedController, PIDOutput {
 			if ((speed - currentSpeed) > 0) {
 				wrappedMotor.set(currentSpeed
 						+ RobotConstants.kMotorSpeedChangeMaximum);
-				System.out.println("MotorWrapper set to " + (currentSpeed
-						+ RobotConstants.kMotorSpeedChangeMaximum));
+				//System.out.println("MotorWrapper set to " + (currentSpeed
+				//		+ RobotConstants.kMotorSpeedChangeMaximum));
 			} else {
 				wrappedMotor.set(currentSpeed
 						- RobotConstants.kMotorSpeedChangeMaximum);
-				System.out.println("MotorWrapper set to " + (currentSpeed
-						- RobotConstants.kMotorSpeedChangeMaximum));
+				//System.out.println("MotorWrapper set to " + (currentSpeed
+				//		- RobotConstants.kMotorSpeedChangeMaximum));
 			}
 		} else {
 			wrappedMotor.set(speed);
-			System.out.println("MotorWrapper set to " + speed);
+			//System.out.println("MotorWrapper set to " + speed);
 		}
 		
 		//System.out.println("MotorWrapper got to " + wrappedMotor.get());
@@ -39,7 +39,7 @@ public class MotorWrapper implements SpeedController, PIDOutput {
 
 	@Override
 	public void pidWrite(double output) {
-		//wrappedMotor.pidWrite(output);
+		wrappedMotor.pidWrite(output);
 		// System.out.println("If this is being printed, the pidWrite of MotorWrapper is being misused.");
 
 	}

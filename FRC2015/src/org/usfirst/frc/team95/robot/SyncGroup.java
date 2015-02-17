@@ -39,12 +39,12 @@ public class SyncGroup implements PIDOutput {
 	}
 
 	public void pidWrite(double bob) {
-		if (manual) {
-			System.out.println("Viva la revelucion!");
+		if (manual && false) {
+			//System.out.println("Viva la revelucion!");
 			return;
 		}
-		System.out.println("Get the scoundrel!");
-		//jamesBond(bob);
+		//System.out.println("Get the scoundrel!");
+		jamesBond(bob);
 	}
 	
 	public void jamesBond(double speed) {
