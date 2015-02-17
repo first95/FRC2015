@@ -384,8 +384,8 @@ public class Robot extends IterativeRobot {
 		RobotConstants.kArmMotorDifferenceTolerance));
 		SmartDashboard.putNumber("Arm Motors' Disagreement Measure", 
 				Math.abs(leftMotorCurrent - rightMotorCurrent));
-
-		if (armLimitSwitch.get()) {
+		
+		if (!armLimitSwitch.get()) {
 			if (armEncoder.getRate() > 0) {
 				armEncoder.setOffset(RobotConstants.kArmPositionZenith
 						- RobotConstants.kArmLimitSwitchSloppyness
@@ -458,7 +458,7 @@ public class Robot extends IterativeRobot {
 		
 		// Limits on arm positions
 		
-		if(fingerEncoder.getDistance() > 3 & armForwards & armLimitSwitch.get()) {
+		if(fingerEncoder.getDistance() > 3 & armForwards &! armLimitSwitch.get()) {
 			armMotors.setMaxSpeed(-0.1);
 		}else if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind && blue2.Pressedp()) {
 			armMotors.setMaxSpeed(-0.1);
@@ -692,7 +692,7 @@ public class Robot extends IterativeRobot {
 			gyro.resetRate();
 		}
 		
-		if (topFingerLimitSwitch.get()) {
+		if (!topFingerLimitSwitch.get()) {
 			if (fingerEncoder.getRate() > 0.05) {
 				fingerDangerousTerritory = true;
 			} else if (fingerEncoder.getRate() < 0.05) {
