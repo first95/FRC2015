@@ -324,6 +324,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
 		SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
 		SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
+		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
+		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
 		// System.out.println("End SmartDashboard" + timeLag.get());
 	}
 
@@ -372,6 +374,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
 		SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
 		SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
+		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
 		
 		// Listen to arguments
 		double leftMotorCurrent = powerDistribution.getCurrent(RobotConstants.kLeftArmMotorCurrent);
@@ -403,6 +406,7 @@ public class Robot extends IterativeRobot {
 			armBackwards = false;
 		}
 
+		
 		if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		} else if (blue1.justPressedp()) {
