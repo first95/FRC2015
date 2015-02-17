@@ -101,7 +101,7 @@ public class Robot extends IterativeRobot {
 	AutoMove autoMove;
 
 	SendableChooser chooser;
-	private boolean autoStopped, fingerDangerousTerritory;
+	private boolean autoStopped, fingerDangerousTerritory, hasHitBouncy;
 
 	Compressor compressor;
 
@@ -109,6 +109,10 @@ public class Robot extends IterativeRobot {
 
 	DigitalInput armLimitSwitch, topFingerLimitSwitch;
 	private MotorWrapper realFingerMotor;
+	
+	Timer bouncyTimeOut;
+	
+	ButtonTracker smallUp, smallDown, largeUp, largeDown;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -237,6 +241,13 @@ public class Robot extends IterativeRobot {
 
 		armLimitSwitch = new DigitalInput(RobotConstants.kArmLimitSwitch);
 		topFingerLimitSwitch = new DigitalInput(RobotConstants.kTopFingerLimitSwitch);
+		
+		bouncyTimeOut = new Timer();
+		
+		smallUp = new ButtonTracker(chasis, 5);
+		smallDown = new ButtonTracker(chasis, 10);
+		largeUp = new ButtonTracker(chasis, 6);
+		largeDown = new ButtonTracker(chasis, 9);
 	}
 
 	public void autonomousInit() {
@@ -323,7 +334,8 @@ public class Robot extends IterativeRobot {
 				zDisplacement.mDisplacementIntegral);
 		SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
 		SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
-		SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
+		SmartDashboard.putNumber("Arm Encoder", armEncoder.getDistance());
+		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
 		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
 		// System.out.println("End SmartDashboard" + timeLag.get());
@@ -373,8 +385,10 @@ public class Robot extends IterativeRobot {
 				zDisplacement.mDisplacementIntegral);
 		SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
 		SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
-		SmartDashboard.putNumber("Arm Encoder", armEncoder.get());
+		SmartDashboard.putNumber("Arm Encoder", armEncoder.getDistance());
+		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
+		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
 		
 		// Listen to arguments
 		double leftMotorCurrent = powerDistribution.getCurrent(RobotConstants.kLeftArmMotorCurrent);
@@ -408,47 +422,49 @@ public class Robot extends IterativeRobot {
 
 		
 		if (blue1.justPressedp()) {
-			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
-		} else if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[1]);
-		} else if (blue1.justPressedp()) {
+		} else if (blue2.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[2]);
-		} else if (blue1.justPressedp()) {
+		} else if (blue3.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[3]);
-		} else if (blue1.justPressedp()) {
+		} else if (blue4.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[4]);
-		} else if (blue1.justPressedp()) {
+		} else if (blue5.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[5]);
+		} else if (blue6.justPressedp()) {
+			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[6]);
+		} else if (weapons.getPOV() != -1) {
+			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		}
 		
 		//fingerController.enabled = false;
 		if (fingerDangerousTerritory) {
-			fingerTalon.set(-0.1);
+			realFingerMotor.set(-0.3);
 		} else if (weapons.getThrottle() > 0) {
-			fingerTalon.set(weapons.getTwist() * Math.abs(weapons.getTwist()));
+			realFingerMotor.set(weapons.getTwist() * Math.abs(weapons.getTwist()));
 		} else {
 			fingerController.periodic();
 		}
 
-		/*if (blue1.justPressedp()) {
-			System.out.println("Upping i to " + (armController.mI + 0.001));
-			armController.mI += 0.001;
+		if (smallUp.justPressedp()) {
+			System.out.println("Upping p to " + (fingerController.mP + 0.01));
+			fingerController.mP += 0.001;
 		}
 		
-		if (blue4.justPressedp()) {
-			System.out.println("downing i to " + (armController.mI - 0.001));
-			armController.mI -= 0.001;
+		if (smallDown.justPressedp()) {
+			System.out.println("Downing p to " + (fingerController.mP - 0.01));
+			fingerController.mP -= 0.001;
 		}
 		
-		if (blue2.justPressedp()) {
-			System.out.println("Upping i to " + (armController.mI + 0.0001));
-			armController.mI += 0.0001;
+		if (largeUp.justPressedp()) {
+			System.out.println("Upping p to " + (fingerController.mP + 0.1));
+			fingerController.mP += 0.0001;
 		}
 		
-		if (blue5.justPressedp()) {
-			System.out.println("Downing i to " + (armController.mI - 0.0001));
-			armController.mI -= 0.0001;
-		}*/
+		if (largeDown.justPressedp()) {
+			System.out.println("Downing p to " + (fingerController.mP - 0.1));
+			fingerController.mP -= 0.0001;
+		}
 
 		// Drive style determines weather left and right are turn or strafe.
 		
@@ -458,9 +474,14 @@ public class Robot extends IterativeRobot {
 		
 		// Limits on arm positions
 		
-		if(fingerEncoder.getDistance() > 3 & armForwards &! armLimitSwitch.get()) {
+		if ((fingerEncoder.getDistance() > 3 & armForwards & !armLimitSwitch.get())) {
 			armMotors.setMaxSpeed(-0.1);
-		}else if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind && blue2.Pressedp()) {
+			bouncyTimeOut.reset();
+			bouncyTimeOut.start();
+			hasHitBouncy = true;
+		} else if (bouncyTimeOut.get() < 1 && hasHitBouncy) {
+			armMotors.setMaxSpeed(-0.1);
+		} else if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind && blue2.Pressedp()) {
 			armMotors.setMaxSpeed(-0.1);
 		} else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab && blue2.Pressedp()) {
 			armMotors.setMinSpeed(0.1);
@@ -699,7 +720,7 @@ public class Robot extends IterativeRobot {
 				fingerDangerousTerritory = false;
 			}
 			
-			fingerEncoder.setPosition(42); // Inches
+			fingerEncoder.setPosition(43); // Inches
 		}
 
 		// System.out.println("After Arm pistons" + timeLag.get());
