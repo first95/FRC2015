@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,8 +57,8 @@ public class Robot extends IterativeRobot {
 	 * are declared to exist.
 	 */
 
-	Talon frontLeft, frontRight, backLeft, backRight, leftArmTalon,
-			rightArmTalon, fingerTalon;
+	Victor frontLeft, frontRight, backLeft, backRight, fingerTalon;
+	Talon leftArmTalon, rightArmTalon;
 	public MotorWrapper realFrontLeft, realFrontRight, realBackLeft,
 			realBackRight, realLeftArmMotor, realRightArmMotor;
 	public Encoder fingerEncoder;
@@ -115,13 +116,13 @@ public class Robot extends IterativeRobot {
 		/*
 		 * This sets up everything's values.
 		 */
-		frontLeft = new Talon(RobotConstants.kFrontLeftMotor);
-		frontRight = new Talon(RobotConstants.kFrontRightMotor);
-		backLeft = new Talon(RobotConstants.kBackLeftMotor);
-		backRight = new Talon(RobotConstants.kBackRightMotor);
+		frontLeft = new Victor(RobotConstants.kFrontLeftMotor);
+		frontRight = new Victor(RobotConstants.kFrontRightMotor);
+		backLeft = new Victor(RobotConstants.kBackLeftMotor);
+		backRight = new Victor(RobotConstants.kBackRightMotor);
 		leftArmTalon = new Talon(RobotConstants.kLeftArmMotor);
 		rightArmTalon = new Talon(RobotConstants.kRightArmMotor);
-		fingerTalon = new Talon(RobotConstants.kFingerMotor);
+		fingerTalon = new Victor(RobotConstants.kFingerMotor);
 		realFrontLeft = new MotorWrapper(frontLeft);
 		//realFrontLeft.scaling = 0.9;
 		realFrontRight = new MotorWrapper(frontRight);
