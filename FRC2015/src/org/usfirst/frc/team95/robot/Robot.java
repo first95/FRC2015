@@ -326,7 +326,7 @@ public class Robot extends IterativeRobot {
 		
 		armMotors.manual = false;
 		armController.enabled = true;
-		fingerController.enabled = false;
+		fingerController.enabled = true;
 	}
 
 	/**
@@ -697,6 +697,7 @@ public class Robot extends IterativeRobot {
 		autoStackCan1.update();
 		autoStackCan2.update();
 		autoStackCan3.update();
+		autoTakeTote.update();
 		triggerButton.update();
 		
 		
