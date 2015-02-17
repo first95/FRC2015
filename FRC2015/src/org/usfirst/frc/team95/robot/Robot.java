@@ -81,6 +81,8 @@ public class Robot extends IterativeRobot {
 			autoStackCan1, autoStackCan2, autoStackCan3, autoGrabCan, autoTakeTote, triggerButton, stopSpin;
 
 	boolean driveStyle, rotating, fieldcentric = false;
+	boolean armForwards = false;
+	boolean armBackwards = false;
 	double targetAngle;
 
 	Timer timeOut;
@@ -387,7 +389,17 @@ public class Robot extends IterativeRobot {
 						- armEncoder.getDistance());
 			}
 		}
+		
+		if(armEncoder.getRate() > 0) {
+			armForwards = true;
+		}else if (armEncoder.getRate() < 0) {
+			armBackwards = true; 
+		}else {
+			armForwards = false;
+			armBackwards = false;
+		}
 
+		
 		if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		} else if (blue1.justPressedp()) {
