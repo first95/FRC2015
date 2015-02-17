@@ -403,7 +403,10 @@ public class Robot extends IterativeRobot {
 			armBackwards = false;
 		}
 
-		
+		if(topFingerLimitSwitch.get() & armForwards & armLimitSwitch.get()) {
+			armForwards = false;
+			armController.setSetpoint(0);
+		}
 		if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		} else if (blue1.justPressedp()) {
