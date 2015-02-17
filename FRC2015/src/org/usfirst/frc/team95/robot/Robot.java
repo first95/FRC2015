@@ -32,7 +32,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
@@ -461,6 +460,8 @@ public class Robot extends IterativeRobot {
 			x = -chasis.getAxis(Joystick.AxisType.kY);
 			rotate = -chasis.getAxis(Joystick.AxisType.kZ);
 		}
+		
+		System.out.println("The Joystick Rotation: " + rotate);
 
 		x *= sensitivity;
 		y *= sensitivity;
@@ -486,7 +487,7 @@ public class Robot extends IterativeRobot {
 			y = 0;
 		}
 
-		if (Math.abs(rotate) < (RobotConstants.kDeadband * 2)) {
+		if (Math.abs(rotate) < (RobotConstants.kDeadband * 5)) {
 			rotate = 0;
 		}
 
@@ -696,6 +697,8 @@ public class Robot extends IterativeRobot {
 		autoStackCan2.update();
 		autoStackCan3.update();
 		triggerButton.update();
+		
+		armController.periodic();
 
 		// System.out.println("Telleop Ends" + timeLag.get());
 

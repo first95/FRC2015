@@ -10,7 +10,7 @@ public class RobotConstants {
 	public static final int kRightArmMotor = 2;
 	public static final int kFingerMotor = 6;
 	public static final int kArmEncoder = 8;
-	public static final int kFingerEncoder = 23;
+	public static final int kFingerEncoder = 6;
 	public static final int kGyro = 0;
 	public static final int kChasis = 0;
 	public static final int kWeapons = 1;
