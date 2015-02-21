@@ -35,7 +35,7 @@ public class RobotConstants {
 	public static final double[] kFingerSetpoints = { 0, 8, 10, 23, 25, 38, 40 };
 	public static final double kDeadband = 0.1;
 	public static final double kTurningCloseness = 1;
-	public static final double kTurningTimeoute = 5;
+	public static final double kTurningTimeoute = 3;
 	public static final double kArmPositionGrab = -0.1;
 	public static final double kArmPositionZenith = Math.PI / 4;
 	public static final double kArmPositionBehind = Math.PI / 2;
