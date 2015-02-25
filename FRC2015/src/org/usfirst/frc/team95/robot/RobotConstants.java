@@ -28,11 +28,13 @@ public class RobotConstants {
 	public static final double kArmP = 0.042;
 	public static final double kArmI = 0;
 	public static final double kArmD = 0;
-	public static final double kFingerP = 0.0;
-	public static final double kFingerI = 0.0;
+	public static final double kFingerP = 0.17;
+	public static final double kFingerI = 0.012;
 	public static final double kFingerD = 0.0;
 	public static final double kPIDUpdateInterval = 50.0;
-	public static final double[] kFingerSetpoints = { 0, 8, 10, 23, 25, 38, 40 };
+	public static final double[] kFingerSetpoints = { -17.973 , 8, 10, 23, 25, 38, 40 };
+	// Aquire: -17.973
+	//
 	public static final double kDeadband = 0.1;
 	public static final double kTurningCloseness = 1;
 	public static final double kTurningTimeoute = 5;

@@ -18,6 +18,7 @@ public class PlainMotorMove extends AutoMove {
 
 	@Override
 	public Status init() {
+		timeOut.reset();
 		timeOut.start();
 		return Status.wantsToContinue;
 	}
@@ -27,6 +28,7 @@ public class PlainMotorMove extends AutoMove {
 		if (timeOut.get() > time) {
 			return stop();
 		} else {
+			System.out.println("Plain outputing: " + speed);
 			motor.set(speed);
 			return Status.wantsToContinue;
 		}

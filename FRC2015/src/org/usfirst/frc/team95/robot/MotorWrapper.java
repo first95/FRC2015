@@ -12,8 +12,8 @@ public class MotorWrapper implements SpeedController, PIDOutput {
 	}
 
 	public void set(double speed) {
-		//System.out.println("MotorWrapper got to " + wrappedMotor.get());
-		//System.out.println("MotorWrapper set to " + speed);
+		System.out.println("MotorWrapper got to " + wrappedMotor.get());
+		System.out.println("MotorWrapper set to " + speed);
 		speed = speed * scaling;
 		double currentSpeed;
 		currentSpeed = wrappedMotor.get();

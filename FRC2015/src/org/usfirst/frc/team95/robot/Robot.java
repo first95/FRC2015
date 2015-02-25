@@ -22,6 +22,7 @@ import org.usfirst.frc.team95.robot.auto.MakeStack;
 import org.usfirst.frc.team95.robot.auto.NoMove;
 import org.usfirst.frc.team95.robot.auto.PickUpCan;
 import org.usfirst.frc.team95.robot.auto.PickUpTote;
+import org.usfirst.frc.team95.robot.auto.PlainMotorMove;
 import org.usfirst.frc.team95.robot.auto.TakeToteRight;
 
 import edu.wpi.first.wpilibj.ADXL345_I2C;
@@ -110,7 +111,7 @@ public class Robot extends IterativeRobot {
 	DigitalInput armLimitSwitch, topFingerLimitSwitch;
 	private MotorWrapper realFingerMotor;
 	
-	Timer bouncyTimeOut;
+	Timer bouncyTimeOut, downfulnessTimeOut;
 	
 	ButtonTracker smallUp, smallDown, largeUp, largeDown;
 
@@ -234,6 +235,7 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("GrabMaximumFrontAndStack",
 				new GrabMaximumFrontAndStack(this));
 		chooser.addObject("Left Central Can", new GrabLeftCentralCan(this));
+		chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25, 1.0));
 		SmartDashboard.putData("Autonomous Move", chooser);
 
 		tipsyness = new TippynessMeasure();
@@ -243,6 +245,7 @@ public class Robot extends IterativeRobot {
 		topFingerLimitSwitch = new DigitalInput(RobotConstants.kTopFingerLimitSwitch);
 		
 		bouncyTimeOut = new Timer();
+		downfulnessTimeOut = new Timer();
 		
 		smallUp = new ButtonTracker(chasis, 5);
 		smallDown = new ButtonTracker(chasis, 10);
@@ -338,6 +341,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
 		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
+		
+		SmartDashboard.putNumber("Totem Current", powerDistribution.getCurrent(7));
 		// System.out.println("End SmartDashboard" + timeLag.get());
 	}
 
@@ -389,6 +394,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
 		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
+		SmartDashboard.putNumber("Totem Current", powerDistribution.getCurrent(7));
 		
 		// Listen to arguments
 		double leftMotorCurrent = powerDistribution.getCurrent(RobotConstants.kLeftArmMotorCurrent);
@@ -438,33 +444,33 @@ public class Robot extends IterativeRobot {
 		}
 		
 		//fingerController.enabled = false;
-		if (fingerDangerousTerritory) {
-			realFingerMotor.set(-0.3);
+		if (fingerDangerousTerritory && downfulnessTimeOut.get() < 0.5) {
+			realFingerMotor.set(-0.15);
 		} else if (weapons.getThrottle() > 0) {
 			realFingerMotor.set(weapons.getTwist() * Math.abs(weapons.getTwist()));
 		} else {
 			fingerController.periodic();
 		}
 
-		if (smallUp.justPressedp()) {
-			System.out.println("Upping p to " + (fingerController.mP + 0.01));
-			fingerController.mP += 0.001;
+		/*if (smallUp.justPressedp()) {
+			System.out.println("Upping i to " + (fingerController.mI + 0.01));
+			fingerController.mI += 0.001;
 		}
 		
 		if (smallDown.justPressedp()) {
-			System.out.println("Downing p to " + (fingerController.mP - 0.01));
-			fingerController.mP -= 0.001;
+			System.out.println("Downing i to " + (fingerController.mI - 0.01));
+			fingerController.mI -= 0.001;
 		}
 		
 		if (largeUp.justPressedp()) {
-			System.out.println("Upping p to " + (fingerController.mP + 0.1));
-			fingerController.mP += 0.0001;
+			System.out.println("Upping i to " + (fingerController.mI + 0.1));
+			fingerController.mI += 0.0001;
 		}
 		
 		if (largeDown.justPressedp()) {
-			System.out.println("Downing p to " + (fingerController.mP - 0.1));
-			fingerController.mP -= 0.0001;
-		}
+			System.out.println("Downing i to " + (fingerController.mI - 0.1));
+			fingerController.mI -= 0.0001;
+		}*/
 
 		// Drive style determines weather left and right are turn or strafe.
 		
@@ -511,7 +517,7 @@ public class Robot extends IterativeRobot {
 
 		x *= sensitivity;
 		y *= sensitivity;
-		rotate *= sensitivity * 0.5;
+		rotate *= sensitivity * 0.2;
 		
 		/*double rotationRate = gyro.getRate();
 		if (rotationRate < (rotate * RobotConstants.kMaxRotationSpeed + RobotConstants.kRotationTolerance) && 
@@ -720,6 +726,8 @@ public class Robot extends IterativeRobot {
 				fingerDangerousTerritory = false;
 			}
 			
+			downfulnessTimeOut.reset();
+			downfulnessTimeOut.start();
 			fingerEncoder.setPosition(43); // Inches
 		}
 
@@ -744,6 +752,10 @@ public class Robot extends IterativeRobot {
 		autoStackCan3.update();
 		autoTakeTote.update();
 		triggerButton.update();
+		smallUp.update();
+		smallDown.update();
+		largeUp.update();
+		largeDown.update();
 		
 		
 		if (overrideTracker.Pressedp()) {
