@@ -2,7 +2,6 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 import org.usfirst.frc.team95.robot.RobotConstants;
-import edu.wpi.first.wpilibj.PIDController;
 
 /**
  * Picks up a tote from the ground.
@@ -29,7 +28,7 @@ public class PickUpTote extends AutoMove {
 
 	public Status periodic() {
 		System.out.println("Pick Tote");
-		if (true || fingerController.onTarget()) {
+		if (fingerController.onTarget()) {
 			return Status.isNotAbleToContinue;
 		} else {
 			return Status.needsToContinue;

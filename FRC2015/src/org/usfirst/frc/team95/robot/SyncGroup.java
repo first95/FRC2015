@@ -37,10 +37,6 @@ public class SyncGroup implements SpeedController, PIDOutput {
 	}
 
 	public void pidWrite(double bob) {
-		if (manual && false) {
-			//System.out.println("Viva la revelucion!");
-			return;
-		}
 		//System.out.println("Get the scoundrel!");
 		jamesBond(bob);
 	}
