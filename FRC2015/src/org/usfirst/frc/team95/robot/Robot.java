@@ -252,115 +252,8 @@ public class Robot extends IterativeRobot {
 		largeUp = new ButtonTracker(chasis, 6);
 		largeDown = new ButtonTracker(chasis, 9);
 	}
-
-	public void autonomousInit() {
-		xAccelMean = mean(xAccelCalibration);
-		yAccelMean = mean(yAccelCalibration);
-		zAccelMean = mean(zAccelCalibration);
-
-		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
-
-		armController.init();
-		fingerController.init();
-		
-		autoMove = (AutoMove) chooser.getSelected();
-		autoMove.init();
-		
-	}
-
-	/**
-	 * This function is called periodically during autonomous
-	 */
-	public void autonomousPeriodic() {
-		// System.out.println(accel.getXAcceleration() + "," +
-		// accel.getYAcceleration() + "," + accel.getZAcceleration());
-		
-		armController.periodic();
-		fingerController.periodic();
-		
-		if (!autoStopped) {
-			Status status = autoMove.periodic();
-			if (status == Status.isNotAbleToContinue
-					|| status == Status.isAbleToContinue
-					|| status == Status.emergency) {
-				autoStopped = true;
-			}
-		}
-	}
-
-	public void disabledPeriodic() {
-		// System.out.println(accel.getXAcceleration() + "," +
-		// accel.getYAcceleration() + "," + accel.getZAcceleration());
-		xAccelCalibration = shift(xAccelCalibration);
-		yAccelCalibration = shift(yAccelCalibration);
-		zAccelCalibration = shift(zAccelCalibration);
-
-		xAccelCalibration[0] = accel.getXAcceleration();
-		yAccelCalibration[0] = accel.getYAcceleration();
-		zAccelCalibration[0] = accel.getZAcceleration();
-		// xGyroCalibration = gyro.getRate();
-		// timeLag.start();
-		// System.out.println("Entered Teleop");
-		// System.out.println(timeOut.get());
-		// Put currents and temperature on the smartDashboard
-		// System.out.println("Telleop begins" + timeLag.get());
-		SmartDashboard.putNumber("PowerDistributionTemperature",
-				powerDistribution.getTemperature());
-		SmartDashboard.putNumber(
-				"PowerDistribution Total Motor Current",
-				powerDistribution.getCurrent(12)
-						+ powerDistribution.getCurrent(13)
-						+ powerDistribution.getCurrent(14)
-						+ powerDistribution.getCurrent(15));
-		SmartDashboard.putNumber("PowerDistribution Back Right Motor Current",
-				powerDistribution.getCurrent(12));
-
-		SmartDashboard.putNumber("PowerDistribution Front Right Motor Current",
-				powerDistribution.getCurrent(13));
-		SmartDashboard.putNumber("PowerDistribution Back Left Motor Current",
-				powerDistribution.getCurrent(14));
-		SmartDashboard.putNumber("PowerDistribution Front Left Motor Current",
-				powerDistribution.getCurrent(15));
-
-		// Put accelerations and positions
-		// SmartDashboard.putNumber("Current X Acceleration",
-		// accel.getXAcceleration() - xAccelMean);
-		// SmartDashboard.putNumber("Current Y Acceleration",
-		// accel.getYAcceleration() - yAccelMean);
-		SmartDashboard.putNumber("Current Z Acceleration",
-				accel.getZAcceleration() - zAccelMean);
-		SmartDashboard.putNumber("Current X Displacement",
-				xDisplacement.mDisplacementIntegral);
-		SmartDashboard.putNumber("Current Y Displacement",
-				yDisplacement.mDisplacementIntegral);
-		SmartDashboard.putNumber("Current Z Displacement",
-				zDisplacement.mDisplacementIntegral);
-		SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
-		SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
-		SmartDashboard.putNumber("Arm Encoder", armEncoder.getDistance());
-		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
-		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
-		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
-		
-		SmartDashboard.putNumber("Totem Current", powerDistribution.getCurrent(7));
-		// System.out.println("End SmartDashboard" + timeLag.get());
-	}
-
-	@Override
-	public void teleopInit() {
-		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
-		
-		armMotors.manual = false;
-		armController.enabled = true;
-		fingerController.enabled = true;
-	}
-
-	/**
-	 * This function is called periodically during operator control
-	 */
-	public void teleopPeriodic() {
-
-		// Put currents and temperature on the smartDashboard
+	
+	public void commonPeriodic() {
 		SmartDashboard.putNumber("PowerDistributionTemperature",
 				powerDistribution.getTemperature());
 		SmartDashboard.putNumber(
@@ -404,6 +297,103 @@ public class Robot extends IterativeRobot {
 		RobotConstants.kArmMotorDifferenceTolerance));
 		SmartDashboard.putNumber("Arm Motors' Disagreement Measure", 
 				Math.abs(leftMotorCurrent - rightMotorCurrent));
+		
+		armController.periodic();
+		fingerController.periodic();
+		
+		changeDriveStyle.update();
+		rotate90Right.update();
+		rotate90Left.update();
+		overrideTracker.update();
+
+		blue1.update();
+		blue2.update();
+		blue3.update();
+		blue4.update();
+		blue5.update();
+		blue6.update();
+		autoStack.update();
+		autoGrabCan.update();
+		autoStackCan1.update();
+		autoStackCan2.update();
+		autoStackCan3.update();
+		autoTakeTote.update();
+		triggerButton.update();
+		smallUp.update();
+		smallDown.update();
+		largeUp.update();
+		largeDown.update();
+	}
+
+	public void autonomousInit() {
+		xAccelMean = mean(xAccelCalibration);
+		yAccelMean = mean(yAccelCalibration);
+		zAccelMean = mean(zAccelCalibration);
+
+		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+
+		armController.init();
+		fingerController.init();
+		
+		autoMove = (AutoMove) chooser.getSelected();
+		autoMove.init();
+		
+	}
+
+	/**
+	 * This function is called periodically during autonomous
+	 */
+	public void autonomousPeriodic() {
+		// System.out.println(accel.getXAcceleration() + "," +
+		// accel.getYAcceleration() + "," + accel.getZAcceleration());
+		commonPeriodic();
+		
+		
+		if (!autoStopped) {
+			Status status = autoMove.periodic();
+			if (status == Status.isNotAbleToContinue
+					|| status == Status.isAbleToContinue
+					|| status == Status.emergency) {
+				autoStopped = true;
+			}
+		}
+	}
+
+	public void disabledPeriodic() {
+		// System.out.println(accel.getXAcceleration() + "," +
+		// accel.getYAcceleration() + "," + accel.getZAcceleration());
+		xAccelCalibration = shift(xAccelCalibration);
+		yAccelCalibration = shift(yAccelCalibration);
+		zAccelCalibration = shift(zAccelCalibration);
+
+		xAccelCalibration[0] = accel.getXAcceleration();
+		yAccelCalibration[0] = accel.getYAcceleration();
+		zAccelCalibration[0] = accel.getZAcceleration();
+		// xGyroCalibration = gyro.getRate();
+		// timeLag.start();
+		// System.out.println("Entered Teleop");
+		// System.out.println(timeOut.get());
+		// Put currents and temperature on the smartDashboard
+		// System.out.println("Telleop begins" + timeLag.get());
+		commonPeriodic();
+	}
+
+	@Override
+	public void teleopInit() {
+		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
+		
+		armMotors.manual = false;
+		armController.enabled = true;
+		fingerController.enabled = true;
+	}
+
+	/**
+	 * This function is called periodically during operator control
+	 */
+	public void teleopPeriodic() {
+
+		// Put currents and temperature on the smartDashboard
+		
 		
 		if (!armLimitSwitch.get()) {
 			if (armEncoder.getRate() > 0) {
@@ -586,17 +576,7 @@ public class Robot extends IterativeRobot {
 		}
 		// System.out.println("End Middle Teleop" + timeLag.get());
 
-		// Track acceleration.
-		double accelX, accelY;
-		accelX = Math.cos(turned) * // * (accel.getXAcceleration() - xAccelMean)
-									// +
-				Math.sin(turned);// * (accel.getYAcceleration() - yAccelMean);
-		accelY = Math.cos(turned) * // (accel.getYAcceleration() - yAccelMean) +
-				Math.sin(turned);// * (accel.getXAcceleration() - xAccelMean);
-		// System.out.println("In Trig" + timeLag.get());
-		xDisplacement.update(accelX);
-		yDisplacement.update(accelY);
-		zDisplacement.update(accel.getZAcceleration());
+		
 
 		// System.out.println("After Accelerometer" + timeLag.get());
 		
@@ -733,29 +713,7 @@ public class Robot extends IterativeRobot {
 
 		// System.out.println("After Arm pistons" + timeLag.get());
 
-		// Update button trackers
-		changeDriveStyle.update();
-		rotate90Right.update();
-		rotate90Left.update();
-		overrideTracker.update();
-
-		blue1.update();
-		blue2.update();
-		blue3.update();
-		blue4.update();
-		blue5.update();
-		blue6.update();
-		autoStack.update();
-		autoGrabCan.update();
-		autoStackCan1.update();
-		autoStackCan2.update();
-		autoStackCan3.update();
-		autoTakeTote.update();
-		triggerButton.update();
-		smallUp.update();
-		smallDown.update();
-		largeUp.update();
-		largeDown.update();
+		// Update button tracker
 		
 		
 		if (overrideTracker.Pressedp()) {
@@ -768,6 +726,8 @@ public class Robot extends IterativeRobot {
 		// System.out.println("Telleop Ends" + timeLag.get());
 
 		// System.out.println("After Button updates" + timeLag.get());
+		
+		commonPeriodic();
 
 	}
 
