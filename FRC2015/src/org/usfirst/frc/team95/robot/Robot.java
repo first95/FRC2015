@@ -323,6 +323,30 @@ public class Robot extends IterativeRobot {
 		smallDown.update();
 		largeUp.update();
 		largeDown.update();
+		
+		if (!armLimitSwitch.get()) {
+			if (armEncoder.getRate() > 0) {
+				armEncoder.setOffset(RobotConstants.kArmPositionZenith
+						- RobotConstants.kArmLimitSwitchSloppyness
+						- armEncoder.getDistance());
+			} else {
+				armEncoder.setOffset(RobotConstants.kArmPositionZenith
+						+ RobotConstants.kArmLimitSwitchSloppyness
+						- armEncoder.getDistance());
+			}
+		}
+		
+		if (!topFingerLimitSwitch.get()) {
+			if (fingerEncoder.getRate() > 0.05) {
+				fingerDangerousTerritory = true;
+			} else if (fingerEncoder.getRate() < 0.05) {
+				fingerDangerousTerritory = false;
+			}
+			
+			downfulnessTimeOut.reset();
+			downfulnessTimeOut.start();
+			fingerEncoder.setPosition(43); // Inches
+		}
 	}
 
 	public void autonomousInit() {
@@ -393,19 +417,6 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 
 		// Put currents and temperature on the smartDashboard
-		
-		
-		if (!armLimitSwitch.get()) {
-			if (armEncoder.getRate() > 0) {
-				armEncoder.setOffset(RobotConstants.kArmPositionZenith
-						- RobotConstants.kArmLimitSwitchSloppyness
-						- armEncoder.getDistance());
-			} else {
-				armEncoder.setOffset(RobotConstants.kArmPositionZenith
-						+ RobotConstants.kArmLimitSwitchSloppyness
-						- armEncoder.getDistance());
-			}
-		}
 		
 		if(armEncoder.getRate() > 0) {
 			armForwards = true;
@@ -699,17 +710,6 @@ public class Robot extends IterativeRobot {
 			gyro.resetRate();
 		}
 		
-		if (!topFingerLimitSwitch.get()) {
-			if (fingerEncoder.getRate() > 0.05) {
-				fingerDangerousTerritory = true;
-			} else if (fingerEncoder.getRate() < 0.05) {
-				fingerDangerousTerritory = false;
-			}
-			
-			downfulnessTimeOut.reset();
-			downfulnessTimeOut.start();
-			fingerEncoder.setPosition(43); // Inches
-		}
 
 		// System.out.println("After Arm pistons" + timeLag.get());
 
