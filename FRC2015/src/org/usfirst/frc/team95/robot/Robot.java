@@ -298,8 +298,12 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Arm Motors' Disagreement Measure", 
 				Math.abs(leftMotorCurrent - rightMotorCurrent));
 		
-		armController.periodic();
-		fingerController.periodic();
+		if (!this.isDisabled()) {
+			armController.periodic();
+			if (weapons.getThrottle() < 0) {
+				fingerController.periodic();
+			}
+		}
 		
 		changeDriveStyle.update();
 		rotate90Right.update();
