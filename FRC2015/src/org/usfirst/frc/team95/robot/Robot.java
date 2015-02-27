@@ -15,6 +15,10 @@ import org.usfirst.frc.team95.robot.auto.CanStack2;
 import org.usfirst.frc.team95.robot.auto.CanStack3;
 import org.usfirst.frc.team95.robot.auto.Dance;
 import org.usfirst.frc.team95.robot.auto.FauxPID;
+import org.usfirst.frc.team95.robot.auto.GoBackward;
+import org.usfirst.frc.team95.robot.auto.GrabCanFromFloor;
+import org.usfirst.frc.team95.robot.auto.GrabFrontMoveLeft;
+import org.usfirst.frc.team95.robot.auto.GrabFrontMoveRight;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabLeftCentralCan;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
@@ -52,6 +56,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
+@SuppressWarnings("unused") // So that it doesn't complain about unused imports
 public class Robot extends IterativeRobot {
 	/*
 	 * This is the definitions section, where all variables that need to persist
@@ -65,7 +70,7 @@ public class Robot extends IterativeRobot {
 	public ResetableEncoder armEncoder, fingerEncoder;
 	public RobotDrive driveTrain;
 
-	SyncGroup armMotors;
+	public SyncGroup armMotors;
 
 	public ResetableGyro gyro;
 	ADXL345_I2C extraAccel;
@@ -229,13 +234,17 @@ public class Robot extends IterativeRobot {
 
 		chooser = new SendableChooser();
 		chooser.addDefault("Zombie", new NoMove(this));
-		chooser.addObject("TakeToteRight", new TakeToteRight(this));
+		//chooser.addObject("TakeToteRight", new TakeToteRight(this));
 		chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
-		chooser.addObject("Dance", new Dance(this));
+		//chooser.addObject("Dance", new Dance(this));
 		chooser.addObject("GrabMaximumFrontAndStack",
 				new GrabMaximumFrontAndStack(this));
 		chooser.addObject("Left Central Can", new GrabLeftCentralCan(this));
-		chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25, 1.0));
+		//chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25, 1.0));
+		chooser.addObject("Floor Can", new GrabCanFromFloor(this));
+		chooser.addObject("Move Back", new GoBackward(this));
+		chooser.addObject("Grab Can and Move Left", new GrabFrontMoveLeft(this));
+		chooser.addObject("Grab Can and Move Right", new GrabFrontMoveRight(this));
 		SmartDashboard.putData("Autonomous Move", chooser);
 
 		tipsyness = new TippynessMeasure();
@@ -449,7 +458,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 		//fingerController.enabled = false;
-		if (fingerDangerousTerritory && downfulnessTimeOut.get() < 0.5) {
+		if (fingerDangerousTerritory && downfulnessTimeOut.get() < 2) {
 			realFingerMotor.set(-0.15);
 		} else if (weapons.getThrottle() > 0) {
 			realFingerMotor.set(weapons.getTwist() * Math.abs(weapons.getTwist()));
@@ -481,7 +490,7 @@ public class Robot extends IterativeRobot {
 			armMotors.setMinSpeed(triggerButton.Pressedp() ? -RobotConstants.kArmLimitedSpeed : -1.0);
 		}
 		
-		armController.setSetpoint(weapons.getY()*10);
+		armController.setSetpoint(-weapons.getY()*10);
 			
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;
