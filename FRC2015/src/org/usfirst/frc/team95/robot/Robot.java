@@ -457,26 +457,6 @@ public class Robot extends IterativeRobot {
 			fingerController.periodic();
 		}
 
-		/*if (smallUp.justPressedp()) {
-			System.out.println("Upping i to " + (fingerController.mI + 0.01));
-			fingerController.mI += 0.001;
-		}
-		
-		if (smallDown.justPressedp()) {
-			System.out.println("Downing i to " + (fingerController.mI - 0.01));
-			fingerController.mI -= 0.001;
-		}
-		
-		if (largeUp.justPressedp()) {
-			System.out.println("Upping i to " + (fingerController.mI + 0.1));
-			fingerController.mI += 0.0001;
-		}
-		
-		if (largeDown.justPressedp()) {
-			System.out.println("Downing i to " + (fingerController.mI - 0.1));
-			fingerController.mI -= 0.0001;
-		}*/
-
 		// Drive style determines weather left and right are turn or strafe.
 		
 		if (changeDriveStyle.justPressedp()) {

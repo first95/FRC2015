@@ -26,12 +26,12 @@ public class MakeStack extends AutoMove {
 	@Override
 	public Status periodic() {
 		if (robot.fingerController.onTarget() && stage == 0) {
-			robot.armController.setSetpoint(RobotConstants.kArmPositionGrab);
+			robot.armController.setSetpoint(0.5);
 			timeOut.start();
 			stage = 1;
 		} else if (stage == 1 && (timeOut.get() > 2)) {
 			robot.armPistons.set(false);
-			robot.armController.setSetpoint(RobotConstants.kArmPositionZenith);
+			robot.armController.setSetpoint(-0.1);
 			stage = 2;
 		} else if (stage == 2) {
 			return Status.isAbleToContinue;
