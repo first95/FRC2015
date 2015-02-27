@@ -37,10 +37,10 @@ public class SyncGroup implements SpeedController, PIDOutput {
 	}
 
 	public void pidWrite(double bob) {
-		//System.out.println("Get the scoundrel!");
+		// System.out.println("Get the scoundrel!");
 		jamesBond(bob);
 	}
-	
+
 	public void jamesBond(double speed) {
 		if (speed > maxSpeed) {
 			speed = maxSpeed;
@@ -56,7 +56,7 @@ public class SyncGroup implements SpeedController, PIDOutput {
 			}
 		}
 	}
-	
+
 	public void setIrrespective(double speed) {
 
 		for (int i = 0; i < mSpeedControllers.length; i++) {
@@ -89,13 +89,13 @@ public class SyncGroup implements SpeedController, PIDOutput {
 	@Override
 	public void set(double speed, byte syncGroup) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void disable() {
 		set(0);
-		
+
 	}
 
 }

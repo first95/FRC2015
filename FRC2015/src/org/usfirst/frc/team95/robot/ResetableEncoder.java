@@ -17,7 +17,7 @@ public class ResetableEncoder extends Encoder {
 	public double getDistance() {
 		return offset + super.getDistance();
 	}
-	
+
 	public void setPosition(double offset) {
 		setOffset(-super.getDistance() + offset);
 	}

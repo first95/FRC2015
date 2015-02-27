@@ -7,6 +7,6 @@ public class CanStack extends CanStackN {
 	int stage = 0;
 
 	public CanStack(Robot robo) {
-		super(robo,1);
+		super(robo, 1);
 	}
 }

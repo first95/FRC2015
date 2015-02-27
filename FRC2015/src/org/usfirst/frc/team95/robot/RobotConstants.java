@@ -32,7 +32,8 @@ public class RobotConstants {
 	public static final double kFingerI = 0.012;
 	public static final double kFingerD = 0.0;
 	public static final double kPIDUpdateInterval = 50.0;
-	public static final double[] kFingerSetpoints = { -17.973 , 8, 10, 23, 25, 38, 40 };
+	public static final double[] kFingerSetpoints = { -17.973, 8, 10, 23, 25,
+			38, 40 };
 	// Aquire: -17.973
 	//
 	public static final double kDeadband = 0.1;
@@ -57,7 +58,8 @@ public class RobotConstants {
 	public static final int kArmLimitSwitch = 0;
 	public static final double kArmLimitSwitchSloppyness = 0.1;
 	public static final double kRotationTolerance = 5;
-	public static final double kMaxRotationSpeed = 1800 / Math.PI; // degrees / sec
+	public static final double kMaxRotationSpeed = 1800 / Math.PI; // degrees /
+																	// sec
 	public static final int kLeftArmMotorCurrent = 15;
 	public static final int kRightArmMotorCurrent = 0;
 	public static final double kArmMotorDifferenceTolerance = 0.1;

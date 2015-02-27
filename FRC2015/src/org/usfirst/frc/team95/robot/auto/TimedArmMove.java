@@ -7,7 +7,7 @@ public class TimedArmMove extends AutoMove {
 	Timer timeOut;
 	Robot robo;
 	double s, t;
-	
+
 	public TimedArmMove(Robot robot, double speed, double time) {
 		s = speed;
 		t = time;
@@ -38,6 +38,5 @@ public class TimedArmMove extends AutoMove {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
+
 }

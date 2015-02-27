@@ -25,7 +25,7 @@ public class ResetableGyro extends Gyro {
 				+ super.getAngle());
 
 	}
-	
+
 	public void resetRate() {
 		offset = -super.getRate();
 	}
@@ -33,7 +33,7 @@ public class ResetableGyro extends Gyro {
 	public double getAngle() {
 		return super.getAngle() + offset;
 	}
-	
+
 	public double getRate() {
 		return super.getRate() + rateOffset;
 	}
