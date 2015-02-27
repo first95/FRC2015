@@ -58,6 +58,9 @@ public class SequentialMove extends AutoMove {
 	}
 
 	public Status stop() {
+		if (william < moves.length) {
+			moves[william].stop();
+		}
 		return Status.isNotAbleToContinue;
 	}
 

@@ -17,17 +17,21 @@ import org.usfirst.frc.team95.robot.auto.Dance;
 import org.usfirst.frc.team95.robot.auto.FauxPID;
 import org.usfirst.frc.team95.robot.auto.GoBackward;
 import org.usfirst.frc.team95.robot.auto.GrabCanFromFloor;
+import org.usfirst.frc.team95.robot.auto.GrabFrontMoveBackwards;
+import org.usfirst.frc.team95.robot.auto.GrabFrontMoveForwards;
 import org.usfirst.frc.team95.robot.auto.GrabFrontMoveLeft;
 import org.usfirst.frc.team95.robot.auto.GrabFrontMoveRight;
 import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabLeftCentralCan;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
+import org.usfirst.frc.team95.robot.auto.GrabStepCanPutBehind;
 import org.usfirst.frc.team95.robot.auto.MakeStack;
 import org.usfirst.frc.team95.robot.auto.NoMove;
 import org.usfirst.frc.team95.robot.auto.PickUpCan;
 import org.usfirst.frc.team95.robot.auto.PickUpTote;
 import org.usfirst.frc.team95.robot.auto.PlainMotorMove;
 import org.usfirst.frc.team95.robot.auto.TakeToteRight;
+import org.usfirst.frc.team95.robot.auto.GoForward;
 
 import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
@@ -113,12 +117,14 @@ public class Robot extends IterativeRobot {
 
 	TippynessMeasure tipsyness, swayfulness;
 
-	DigitalInput armLimitSwitch, topFingerLimitSwitch;
+	public DigitalInput armLimitSwitch, topFingerLimitSwitch;
 	private MotorWrapper realFingerMotor;
 	
 	Timer bouncyTimeOut, downfulnessTimeOut;
 	
 	ButtonTracker smallUp, smallDown, largeUp, largeDown;
+	
+	boolean grippersLatched = false;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -235,16 +241,19 @@ public class Robot extends IterativeRobot {
 		chooser = new SendableChooser();
 		chooser.addDefault("Zombie", new NoMove(this));
 		//chooser.addObject("TakeToteRight", new TakeToteRight(this));
-		chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
+		//chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
 		//chooser.addObject("Dance", new Dance(this));
-		chooser.addObject("GrabMaximumFrontAndStack",
-				new GrabMaximumFrontAndStack(this));
-		chooser.addObject("Left Central Can", new GrabLeftCentralCan(this));
+		//chooser.addObject("GrabMaximumFrontAndStack",
+		//		new GrabMaximumFrontAndStack(this));
+		chooser.addObject("Grab Barrier Can and Move Back", new GrabLeftCentralCan(this));
 		//chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25, 1.0));
-		chooser.addObject("Floor Can", new GrabCanFromFloor(this));
-		chooser.addObject("Move Back", new GoBackward(this));
-		chooser.addObject("Grab Can and Move Left", new GrabFrontMoveLeft(this));
+		//chooser.addObject("Floor Can", new GrabCanFromFloor(this));
+		chooser.addObject("Move Forward", new GoForward(this));
+		//chooser.addObject("Grab Can and Move Left", new GrabFrontMoveLeft(this));
 		chooser.addObject("Grab Can and Move Right", new GrabFrontMoveRight(this));
+		//chooser.addObject("Grab Can and Move Forward", new GrabFrontMoveForwards(this));
+		chooser.addObject("Grab Can and Move Backward", new GrabFrontMoveBackwards(this));
+		chooser.addObject("Grab Barrier Can and Place Behind", new GrabStepCanPutBehind(this));
 		SmartDashboard.putData("Autonomous Move", chooser);
 
 		tipsyness = new TippynessMeasure();
@@ -697,7 +706,11 @@ public class Robot extends IterativeRobot {
 			gyro.set(chasis.getPOV());
 		}
 
-		armPistons.set(triggerButton.Pressedp());
+		armPistons.set(triggerButton.Pressedp() || grippersLatched);
+		
+		if (triggerButton.Pressedp()) {
+			grippersLatched = false;
+		}
 		
 		if (stopSpin.Pressedp()) {
 			gyro.resetRate();

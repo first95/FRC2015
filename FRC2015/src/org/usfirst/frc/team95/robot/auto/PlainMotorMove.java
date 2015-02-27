@@ -7,6 +7,7 @@ public class PlainMotorMove extends AutoMove {
 	public double speed, time;
 	Timer timeOut;
 	SpeedController motor;
+	public boolean stopEarly;
 	
 	public PlainMotorMove(SpeedController motor, double speed, double time) {
 		this.time = time;
@@ -25,7 +26,7 @@ public class PlainMotorMove extends AutoMove {
 
 	@Override
 	public Status periodic() {
-		if (timeOut.get() > time) {
+		if (timeOut.get() > time || stopEarly) {
 			return stop();
 		} else {
 			//System.out.println("Plain outputing: " + speed);
