@@ -8,7 +8,7 @@ public class PlainMotorMove extends AutoMove {
 	Timer timeOut;
 	SpeedController motor;
 	public boolean stopEarly;
-	
+
 	public PlainMotorMove(SpeedController motor, double speed, double time) {
 		this.time = time;
 		this.speed = speed;
@@ -29,7 +29,7 @@ public class PlainMotorMove extends AutoMove {
 		if (timeOut.get() > time || stopEarly) {
 			return stop();
 		} else {
-			//System.out.println("Plain outputing: " + speed);
+			// System.out.println("Plain outputing: " + speed);
 			motor.set(speed);
 			return Status.wantsToContinue;
 		}

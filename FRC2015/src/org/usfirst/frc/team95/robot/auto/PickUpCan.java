@@ -13,8 +13,8 @@ public class PickUpCan extends PureSequentialMove {
 	Robot robot;
 
 	public PickUpCan(Robot robo) {
-		AutoMove[] stuff = {new TimedArmMove(robo, 1, 0.5), new Pistons(robo, true), 
-			new TimedArmMove(robo, -1, 0.5)};
+		AutoMove[] stuff = { new TimedArmMove(robo, 1, 0.5),
+				new Pistons(robo, true), new TimedArmMove(robo, -1, 0.5) };
 		sequence = new SequentialMove(stuff);
 	}
 }

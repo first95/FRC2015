@@ -7,7 +7,6 @@
 
 package org.usfirst.frc.team95.robot;
 
-
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
 import org.usfirst.frc.team95.robot.auto.CanStack;
@@ -60,7 +59,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-@SuppressWarnings("unused") // So that it doesn't complain about unused imports
+@SuppressWarnings("unused")
+// So that it doesn't complain about unused imports
 public class Robot extends IterativeRobot {
 	/*
 	 * This is the definitions section, where all variables that need to persist
@@ -87,7 +87,8 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
 			overrideTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			autoStackCan1, autoStackCan2, autoStackCan3, autoGrabCan, autoTakeTote, triggerButton, stopSpin;
+			autoStackCan1, autoStackCan2, autoStackCan3, autoGrabCan,
+			autoTakeTote, triggerButton, stopSpin;
 
 	boolean driveStyle, rotating, fieldcentric = false;
 	boolean armForwards = false;
@@ -119,11 +120,11 @@ public class Robot extends IterativeRobot {
 
 	public DigitalInput armLimitSwitch, topFingerLimitSwitch;
 	private MotorWrapper realFingerMotor;
-	
+
 	Timer bouncyTimeOut, downfulnessTimeOut;
-	
+
 	ButtonTracker smallUp, smallDown, largeUp, largeDown;
-	
+
 	boolean grippersLatched = false;
 
 	/**
@@ -142,18 +143,18 @@ public class Robot extends IterativeRobot {
 		rightArmTalon = new Talon(RobotConstants.kRightArmMotor);
 		fingerTalon = new Victor(RobotConstants.kFingerMotor);
 		realFrontLeft = new MotorWrapper(frontLeft);
-		//realFrontLeft.scaling = 0.9;
+		// realFrontLeft.scaling = 0.9;
 		realFrontRight = new MotorWrapper(frontRight);
-		//realFrontRight.scaling = 0.9;
+		// realFrontRight.scaling = 0.9;
 		realBackLeft = new MotorWrapper(backLeft);
 		realBackRight = new MotorWrapper(backRight);
-		//realBackLeft.scaling = 0.9;
+		// realBackLeft.scaling = 0.9;
 		realRightArmMotor = new MotorWrapper(rightArmTalon);
-		
+
 		realLeftArmMotor = new MotorWrapper(leftArmTalon);
-		
+
 		realFingerMotor = new MotorWrapper(fingerTalon);
-		
+
 		armEncoder = new ResetableEncoder(RobotConstants.kArmEncoder,
 				RobotConstants.kArmEncoder + 1);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
@@ -183,15 +184,17 @@ public class Robot extends IterativeRobot {
 
 		changeDriveStyle = new ButtonTracker(chasis,
 				RobotConstants.kChangeDriveStyle);
-		overrideTracker = new ButtonTracker(chasis,
-				RobotConstants.kArmOverride);
+		overrideTracker = new ButtonTracker(chasis, RobotConstants.kArmOverride);
 		driveStyle = false; // False == traditional
 		rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
 		rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
 		autoStack = new ButtonTracker(weapons, RobotConstants.kAutoStack);
-		autoStackCan1 = new ButtonTracker(weapons, RobotConstants.kAutoStackCan1);
-		autoStackCan2 = new ButtonTracker(weapons, RobotConstants.kAutoStackCan2);
-		autoStackCan3 = new ButtonTracker(weapons, RobotConstants.kAutoStackCan3);
+		autoStackCan1 = new ButtonTracker(weapons,
+				RobotConstants.kAutoStackCan1);
+		autoStackCan2 = new ButtonTracker(weapons,
+				RobotConstants.kAutoStackCan2);
+		autoStackCan3 = new ButtonTracker(weapons,
+				RobotConstants.kAutoStackCan3);
 		autoGrabCan = new ButtonTracker(weapons, RobotConstants.kAutoGrabCan);
 		autoTakeTote = new ButtonTracker(weapons, RobotConstants.kAutoTakeTote);
 		blue1 = new ButtonTracker(weapons, 11);
@@ -200,7 +203,8 @@ public class Robot extends IterativeRobot {
 		blue4 = new ButtonTracker(weapons, 16);
 		blue5 = new ButtonTracker(weapons, 15);
 		blue6 = new ButtonTracker(weapons, 14);
-		triggerButton = new ButtonTracker(weapons, RobotConstants.kArmPistonsButton);
+		triggerButton = new ButtonTracker(weapons,
+				RobotConstants.kArmPistonsButton);
 		stopSpin = new ButtonTracker(chasis, RobotConstants.kResetRateButton);
 		rotating = false;
 		fieldcentric = true;
@@ -218,19 +222,17 @@ public class Robot extends IterativeRobot {
 		armMotors = new SyncGroup(table, reversed);
 		table = null;
 
-		armController = new FauxPID(RobotConstants.kArmP,
-				RobotConstants.kArmI, RobotConstants.kArmD,
-				armEncoder, armMotors);
-		//armController.enable();
-		//armController.setTolerance(1.0);
+		armController = new FauxPID(RobotConstants.kArmP, RobotConstants.kArmI,
+				RobotConstants.kArmD, armEncoder, armMotors);
+		// armController.enable();
+		// armController.setTolerance(1.0);
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
-		
 
 		fingerController = new FauxPID(RobotConstants.kFingerP,
 				RobotConstants.kFingerI, RobotConstants.kFingerD,
 				fingerEncoder, realFingerMotor);
-		//fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
-		//fingerController.enable();
+		// fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
+		// fingerController.enable();
 
 		armPistons = new Solenoid(RobotConstants.kPCMId,
 				RobotConstants.kArmPistons);
@@ -240,37 +242,45 @@ public class Robot extends IterativeRobot {
 
 		chooser = new SendableChooser();
 		chooser.addDefault("Zombie", new NoMove(this));
-		//chooser.addObject("TakeToteRight", new TakeToteRight(this));
-		//chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
-		//chooser.addObject("Dance", new Dance(this));
-		//chooser.addObject("GrabMaximumFrontAndStack",
-		//		new GrabMaximumFrontAndStack(this));
-		chooser.addObject("Grab Barrier Can and Move Back", new GrabLeftCentralCan(this));
-		//chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25, 1.0));
-		//chooser.addObject("Floor Can", new GrabCanFromFloor(this));
+		// chooser.addObject("TakeToteRight", new TakeToteRight(this));
+		// chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
+		// chooser.addObject("Dance", new Dance(this));
+		// chooser.addObject("GrabMaximumFrontAndStack",
+		// new GrabMaximumFrontAndStack(this));
+		chooser.addObject("Grab Barrier Can and Move Back",
+				new GrabLeftCentralCan(this));
+		// chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25,
+		// 1.0));
+		// chooser.addObject("Floor Can", new GrabCanFromFloor(this));
 		chooser.addObject("Move Forward", new GoForward(this));
-		//chooser.addObject("Grab Can and Move Left", new GrabFrontMoveLeft(this));
-		chooser.addObject("Grab Can and Move Right", new GrabFrontMoveRight(this));
-		//chooser.addObject("Grab Can and Move Forward", new GrabFrontMoveForwards(this));
-		chooser.addObject("Grab Can and Move Backward", new GrabFrontMoveBackwards(this));
-		chooser.addObject("Grab Barrier Can and Place Behind", new GrabStepCanPutBehind(this));
+		// chooser.addObject("Grab Can and Move Left", new
+		// GrabFrontMoveLeft(this));
+		chooser.addObject("Grab Can and Move Right", new GrabFrontMoveRight(
+				this));
+		// chooser.addObject("Grab Can and Move Forward", new
+		// GrabFrontMoveForwards(this));
+		chooser.addObject("Grab Can and Move Backward",
+				new GrabFrontMoveBackwards(this));
+		chooser.addObject("Grab Barrier Can and Place Behind",
+				new GrabStepCanPutBehind(this));
 		SmartDashboard.putData("Autonomous Move", chooser);
 
 		tipsyness = new TippynessMeasure();
 		swayfulness = new TippynessMeasure();
 
 		armLimitSwitch = new DigitalInput(RobotConstants.kArmLimitSwitch);
-		topFingerLimitSwitch = new DigitalInput(RobotConstants.kTopFingerLimitSwitch);
-		
+		topFingerLimitSwitch = new DigitalInput(
+				RobotConstants.kTopFingerLimitSwitch);
+
 		bouncyTimeOut = new Timer();
 		downfulnessTimeOut = new Timer();
-		
+
 		smallUp = new ButtonTracker(chasis, 5);
 		smallDown = new ButtonTracker(chasis, 10);
 		largeUp = new ButtonTracker(chasis, 6);
 		largeDown = new ButtonTracker(chasis, 9);
 	}
-	
+
 	public void commonPeriodic() {
 		SmartDashboard.putNumber("PowerDistributionTemperature",
 				powerDistribution.getTemperature());
@@ -305,24 +315,29 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
 		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
-		SmartDashboard.putNumber("Totem Current", powerDistribution.getCurrent(7));
-		
+		SmartDashboard.putNumber("Totem Current",
+				powerDistribution.getCurrent(7));
+
 		// Listen to arguments
-		double leftMotorCurrent = powerDistribution.getCurrent(RobotConstants.kLeftArmMotorCurrent);
-		double rightMotorCurrent = powerDistribution.getCurrent(RobotConstants.kRightArmMotorCurrent);
-		
-		SmartDashboard.putBoolean("Arm Motors' Fighting", !(Math.abs(leftMotorCurrent - rightMotorCurrent) > 
-		RobotConstants.kArmMotorDifferenceTolerance));
-		SmartDashboard.putNumber("Arm Motors' Disagreement Measure", 
+		double leftMotorCurrent = powerDistribution
+				.getCurrent(RobotConstants.kLeftArmMotorCurrent);
+		double rightMotorCurrent = powerDistribution
+				.getCurrent(RobotConstants.kRightArmMotorCurrent);
+
+		SmartDashboard
+				.putBoolean(
+						"Arm Motors' Fighting",
+						!(Math.abs(leftMotorCurrent - rightMotorCurrent) > RobotConstants.kArmMotorDifferenceTolerance));
+		SmartDashboard.putNumber("Arm Motors' Disagreement Measure",
 				Math.abs(leftMotorCurrent - rightMotorCurrent));
-		
+
 		if (!this.isDisabled()) {
 			armController.periodic();
 			if (weapons.getThrottle() < 0) {
 				fingerController.periodic();
 			}
 		}
-		
+
 		changeDriveStyle.update();
 		rotate90Right.update();
 		rotate90Left.update();
@@ -345,7 +360,7 @@ public class Robot extends IterativeRobot {
 		smallDown.update();
 		largeUp.update();
 		largeDown.update();
-		
+
 		if (!armLimitSwitch.get()) {
 			if (armEncoder.getRate() > 0) {
 				armEncoder.setOffset(RobotConstants.kArmPositionZenith
@@ -357,14 +372,14 @@ public class Robot extends IterativeRobot {
 						- armEncoder.getDistance());
 			}
 		}
-		
+
 		if (!topFingerLimitSwitch.get()) {
 			if (fingerEncoder.getRate() > 0.05) {
 				fingerDangerousTerritory = true;
 			} else if (fingerEncoder.getRate() < 0.05) {
 				fingerDangerousTerritory = false;
 			}
-			
+
 			downfulnessTimeOut.reset();
 			downfulnessTimeOut.start();
 			fingerEncoder.setPosition(43); // Inches
@@ -380,10 +395,10 @@ public class Robot extends IterativeRobot {
 
 		armController.init();
 		fingerController.init();
-		
+
 		autoMove = (AutoMove) chooser.getSelected();
 		autoMove.init();
-		
+
 	}
 
 	/**
@@ -393,8 +408,7 @@ public class Robot extends IterativeRobot {
 		// System.out.println(accel.getXAcceleration() + "," +
 		// accel.getYAcceleration() + "," + accel.getZAcceleration());
 		commonPeriodic();
-		
-		
+
 		if (!autoStopped) {
 			Status status = autoMove.periodic();
 			if (status == Status.isNotAbleToContinue
@@ -427,7 +441,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
-		
+
 		armMotors.manual = false;
 		armController.enabled = true;
 		fingerController.enabled = true;
@@ -439,17 +453,16 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 
 		// Put currents and temperature on the smartDashboard
-		
-		if(armEncoder.getRate() > 0) {
+
+		if (armEncoder.getRate() > 0) {
 			armForwards = true;
-		}else if (armEncoder.getRate() < 0) {
-			armBackwards = true; 
-		}else {
+		} else if (armEncoder.getRate() < 0) {
+			armBackwards = true;
+		} else {
 			armForwards = false;
 			armBackwards = false;
 		}
 
-		
 		if (blue1.justPressedp()) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[1]);
 		} else if (blue2.justPressedp()) {
@@ -465,42 +478,50 @@ public class Robot extends IterativeRobot {
 		} else if (weapons.getPOV() != -1) {
 			fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
 		}
-		
-		//fingerController.enabled = false;
+
+		// fingerController.enabled = false;
 		if (fingerDangerousTerritory && downfulnessTimeOut.get() < 2) {
 			realFingerMotor.set(-0.15);
 		} else if (weapons.getThrottle() > 0) {
-			realFingerMotor.set(weapons.getTwist() * Math.abs(weapons.getTwist()));
+			realFingerMotor.set(weapons.getTwist()
+					* Math.abs(weapons.getTwist()));
 		} else {
 			fingerController.periodic();
 		}
 
 		// Drive style determines weather left and right are turn or strafe.
-		
+
 		if (changeDriveStyle.justPressedp()) {
 			driveStyle = !driveStyle;
 		}
-		
+
 		// Limits on arm positions
-		
-		if ((fingerEncoder.getDistance() > 3 & armForwards & !armLimitSwitch.get())) {
+
+		if ((fingerEncoder.getDistance() > 3 & armForwards & !armLimitSwitch
+				.get())) {
 			armMotors.setMaxSpeed(-0.1);
 			bouncyTimeOut.reset();
 			bouncyTimeOut.start();
 			hasHitBouncy = true;
 		} else if (bouncyTimeOut.get() < 1 && hasHitBouncy) {
 			armMotors.setMaxSpeed(-0.1);
-		} else if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind && blue2.Pressedp()) {
+		} else if (armEncoder.getDistance() > RobotConstants.kArmPositionBehind
+				&& blue2.Pressedp()) {
 			armMotors.setMaxSpeed(-0.1);
-		} else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab && blue2.Pressedp()) {
+		} else if (armEncoder.getDistance() < RobotConstants.kArmPositionGrab
+				&& blue2.Pressedp()) {
 			armMotors.setMinSpeed(0.1);
 		} else {
-			armMotors.setMaxSpeed(triggerButton.Pressedp() ? RobotConstants.kArmLimitedSpeed : 1.0);
-			armMotors.setMinSpeed(triggerButton.Pressedp() ? -RobotConstants.kArmLimitedSpeed : -1.0);
+			armMotors
+					.setMaxSpeed(triggerButton.Pressedp() ? RobotConstants.kArmLimitedSpeed
+							: 1.0);
+			armMotors
+					.setMinSpeed(triggerButton.Pressedp() ? -RobotConstants.kArmLimitedSpeed
+							: -1.0);
 		}
-		
-		armController.setSetpoint(-weapons.getY()*10);
-			
+
+		armController.setSetpoint(-weapons.getY() * 10);
+
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;
 		turned = ((gyro.getAngle()));// / 180.0) * Math.PI);
@@ -515,21 +536,23 @@ public class Robot extends IterativeRobot {
 			x = -chasis.getAxis(Joystick.AxisType.kY);
 			rotate = -chasis.getAxis(Joystick.AxisType.kZ);
 		}
-		
-		//System.out.println("The Joystick Rotation: " + rotate);
+
+		// System.out.println("The Joystick Rotation: " + rotate);
 
 		x *= sensitivity;
 		y *= sensitivity;
 		rotate *= sensitivity * 0.2;
-		
-		/*double rotationRate = gyro.getRate();
-		if (rotationRate < (rotate * RobotConstants.kMaxRotationSpeed + RobotConstants.kRotationTolerance) && 
-				rotationRate > (rotate * RobotConstants.kMaxRotationSpeed - RobotConstants.kRotationTolerance)) {
-			rotate += (rotationRate - rotate);
-		}*/
 
-		//y += tipsyness.tipped();
-		//x += swayfulness.tipped();
+		/*
+		 * double rotationRate = gyro.getRate(); if (rotationRate < (rotate *
+		 * RobotConstants.kMaxRotationSpeed + RobotConstants.kRotationTolerance)
+		 * && rotationRate > (rotate * RobotConstants.kMaxRotationSpeed -
+		 * RobotConstants.kRotationTolerance)) { rotate += (rotationRate -
+		 * rotate); }
+		 */
+
+		// y += tipsyness.tipped();
+		// x += swayfulness.tipped();
 
 		// System.out.println("Field Centric " + fieldcentric + "\n Gyro " +
 		// gyro.getAngle());
@@ -583,16 +606,14 @@ public class Robot extends IterativeRobot {
 			}
 
 			driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, 0.0);
-			
+
 		} else {
 			driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
 		}
 		// System.out.println("End Middle Teleop" + timeLag.get());
 
-		
-
 		// System.out.println("After Accelerometer" + timeLag.get());
-		
+
 		// Auto Can1 Stacker on 5 (when ready)
 		if (autoStackCan1.justPressedp()) {
 			autoStopped = false;
@@ -610,7 +631,7 @@ public class Robot extends IterativeRobot {
 			}
 
 		}
-		
+
 		// Auto Can2 Stacker on 6 (when ready)
 		if (autoStackCan2.justPressedp()) {
 			autoStopped = false;
@@ -628,7 +649,7 @@ public class Robot extends IterativeRobot {
 			}
 
 		}
-		
+
 		// Auto Can3 Stacker on 7 (when ready)
 		if (autoStackCan3.justPressedp()) {
 			autoStopped = false;
@@ -646,7 +667,7 @@ public class Robot extends IterativeRobot {
 			}
 
 		}
-		
+
 		// Auto stack on hold 8
 		if (autoStack.justPressedp()) {
 			autoStopped = false;
@@ -664,7 +685,7 @@ public class Robot extends IterativeRobot {
 			}
 
 		}
-		
+
 		// Auto Can Grabber on 9
 		if (autoGrabCan.justPressedp()) {
 			autoStopped = false;
@@ -707,32 +728,30 @@ public class Robot extends IterativeRobot {
 		}
 
 		armPistons.set(triggerButton.Pressedp() || grippersLatched);
-		
+
 		if (triggerButton.Pressedp()) {
 			grippersLatched = false;
 		}
-		
+
 		if (stopSpin.Pressedp()) {
 			gyro.resetRate();
 		}
-		
 
 		// System.out.println("After Arm pistons" + timeLag.get());
 
 		// Update button tracker
-		
-		
+
 		if (overrideTracker.Pressedp()) {
 			armMotors.jamesBond(weapons.getY() * -0.5);
 		} else {
-			
+
 			armController.periodic();
 		}
 
 		// System.out.println("Telleop Ends" + timeLag.get());
 
 		// System.out.println("After Button updates" + timeLag.get());
-		
+
 		commonPeriodic();
 
 	}

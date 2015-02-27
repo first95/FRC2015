@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class PureInterruptedSequentialMove extends PureSequentialMove {
 	DigitalInput interruptor;
-	
+
 	@Override
 	public Status periodic() {
 		if (interruptor != null && !interruptor.get()) {

@@ -11,8 +11,9 @@ public class FauxPID extends AutoMove {
 	double mIntegral, mPrevError;
 	PIDSource mSource;
 	PIDOutput mOutput;
-	
-	public FauxPID(double p, double i, double d, PIDSource source, PIDOutput output) {
+
+	public FauxPID(double p, double i, double d, PIDSource source,
+			PIDOutput output) {
 		mP = p;
 		mI = i;
 		mD = d;
@@ -20,7 +21,6 @@ public class FauxPID extends AutoMove {
 		mOutput = output;
 		enabled = true;
 	}
-	
 
 	@Override
 	public Status init() {
@@ -34,25 +34,26 @@ public class FauxPID extends AutoMove {
 		if (!enabled) {
 			return Status.wantsToContinue;
 		}
-		
+
 		double input = mSource.pidGet();
 		double error = mSetpoint - input;
 		if (mI != 0) {
-            double potentialIGain = (mIntegral + error) * mI;
-            if (potentialIGain < 1.0) {
-                if (potentialIGain > -1.0) {
-                    mIntegral += error;
-                } else {
-                    mIntegral = -1.0 / mI;
-                }
-            } else {
-                mIntegral = 1.0 / mI;
-            }
-        }
-		
-		mOutput.pidWrite(error * mP + mIntegral * mI + (error - mPrevError) * mD);
+			double potentialIGain = (mIntegral + error) * mI;
+			if (potentialIGain < 1.0) {
+				if (potentialIGain > -1.0) {
+					mIntegral += error;
+				} else {
+					mIntegral = -1.0 / mI;
+				}
+			} else {
+				mIntegral = 1.0 / mI;
+			}
+		}
+
+		mOutput.pidWrite(error * mP + mIntegral * mI + (error - mPrevError)
+				* mD);
 		mPrevError = error;
-		
+
 		return Status.wantsToContinue;
 	}
 
@@ -60,15 +61,15 @@ public class FauxPID extends AutoMove {
 	public Status stop() {
 		return Status.isNotAbleToContinue;
 	}
-	
+
 	public void setSetpoint(double setpoint) {
 		mSetpoint = setpoint;
 	}
-	
+
 	public double getSetpoint() {
 		return mSetpoint;
 	}
-	
+
 	public boolean onTarget() {
 		return Math.abs(mSetpoint - mSource.pidGet()) < RobotConstants.kPIDTolerance;
 	}

@@ -22,7 +22,8 @@ public class PickUpTote extends AutoMove {
 
 	public Status init() {
 		System.out.print("Pick tote initialization.");
-		fingerController.setSetpoint(findSetpoint(fingerController.getSetpoint()) + 1);
+		fingerController.setSetpoint(findSetpoint(fingerController
+				.getSetpoint()) + 1);
 		return Status.wantsToContinue;
 	}
 
