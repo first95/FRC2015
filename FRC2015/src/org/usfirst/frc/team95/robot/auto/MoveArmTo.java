@@ -18,13 +18,14 @@ public class MoveArmTo extends AutoMove{
 	}
 	
 	public Status init() {
-		if (target < 0) {
+		if (target < robot.armEncoder.getDistance()) {
 			System.out.println("Decided that target was behind us.");
 			robot.armMotors.set(0.5);
 		} else {
 			System.out.println("Decided that target was in front.");
 			robot.armMotors.set(-0.5);
 		}
+		robot.armController.enabled = false;
 		timeOut.reset();
 		timeOut.start();
 		return Status.needsToContinue;
@@ -37,6 +38,8 @@ public class MoveArmTo extends AutoMove{
 			
 			robot.armMotors.set(0);
 			return Status.isNotAbleToContinue;
+		} else {
+			robot.armMotors.set(-0.5);
 		}
 		System.out.println("ArmTo: Continuing . . . ");
 		return Status.wantsToContinue;
@@ -44,6 +47,7 @@ public class MoveArmTo extends AutoMove{
 	
 	public Status stop(){
 		robot.armMotors.set(0);
+		robot.armController.enabled = true;
 		return Status.isNotAbleToContinue;
 	}
 }
