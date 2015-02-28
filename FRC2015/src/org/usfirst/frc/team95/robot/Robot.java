@@ -24,11 +24,13 @@ import org.usfirst.frc.team95.robot.auto.GrabGoldenTotes;
 import org.usfirst.frc.team95.robot.auto.GrabLeftCentralCan;
 import org.usfirst.frc.team95.robot.auto.GrabMaximumFrontAndStack;
 import org.usfirst.frc.team95.robot.auto.GrabStepCanPutBehind;
+import org.usfirst.frc.team95.robot.auto.GrabStepCanPutFront;
 import org.usfirst.frc.team95.robot.auto.MakeStack;
 import org.usfirst.frc.team95.robot.auto.NoMove;
 import org.usfirst.frc.team95.robot.auto.PickUpCan;
 import org.usfirst.frc.team95.robot.auto.PickUpTote;
 import org.usfirst.frc.team95.robot.auto.PlainMotorMove;
+import org.usfirst.frc.team95.robot.auto.QuickBarrierGrab;
 import org.usfirst.frc.team95.robot.auto.TakeToteRight;
 import org.usfirst.frc.team95.robot.auto.GoForward;
 
@@ -261,8 +263,11 @@ public class Robot extends IterativeRobot {
 		// GrabFrontMoveForwards(this));
 		chooser.addObject("Grab Can and Move Backward",
 				new GrabFrontMoveBackwards(this));
-		chooser.addObject("Grab Barrier Can and Place Behind",
-				new GrabStepCanPutBehind(this));
+		//chooser.addObject("Grab Barrier Can and Place Behind",
+		//		new GrabStepCanPutBehind(this));
+		chooser.addObject("Grab Barrier Can and Place Front",
+				new GrabStepCanPutFront(this));
+		chooser.addObject("Quick Barrier Grab", new QuickBarrierGrab(this));
 		SmartDashboard.putData("Autonomous Move", chooser);
 
 		tipsyness = new TippynessMeasure();
