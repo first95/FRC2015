@@ -258,8 +258,8 @@ public class Robot extends IterativeRobot {
 		// 1.0));
 		// chooser.addObject("Floor Can", new GrabCanFromFloor(this));
 		chooser.addObject("Move Forward", new GoForward(this));
-		// chooser.addObject("Grab Can and Move Left", new
-		// GrabFrontMoveLeft(this));
+		 chooser.addObject("Grab Can and Move Left", new
+		 GrabFrontMoveLeft(this));
 		chooser.addObject("Grab Can and Move Right", new GrabFrontMoveRight(
 				this));
 		// chooser.addObject("Grab Can and Move Forward", new
