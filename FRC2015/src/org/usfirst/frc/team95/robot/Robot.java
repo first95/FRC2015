@@ -53,6 +53,7 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.smartdashboard.
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -128,6 +129,8 @@ public class Robot extends IterativeRobot {
 	ButtonTracker smallUp, smallDown, largeUp, largeDown;
 
 	boolean grippersLatched = false;
+	
+	AutoMove lastSeenAutoMove = null;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -243,7 +246,7 @@ public class Robot extends IterativeRobot {
 		compressor.start();
 
 		chooser = new SendableChooser();
-		chooser.addDefault("Zombie", new NoMove(this));
+		chooser.addObject("Zombie", new NoMove(this));
 		// chooser.addObject("TakeToteRight", new TakeToteRight(this));
 		// chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
 		// chooser.addObject("Dance", new Dance(this));
@@ -269,6 +272,8 @@ public class Robot extends IterativeRobot {
 				new GrabStepCanPutFront(this));
 		chooser.addObject("Quick Barrier Grab", new QuickBarrierGrab(this));
 		SmartDashboard.putData("Autonomous Move", chooser);
+		
+		
 
 		tipsyness = new TippynessMeasure();
 		swayfulness = new TippynessMeasure();
@@ -400,8 +405,11 @@ public class Robot extends IterativeRobot {
 
 		armController.init();
 		fingerController.init();
-
-		autoMove = (AutoMove) chooser.getSelected();
+		
+		if (autoMove == null) {
+			autoMove = new GrabStepCanPutFront(this);
+		}
+		//autoMove = (AutoMove) chooser.getSelected();
 		autoMove.init();
 
 	}
@@ -425,6 +433,16 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledPeriodic() {
+		AutoMove selected = (AutoMove) chooser.getSelected();
+		if (selected != null) {
+			lastSeenAutoMove = selected;
+			autoMove = selected;
+		} else if (lastSeenAutoMove != null) {
+			autoMove = lastSeenAutoMove;
+		} else {
+			autoMove = new GrabStepCanPutFront(this);
+		}
+		
 		// System.out.println(accel.getXAcceleration() + "," +
 		// accel.getYAcceleration() + "," + accel.getZAcceleration());
 		xAccelCalibration = shift(xAccelCalibration);
