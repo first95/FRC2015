@@ -109,7 +109,7 @@ public class Robot extends IterativeRobot {
 
 	public FauxPID armController, fingerController;
 
-	public Solenoid armPistons;
+	public Solenoid armPistons, antennie;
 
 	AutoMove autoMove;
 
@@ -282,6 +282,8 @@ public class Robot extends IterativeRobot {
 		smallDown = new ButtonTracker(chasis, 10);
 		largeUp = new ButtonTracker(chasis, 6);
 		largeDown = new ButtonTracker(chasis, 9);
+		
+		antennie = new Solenoid(RobotConstants.kAntennie);
 	}
 
 	public void commonPeriodic() {
