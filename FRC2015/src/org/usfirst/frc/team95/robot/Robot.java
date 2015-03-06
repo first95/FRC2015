@@ -344,7 +344,7 @@ public class Robot extends IterativeRobot {
 		if (!this.isDisabled()) {
 			armController.periodic();
 			if (weapons.getThrottle() < 0) {
-				fingerController.periodic();
+				//fingerController.periodic();
 			}
 		}
 
@@ -509,7 +509,7 @@ public class Robot extends IterativeRobot {
 			realFingerMotor.set(weapons.getTwist()
 					* Math.abs(weapons.getTwist()));
 		} else {
-			fingerController.periodic();
+			//fingerController.periodic();
 		}
 
 		// Drive style determines weather left and right are turn or strafe.
