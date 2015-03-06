@@ -90,8 +90,7 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
 			overrideTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			autoStackCan1, autoStackCan2, autoStackCan3, autoGrabCan,
-			autoTakeTote, triggerButton, stopSpin;
+			triggerButton, stopSpin, upTurnSpeed;
 
 	boolean driveStyle, rotating, fieldcentric = false;
 	boolean armForwards = false;
@@ -131,6 +130,10 @@ public class Robot extends IterativeRobot {
 	boolean grippersLatched = false;
 	
 	AutoMove lastSeenAutoMove = null;
+	
+	//false is slow turn
+	boolean turnSpeed = false;
+	
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -191,23 +194,13 @@ public class Robot extends IterativeRobot {
 				RobotConstants.kChangeDriveStyle);
 		overrideTracker = new ButtonTracker(chasis, RobotConstants.kArmOverride);
 		driveStyle = false; // False == traditional
-		rotate90Left = new ButtonTracker(chasis, RobotConstants.kRotate90Left);
-		rotate90Right = new ButtonTracker(chasis, RobotConstants.kRotate90Right);
-		autoStack = new ButtonTracker(weapons, RobotConstants.kAutoStack);
-		autoStackCan1 = new ButtonTracker(weapons,
-				RobotConstants.kAutoStackCan1);
-		autoStackCan2 = new ButtonTracker(weapons,
-				RobotConstants.kAutoStackCan2);
-		autoStackCan3 = new ButtonTracker(weapons,
-				RobotConstants.kAutoStackCan3);
-		autoGrabCan = new ButtonTracker(weapons, RobotConstants.kAutoGrabCan);
-		autoTakeTote = new ButtonTracker(weapons, RobotConstants.kAutoTakeTote);
 		blue1 = new ButtonTracker(weapons, 11);
 		blue2 = new ButtonTracker(weapons, 12);
 		blue3 = new ButtonTracker(weapons, 13);
 		blue4 = new ButtonTracker(weapons, 16);
 		blue5 = new ButtonTracker(weapons, 15);
 		blue6 = new ButtonTracker(weapons, 14);
+		upTurnSpeed = new ButtonTracker(chasis, 2);
 		triggerButton = new ButtonTracker(weapons,
 				RobotConstants.kArmPistonsButton);
 		stopSpin = new ButtonTracker(chasis, RobotConstants.kResetRateButton);
@@ -360,16 +353,12 @@ public class Robot extends IterativeRobot {
 		blue5.update();
 		blue6.update();
 		autoStack.update();
-		autoGrabCan.update();
-		autoStackCan1.update();
-		autoStackCan2.update();
-		autoStackCan3.update();
-		autoTakeTote.update();
 		triggerButton.update();
 		smallUp.update();
 		smallDown.update();
 		largeUp.update();
 		largeDown.update();
+		upTurnSpeed.update();
 
 		if (!armLimitSwitch.get()) {
 			if (armEncoder.getRate() > 0) {
@@ -550,6 +539,13 @@ public class Robot extends IterativeRobot {
 		turned = ((gyro.getAngle()));// / 180.0) * Math.PI);
 		sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
 
+		if (upTurnSpeed.Pressedp()) {
+			turnSpeed = true;
+		} else {
+			turnSpeed = false;
+		}
+		
+		
 		if (driveStyle) {
 			y = -chasis.getAxis(Joystick.AxisType.kZ);
 			x = -chasis.getAxis(Joystick.AxisType.kY);
@@ -564,7 +560,11 @@ public class Robot extends IterativeRobot {
 
 		x *= sensitivity;
 		y *= sensitivity;
-		rotate *= sensitivity * 0.2;
+		if (turnSpeed = true) {
+			rotate *= sensitivity;
+		}else {
+			rotate *= sensitivity * 0.2;
+		}
 
 		/*
 		 * double rotationRate = gyro.getRate(); if (rotationRate < (rotate *
@@ -593,157 +593,6 @@ public class Robot extends IterativeRobot {
 		}
 
 		// System.out.println("True Middle Teleop" + timeLag.get());
-
-		if (rotate90Right.justPressedp()) {
-			timeOut.stop();
-			timeOut.reset();
-			targetAngle = gyro.getAngle() - 90;
-			System.out.println(targetAngle);
-			rotating = true;
-			timeOut.start();
-		}
-
-		if (rotate90Left.justPressedp()) {
-			timeOut.stop();
-			timeOut.reset();
-			targetAngle = gyro.getAngle() + 90;
-			System.out.println(targetAngle);
-			rotating = true;
-			timeOut.start();
-		}
-
-		// Turning stop condition
-		if (Math.abs(gyro.getAngle() - targetAngle) < RobotConstants.kTurningCloseness
-				|| timeOut.get() > RobotConstants.kTurningTimeoute) {
-			rotating = false;
-			timeOut.stop();
-			timeOut.reset();
-		}
-
-		if (rotating) {
-			double turnSpeed = 0;
-			if ((targetAngle - turned) > 0) {
-				turnSpeed = 1;
-			} else {
-				turnSpeed = -1;
-			}
-
-			driveTrain.mecanumDrive_Cartesian(y, x, turnSpeed, 0.0);
-
-		} else {
-			driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
-		}
-		// System.out.println("End Middle Teleop" + timeLag.get());
-
-		// System.out.println("After Accelerometer" + timeLag.get());
-
-		// Auto Can1 Stacker on 5 (when ready)
-		if (autoStackCan1.justPressedp()) {
-			autoStopped = false;
-			autoMove = new CanStack(this);
-			autoMove.init();
-		}
-		if (autoStackCan1.Pressedp()) {
-			if (!autoStopped) {
-				Status status = autoMove.periodic();
-				if (status == Status.isNotAbleToContinue
-						|| status == Status.isAbleToContinue
-						|| status == Status.emergency) {
-					autoStopped = true;
-				}
-			}
-
-		}
-
-		// Auto Can2 Stacker on 6 (when ready)
-		if (autoStackCan2.justPressedp()) {
-			autoStopped = false;
-			autoMove = new CanStack2(this);
-			autoMove.init();
-		}
-		if (autoStackCan2.Pressedp()) {
-			if (!autoStopped) {
-				Status status = autoMove.periodic();
-				if (status == Status.isNotAbleToContinue
-						|| status == Status.isAbleToContinue
-						|| status == Status.emergency) {
-					autoStopped = true;
-				}
-			}
-
-		}
-
-		// Auto Can3 Stacker on 7 (when ready)
-		if (autoStackCan3.justPressedp()) {
-			autoStopped = false;
-			autoMove = new CanStack3(this);
-			autoMove.init();
-		}
-		if (autoStackCan3.Pressedp()) {
-			if (!autoStopped) {
-				Status status = autoMove.periodic();
-				if (status == Status.isNotAbleToContinue
-						|| status == Status.isAbleToContinue
-						|| status == Status.emergency) {
-					autoStopped = true;
-				}
-			}
-
-		}
-
-		// Auto stack on hold 8
-		if (autoStack.justPressedp()) {
-			autoStopped = false;
-			autoMove = new MakeStack(this);
-			autoMove.init();
-		}
-		if (autoStack.Pressedp()) {
-			if (!autoStopped) {
-				Status status = autoMove.periodic();
-				if (status == Status.isNotAbleToContinue
-						|| status == Status.isAbleToContinue
-						|| status == Status.emergency) {
-					autoStopped = true;
-				}
-			}
-
-		}
-
-		// Auto Can Grabber on 9
-		if (autoGrabCan.justPressedp()) {
-			autoStopped = false;
-			autoMove = new PickUpCan(this);
-			autoMove.init();
-		}
-		if (autoGrabCan.Pressedp()) {
-			if (!autoStopped) {
-				Status status = autoMove.periodic();
-				if (status == Status.isNotAbleToContinue
-						|| status == Status.isAbleToContinue
-						|| status == Status.emergency) {
-					autoStopped = true;
-				}
-			}
-
-		}
-
-		// Auto Tote Grabber on 10
-		if (autoTakeTote.justPressedp()) {
-			autoStopped = false;
-			autoMove = new PickUpTote(this);
-			autoMove.init();
-		}
-		if (autoTakeTote.Pressedp()) {
-			if (!autoStopped) {
-				Status status = autoMove.periodic();
-				if (status == Status.isNotAbleToContinue
-						|| status == Status.isAbleToContinue
-						|| status == Status.emergency) {
-					autoStopped = true;
-				}
-			}
-
-		}
 
 		// Manual gyro reseting
 		if (chasis.getPOV() != -1) {
