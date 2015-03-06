@@ -2,13 +2,20 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 
+import edu.wpi.first.wpilibj.Solenoid;
+
 public class Pistons extends AutoMove {
 
-	Robot robot;
+	Solenoid pistons;
 	boolean on;
 
 	public Pistons(Robot robo, boolean b) {
-		robot = robo;
+		pistons = robo.armPistons;
+		on = b;
+	}
+	
+	public Pistons(Solenoid solenoid, boolean b) {
+		pistons = solenoid;
 		on = b;
 	}
 
@@ -17,7 +24,7 @@ public class Pistons extends AutoMove {
 	}
 
 	public Status periodic() {
-		robot.armPistons.set(on);
+		pistons.set(on);
 		return Status.isNotAbleToContinue;
 	}
 
