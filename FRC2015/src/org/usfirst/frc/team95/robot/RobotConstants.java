@@ -36,9 +36,9 @@ public class RobotConstants {
 	public static final double kArmPositionZenith = Math.PI / 4;
 	public static final double kArmPositionBehind = Math.PI / 2;
 	public static final int kArmPistons = 0;
-	public static final int kAntennie = 1;
+	public static final int kAntennie = 2;
 	public static final int kArmPistonsButton = 1;
-	public static final int kGrabberRotatePiston = 2;
+	public static final int kGrabberRotatePiston = 4;
 	public static final int kGrabberRotateButton = 4;
 	public static final double kArmTolerance = 0.1;
 	public static final double kFingerTolerance = 0.2;
