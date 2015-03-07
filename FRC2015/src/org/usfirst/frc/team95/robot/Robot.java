@@ -7,7 +7,9 @@
 
 package org.usfirst.frc.team95.robot;
 
-import org.usfirst.frc.team95.robot.auto.AntennieGrab;
+import org.usfirst.frc.team95.robot.auto.AntennieAndTotes;
+import org.usfirst.frc.team95.robot.auto.AntennieGrabAndBack;
+import org.usfirst.frc.team95.robot.auto.PlainAntennieGrab;
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
 import org.usfirst.frc.team95.robot.auto.CanStack;
@@ -269,7 +271,9 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Grab Barrier Can and Place Front",
 				new GrabStepCanPutFront(this));
 		chooser.addObject("Quick Barrier Grab", new QuickBarrierGrab(this));
-		chooser.addObject("Antennie", new AntennieGrab(this));
+		chooser.addObject("Plain Antennie", new PlainAntennieGrab(this));
+		chooser.addObject("Antennie And Totes", new AntennieAndTotes(this));
+		chooser.addObject("Antennie And Move Back", new AntennieGrabAndBack(this));
 		SmartDashboard.putData("Autonomous Move", chooser);
 		
 		
