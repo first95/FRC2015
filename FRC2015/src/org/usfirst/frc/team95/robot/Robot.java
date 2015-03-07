@@ -658,11 +658,8 @@ public class Robot extends IterativeRobot {
 
 		// Update button tracker
 
-		if (antennieButton.Pressedp()) {
-			antennie.set(true);
-		}else {
-			antennie.set(false);
-		}
+		antennie.set(antennieButton.Pressedp() && 
+				(armEncoder.getDistance() < 0.95993 || armEncoder.getDistance() > 2.18166)); // 55 and 125 degrees
 		
 		if (overrideTracker.Pressedp()) {
 			armMotors.jamesBond(weapons.getY() * -0.5);
