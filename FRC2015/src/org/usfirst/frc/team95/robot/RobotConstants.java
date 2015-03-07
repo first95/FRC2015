@@ -63,7 +63,7 @@ public class RobotConstants {
 	public static final double kPIDTolerance = 2;
 	public static final int kTopFingerLimitSwitch = 1;
 	public static final int kLowFingerLimitSwitch = 2;
-	public static final int kMidLowFingerLimitSwitch = 3;
+	public static final int kMidLowFingerLimitSwitch = 5;
 	public static final int kMidHighFingerLimitSwitch = 4;
 
 }
