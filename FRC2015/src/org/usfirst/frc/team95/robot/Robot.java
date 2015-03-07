@@ -96,7 +96,7 @@ public class Robot extends IterativeRobot {
 			triggerButton, stopSpin, upTurnSpeed, antennieButton,
 			grabberRotateButton;
 
-	boolean driveStyle, rotating, fieldcentric = false;
+	boolean driveStyle, rotating, fingersAtBottom, fieldcentric = false;
 	boolean armForwards = false;
 	boolean armBackwards = false;
 	double targetAngle;
@@ -127,7 +127,7 @@ public class Robot extends IterativeRobot {
 	public DigitalInput armLimitSwitch, topFingerLimitSwitch, lowFingerLimitSwitch, midLowFingerLimitSwitch, midHighFingerLimitSwitch;
 	private MotorWrapper realFingerMotor;
 
-	Timer bouncyTimeOut, downfulnessTimeOut;
+	Timer bouncyTimeOut, downfulnessTimeOut, upfulnessTimeOut;
 
 	ButtonTracker smallUp, smallDown, largeUp, largeDown;
 
@@ -293,6 +293,7 @@ public class Robot extends IterativeRobot {
 
 		bouncyTimeOut = new Timer();
 		downfulnessTimeOut = new Timer();
+		upfulnessTimeOut = new Timer();
 
 		smallUp = new ButtonTracker(chasis, 5);
 		smallDown = new ButtonTracker(chasis, 10);
@@ -405,7 +406,15 @@ public class Robot extends IterativeRobot {
 			fingerEncoder.setPosition(43); // Inches
 		}
 		
-		if(!lowFingerLimitSwitch.get()) {
+		if(!lowFingerLimitSwitch.get()) { // This is what is going to go horribly wrong.
+			if (fingerEncoder.getRate() < 0.05) {
+				fingersAtBottom = true;
+			} else if (fingerEncoder.getRate() > 0.05) {
+				fingersAtBottom = false;
+			}
+			
+			upfulnessTimeOut.reset();
+			upfulnessTimeOut.start();
 			fingerEncoder.setPosition(8);
 		}
 		
@@ -527,10 +536,13 @@ public class Robot extends IterativeRobot {
 		// fingerController.enabled = false;
 		if (fingerDangerousTerritory && downfulnessTimeOut.get() < 2) {
 			realFingerMotor.set(-0.15);
+		} else if (fingersAtBottom && upfulnessTimeOut.get() < 1) {
+			realFingerMotor.set(0.15);
 		} else if (weapons.getThrottle() > 0) {
 			realFingerMotor.set(weapons.getTwist()
 					* Math.abs(weapons.getTwist()));
 		} else {
+			realFingerMotor.set(0);
 			//fingerController.periodic();
 		}
 
