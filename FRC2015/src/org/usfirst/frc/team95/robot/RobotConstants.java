@@ -17,6 +17,7 @@ public class RobotConstants {
 	public static final int kChangeDriveStyle = 11;
 	public static final int kArmOverride = 2;
 	public static final int kCalibrationLength = 500;
+	public static final int kAntennieButton = 3;
 	public static final double kArmP = 0.042;
 	public static final double kArmI = 0;
 	public static final double kArmD = 0;
@@ -37,6 +38,8 @@ public class RobotConstants {
 	public static final int kArmPistons = 0;
 	public static final int kAntennie = 1;
 	public static final int kArmPistonsButton = 1;
+	public static final int kGrabberRotatePiston = 2;
+	public static final int kGrabberRotateButton = 4;
 	public static final double kArmTolerance = 0.1;
 	public static final double kFingerTolerance = 0.2;
 	public static final int kPCMId = 1;

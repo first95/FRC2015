@@ -91,7 +91,8 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
 			overrideTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			triggerButton, stopSpin, upTurnSpeed;
+			triggerButton, stopSpin, upTurnSpeed, antennieButton,
+			grabberRotateButton;
 
 	boolean driveStyle, rotating, fieldcentric = false;
 	boolean armForwards = false;
@@ -110,7 +111,7 @@ public class Robot extends IterativeRobot {
 
 	public FauxPID armController, fingerController;
 
-	public Solenoid armPistons, antennie;
+	public Solenoid armPistons, antennie, grabberRotatePiston;
 
 	AutoMove autoMove;
 
@@ -193,14 +194,17 @@ public class Robot extends IterativeRobot {
 
 		changeDriveStyle = new ButtonTracker(chasis,
 				RobotConstants.kChangeDriveStyle);
+		
 		overrideTracker = new ButtonTracker(chasis, RobotConstants.kArmOverride);
+		antennieButton = new ButtonTracker(weapons, RobotConstants.kAntennieButton);
+		grabberRotateButton = new ButtonTracker(weapons, RobotConstants.kGrabberRotateButton);
 		driveStyle = false; // False == traditional
-		blue1 = new ButtonTracker(weapons, 11);
-		blue2 = new ButtonTracker(weapons, 12);
-		blue3 = new ButtonTracker(weapons, 13);
-		blue4 = new ButtonTracker(weapons, 16);
-		blue5 = new ButtonTracker(weapons, 15);
-		blue6 = new ButtonTracker(weapons, 14);
+		blue1 = new ButtonTracker(chasis, 5);
+		blue2 = new ButtonTracker(chasis, 6);
+		blue3 = new ButtonTracker(chasis, 7);
+		blue4 = new ButtonTracker(chasis, 8);
+		blue5 = new ButtonTracker(chasis, 9);
+		blue6 = new ButtonTracker(chasis, 10);
 		upTurnSpeed = new ButtonTracker(chasis, 2);
 		triggerButton = new ButtonTracker(weapons,
 				RobotConstants.kArmPistonsButton);
@@ -286,6 +290,7 @@ public class Robot extends IterativeRobot {
 		largeDown = new ButtonTracker(chasis, 9);
 		
 		antennie = new Solenoid(RobotConstants.kAntennie);
+		grabberRotatePiston = new Solenoid(RobotConstants.kGrabberRotatePiston);
 	}
 
 	public void commonPeriodic() {
@@ -363,6 +368,8 @@ public class Robot extends IterativeRobot {
 		largeUp.update();
 		largeDown.update();
 		upTurnSpeed.update();
+		antennieButton.update();
+		grabberRotateButton.update();
 
 		if (!armLimitSwitch.get()) {
 			if (armEncoder.getRate() > 0) {
@@ -617,6 +624,12 @@ public class Robot extends IterativeRobot {
 
 		// Update button tracker
 
+		if (antennieButton.Pressedp()) {
+			antennie.set(true);
+		}else {
+			antennie.set(false);
+		}
+		
 		if (overrideTracker.Pressedp()) {
 			armMotors.jamesBond(weapons.getY() * -0.5);
 		} else {
@@ -624,6 +637,12 @@ public class Robot extends IterativeRobot {
 			armController.periodic();
 		}
 
+		if (grabberRotateButton.Pressedp()) {
+			grabberRotatePiston.set(true);
+		} else {
+			grabberRotatePiston.set(false);
+		}
+		
 		// System.out.println("Telleop Ends" + timeLag.get());
 
 		// System.out.println("After Button updates" + timeLag.get());
