@@ -122,7 +122,7 @@ public class Robot extends IterativeRobot {
 
 	TippynessMeasure tipsyness, swayfulness;
 
-	public DigitalInput armLimitSwitch, topFingerLimitSwitch;
+	public DigitalInput armLimitSwitch, topFingerLimitSwitch, lowFingerLimitSwitch, midLowFingerLimitSwitch, midHighFingerLimitSwitch;
 	private MotorWrapper realFingerMotor;
 
 	Timer bouncyTimeOut, downfulnessTimeOut;
@@ -280,6 +280,12 @@ public class Robot extends IterativeRobot {
 		armLimitSwitch = new DigitalInput(RobotConstants.kArmLimitSwitch);
 		topFingerLimitSwitch = new DigitalInput(
 				RobotConstants.kTopFingerLimitSwitch);
+		lowFingerLimitSwitch = new DigitalInput(
+				RobotConstants.kLowFingerLimitSwitch);
+		midLowFingerLimitSwitch = new DigitalInput(
+				RobotConstants.kMidLowFingerLimitSwitch);
+		midHighFingerLimitSwitch = new DigitalInput(
+				RobotConstants.kMidHighFingerLimitSwitch);
 
 		bouncyTimeOut = new Timer();
 		downfulnessTimeOut = new Timer();
@@ -393,6 +399,18 @@ public class Robot extends IterativeRobot {
 			downfulnessTimeOut.reset();
 			downfulnessTimeOut.start();
 			fingerEncoder.setPosition(43); // Inches
+		}
+		
+		if(!lowFingerLimitSwitch.get()) {
+			fingerEncoder.setPosition(8);
+		}
+		
+		if(!midLowFingerLimitSwitch.get()) {
+			fingerEncoder.setPosition(23);
+		}
+		
+		if(!midHighFingerLimitSwitch.get()) {
+			fingerEncoder.setPosition(38);
 		}
 	}
 
