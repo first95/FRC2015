@@ -668,8 +668,7 @@ public class Robot extends IterativeRobot {
 
 		// Update button tracker
 
-		if (antennieButton.Pressedp() && 
-				(armEncoder.getDistance() < 0.95993 || armEncoder.getDistance() > 2.18166)) { // 55 and 125 degrees
+		if (antennieButton.Pressedp()) {
 			antennie.set(Value.kForward);
 		} else {
 			antennie.set(Value.kReverse);
@@ -682,7 +681,8 @@ public class Robot extends IterativeRobot {
 			armController.periodic();
 		}
 
-		if (grabberRotateButton.Pressedp()) {
+		if (grabberRotateButton.Pressedp() &&
+				(armEncoder.getDistance() < 0.9599 || armEncoder.getDistance() > 2.18166)) {
 			grabberRotatePiston.set(Value.kForward);
 		} else {
 			grabberRotatePiston.set(Value.kReverse);
