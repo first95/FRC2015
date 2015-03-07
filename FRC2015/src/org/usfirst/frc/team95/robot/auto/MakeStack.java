@@ -2,6 +2,8 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 import org.usfirst.frc.team95.robot.RobotConstants;
+
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
 
 public class MakeStack extends AutoMove {
@@ -30,7 +32,7 @@ public class MakeStack extends AutoMove {
 			timeOut.start();
 			stage = 1;
 		} else if (stage == 1 && (timeOut.get() > 2)) {
-			robot.armPistons.set(false);
+			robot.armPistons.set(Value.kReverse);
 			robot.armController.setSetpoint(-0.1);
 			stage = 2;
 		} else if (stage == 2) {

@@ -41,6 +41,8 @@ import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -113,7 +115,7 @@ public class Robot extends IterativeRobot {
 
 	public FauxPID armController, fingerController;
 
-	public Solenoid armPistons, antennie, grabberRotatePiston;
+	public DoubleSolenoid armPistons, antennie, grabberRotatePiston;
 
 	AutoMove autoMove;
 
@@ -239,8 +241,8 @@ public class Robot extends IterativeRobot {
 		// fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
 		// fingerController.enable();
 
-		armPistons = new Solenoid(RobotConstants.kPCMId,
-				RobotConstants.kArmPistons);
+		armPistons = new DoubleSolenoid(RobotConstants.kPCMId,
+				RobotConstants.kArmPistons, RobotConstants.kArmPistons + 1);
 
 		compressor = new Compressor();
 		compressor.start();
@@ -300,8 +302,8 @@ public class Robot extends IterativeRobot {
 		largeUp = new ButtonTracker(chasis, 6);
 		largeDown = new ButtonTracker(chasis, 9);
 		
-		antennie = new Solenoid(RobotConstants.kAntennie);
-		grabberRotatePiston = new Solenoid(RobotConstants.kGrabberRotatePiston);
+		antennie = new DoubleSolenoid(RobotConstants.kPCMId, RobotConstants.kAntennie, RobotConstants.kAntennie + 1);
+		grabberRotatePiston = new DoubleSolenoid(RobotConstants.kPCMId, RobotConstants.kGrabberRotatePiston, RobotConstants.kGrabberRotatePiston + 1);
 	}
 
 	public void commonPeriodic() {
@@ -644,7 +646,11 @@ public class Robot extends IterativeRobot {
 			gyro.set(chasis.getPOV());
 		}
 
-		armPistons.set(triggerButton.Pressedp() || grippersLatched);
+		if (triggerButton.Pressedp() || grippersLatched) {
+			armPistons.set(Value.kForward);
+		} else {
+			armPistons.set(Value.kReverse);
+		}
 
 		if (triggerButton.Pressedp()) {
 			grippersLatched = false;
@@ -658,8 +664,12 @@ public class Robot extends IterativeRobot {
 
 		// Update button tracker
 
-		antennie.set(antennieButton.Pressedp() && 
-				(armEncoder.getDistance() < 0.95993 || armEncoder.getDistance() > 2.18166)); // 55 and 125 degrees
+		if (antennieButton.Pressedp() && 
+				(armEncoder.getDistance() < 0.95993 || armEncoder.getDistance() > 2.18166)) { // 55 and 125 degrees
+			antennie.set(Value.kForward);
+		} else {
+			antennie.set(Value.kReverse);
+		}
 		
 		if (overrideTracker.Pressedp()) {
 			armMotors.jamesBond(weapons.getY() * -0.5);
@@ -669,9 +679,9 @@ public class Robot extends IterativeRobot {
 		}
 
 		if (grabberRotateButton.Pressedp()) {
-			grabberRotatePiston.set(true);
+			grabberRotatePiston.set(Value.kForward);
 		} else {
-			grabberRotatePiston.set(false);
+			grabberRotatePiston.set(Value.kReverse);
 		}
 		
 		// System.out.println("Telleop Ends" + timeLag.get());

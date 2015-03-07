@@ -2,11 +2,12 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class Pistons extends AutoMove {
 
-	Solenoid pistons;
+	DoubleSolenoid pistons;
 	boolean on;
 
 	public Pistons(Robot robo, boolean b) {
@@ -14,7 +15,7 @@ public class Pistons extends AutoMove {
 		on = b;
 	}
 	
-	public Pistons(Solenoid solenoid, boolean b) {
+	public Pistons(DoubleSolenoid solenoid, boolean b) {
 		pistons = solenoid;
 		on = b;
 	}
@@ -24,7 +25,11 @@ public class Pistons extends AutoMove {
 	}
 
 	public Status periodic() {
-		pistons.set(on);
+		if (on) {
+			pistons.set(Value.kForward);
+		} else {
+			pistons.set(Value.kReverse);
+		}
 		return Status.isNotAbleToContinue;
 	}
 
