@@ -409,14 +409,6 @@ public class Robot extends IterativeRobot {
 		}
 		
 		if(!lowFingerLimitSwitch.get()) { // This is what is going to go horribly wrong.
-			if (fingerEncoder.getRate() < 0.05) {
-				fingersAtBottom = true;
-			} else if (fingerEncoder.getRate() > 0.05) {
-				fingersAtBottom = false;
-			}
-			
-			upfulnessTimeOut.reset();
-			upfulnessTimeOut.start();
 			fingerEncoder.setPosition(8);
 		}
 		
@@ -426,6 +418,17 @@ public class Robot extends IterativeRobot {
 		
 		if(!midHighFingerLimitSwitch.get()) {
 			fingerEncoder.setPosition(38);
+		}
+		
+		if (fingerEncoder.getDistance() < 0) {
+			if (fingerEncoder.getRate() < 0.05) {
+				fingersAtBottom = true;
+			} else if (fingerEncoder.getRate() > 0.05) {
+				fingersAtBottom = false;
+			}
+			
+			upfulnessTimeOut.reset();
+			upfulnessTimeOut.start();
 		}
 	}
 
