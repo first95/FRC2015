@@ -340,6 +340,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
 		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
+		SmartDashboard.putBoolean("Bottem Finger Limit", lowFingerLimitSwitch.get());
 		SmartDashboard.putNumber("Totem Current",
 				powerDistribution.getCurrent(7));
 
