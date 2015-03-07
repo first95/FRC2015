@@ -242,7 +242,7 @@ public class Robot extends IterativeRobot {
 		// fingerController.enable();
 
 		armPistons = new DoubleSolenoid(RobotConstants.kPCMId,
-				RobotConstants.kArmPistons, RobotConstants.kArmPistons + 1);
+				2, 5);
 
 		compressor = new Compressor();
 		compressor.start();
@@ -302,8 +302,8 @@ public class Robot extends IterativeRobot {
 		largeUp = new ButtonTracker(chasis, 6);
 		largeDown = new ButtonTracker(chasis, 9);
 		
-		antennie = new DoubleSolenoid(RobotConstants.kPCMId, RobotConstants.kAntennie, RobotConstants.kAntennie + 1);
-		grabberRotatePiston = new DoubleSolenoid(RobotConstants.kPCMId, RobotConstants.kGrabberRotatePiston, RobotConstants.kGrabberRotatePiston + 1);
+		antennie = new DoubleSolenoid(RobotConstants.kPCMId, 0, 7);
+		grabberRotatePiston = new DoubleSolenoid(RobotConstants.kPCMId, 1, 6);
 	}
 
 	public void commonPeriodic() {
