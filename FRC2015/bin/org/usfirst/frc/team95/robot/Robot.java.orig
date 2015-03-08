@@ -7,6 +7,9 @@
 
 package org.usfirst.frc.team95.robot;
 
+import org.usfirst.frc.team95.robot.auto.AntennieAndTotes;
+import org.usfirst.frc.team95.robot.auto.AntennieGrabAndBack;
+import org.usfirst.frc.team95.robot.auto.PlainAntennieGrab;
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
 import org.usfirst.frc.team95.robot.auto.CanStack;
@@ -38,6 +41,8 @@ import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -90,9 +95,10 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
 			overrideTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			triggerButton, stopSpin, upTurnSpeed;
+			triggerButton, stopSpin, upTurnSpeed, antennieButton,
+			grabberRotateButton;
 
-	boolean driveStyle, rotating, fieldcentric = false;
+	boolean driveStyle, rotating, fingersAtBottom, fieldcentric = false;
 	boolean armForwards = false;
 	boolean armBackwards = false;
 	double targetAngle;
@@ -109,7 +115,7 @@ public class Robot extends IterativeRobot {
 
 	public FauxPID armController, fingerController;
 
-	public Solenoid armPistons;
+	public DoubleSolenoid armPistons, antennie, grabberRotatePiston;
 
 	AutoMove autoMove;
 
@@ -120,10 +126,10 @@ public class Robot extends IterativeRobot {
 
 	TippynessMeasure tipsyness, swayfulness;
 
-	public DigitalInput armLimitSwitch, topFingerLimitSwitch;
+	public DigitalInput armLimitSwitch, topFingerLimitSwitch, lowFingerLimitSwitch, midLowFingerLimitSwitch, midHighFingerLimitSwitch;
 	private MotorWrapper realFingerMotor;
 
-	Timer bouncyTimeOut, downfulnessTimeOut;
+	Timer bouncyTimeOut, downfulnessTimeOut, upfulnessTimeOut;
 
 	ButtonTracker smallUp, smallDown, largeUp, largeDown;
 
@@ -192,14 +198,17 @@ public class Robot extends IterativeRobot {
 
 		changeDriveStyle = new ButtonTracker(chasis,
 				RobotConstants.kChangeDriveStyle);
+		
 		overrideTracker = new ButtonTracker(chasis, RobotConstants.kArmOverride);
+		antennieButton = new ButtonTracker(weapons, RobotConstants.kAntennieButton);
+		grabberRotateButton = new ButtonTracker(weapons, RobotConstants.kGrabberRotateButton);
 		driveStyle = false; // False == traditional
-		blue1 = new ButtonTracker(weapons, 11);
-		blue2 = new ButtonTracker(weapons, 12);
-		blue3 = new ButtonTracker(weapons, 13);
-		blue4 = new ButtonTracker(weapons, 16);
-		blue5 = new ButtonTracker(weapons, 15);
-		blue6 = new ButtonTracker(weapons, 14);
+		blue1 = new ButtonTracker(chasis, 5);
+		blue2 = new ButtonTracker(chasis, 6);
+		blue3 = new ButtonTracker(chasis, 7);
+		blue4 = new ButtonTracker(chasis, 8);
+		blue5 = new ButtonTracker(chasis, 9);
+		blue6 = new ButtonTracker(chasis, 10);
 		upTurnSpeed = new ButtonTracker(chasis, 2);
 		triggerButton = new ButtonTracker(weapons,
 				RobotConstants.kArmPistonsButton);
@@ -232,8 +241,8 @@ public class Robot extends IterativeRobot {
 		// fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
 		// fingerController.enable();
 
-		armPistons = new Solenoid(RobotConstants.kPCMId,
-				RobotConstants.kArmPistons);
+		armPistons = new DoubleSolenoid(RobotConstants.kPCMId,
+				RobotConstants.kArmPistons, RobotConstants.kArmPistons + 1);
 
 		compressor = new Compressor();
 		compressor.start();
@@ -264,6 +273,9 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Grab Barrier Can and Place Front",
 				new GrabStepCanPutFront(this));
 		chooser.addObject("Quick Barrier Grab", new QuickBarrierGrab(this));
+		chooser.addObject("Plain Antennie", new PlainAntennieGrab(this));
+		chooser.addObject("Antennie And Totes", new AntennieAndTotes(this));
+		chooser.addObject("Antennie And Move Back", new AntennieGrabAndBack(this));
 		SmartDashboard.putData("Autonomous Move", chooser);
 		
 		
@@ -274,14 +286,24 @@ public class Robot extends IterativeRobot {
 		armLimitSwitch = new DigitalInput(RobotConstants.kArmLimitSwitch);
 		topFingerLimitSwitch = new DigitalInput(
 				RobotConstants.kTopFingerLimitSwitch);
+		lowFingerLimitSwitch = new DigitalInput(
+				RobotConstants.kLowFingerLimitSwitch);
+		midLowFingerLimitSwitch = new DigitalInput(
+				RobotConstants.kMidLowFingerLimitSwitch);
+		midHighFingerLimitSwitch = new DigitalInput(
+				RobotConstants.kMidHighFingerLimitSwitch);
 
 		bouncyTimeOut = new Timer();
 		downfulnessTimeOut = new Timer();
+		upfulnessTimeOut = new Timer();
 
 		smallUp = new ButtonTracker(chasis, 5);
 		smallDown = new ButtonTracker(chasis, 10);
 		largeUp = new ButtonTracker(chasis, 6);
 		largeDown = new ButtonTracker(chasis, 9);
+		
+		antennie = new DoubleSolenoid(RobotConstants.kPCMId, RobotConstants.kAntennie, RobotConstants.kAntennie + 1);
+		grabberRotatePiston = new DoubleSolenoid(RobotConstants.kPCMId, RobotConstants.kGrabberRotatePiston, RobotConstants.kGrabberRotatePiston + 1);
 	}
 
 	public void commonPeriodic() {
@@ -337,7 +359,7 @@ public class Robot extends IterativeRobot {
 		if (!this.isDisabled()) {
 			armController.periodic();
 			if (weapons.getThrottle() < 0) {
-				fingerController.periodic();
+				//fingerController.periodic();
 			}
 		}
 
@@ -359,6 +381,8 @@ public class Robot extends IterativeRobot {
 		largeUp.update();
 		largeDown.update();
 		upTurnSpeed.update();
+		antennieButton.update();
+		grabberRotateButton.update();
 
 		if (!armLimitSwitch.get()) {
 			if (armEncoder.getRate() > 0) {
@@ -382,6 +406,29 @@ public class Robot extends IterativeRobot {
 			downfulnessTimeOut.reset();
 			downfulnessTimeOut.start();
 			fingerEncoder.setPosition(43); // Inches
+		}
+		
+		if(!lowFingerLimitSwitch.get()) { // This is what is going to go horribly wrong.
+			fingerEncoder.setPosition(8);
+		}
+		
+		if(!midLowFingerLimitSwitch.get()) {
+			fingerEncoder.setPosition(23);
+		}
+		
+		if(!midHighFingerLimitSwitch.get()) {
+			fingerEncoder.setPosition(38);
+		}
+		
+		if (fingerEncoder.getDistance() < 0) {
+			if (fingerEncoder.getRate() < 0.05) {
+				fingersAtBottom = true;
+			} else if (fingerEncoder.getRate() > 0.05) {
+				fingersAtBottom = false;
+			}
+			
+			upfulnessTimeOut.reset();
+			upfulnessTimeOut.start();
 		}
 	}
 
@@ -494,11 +541,14 @@ public class Robot extends IterativeRobot {
 		// fingerController.enabled = false;
 		if (fingerDangerousTerritory && downfulnessTimeOut.get() < 2) {
 			realFingerMotor.set(-0.15);
+		} else if (fingersAtBottom && upfulnessTimeOut.get() < 1) {
+			realFingerMotor.set(0.15);
 		} else if (weapons.getThrottle() > 0) {
 			realFingerMotor.set(weapons.getTwist()
 					* Math.abs(weapons.getTwist()));
 		} else {
-			fingerController.periodic();
+			realFingerMotor.set(0);
+			//fingerController.periodic();
 		}
 
 		// Drive style determines weather left and right are turn or strafe.
@@ -599,7 +649,11 @@ public class Robot extends IterativeRobot {
 			gyro.set(chasis.getPOV());
 		}
 
-		armPistons.set(triggerButton.Pressedp() || grippersLatched);
+		if (triggerButton.Pressedp() || grippersLatched) {
+			armPistons.set(Value.kForward);
+		} else {
+			armPistons.set(Value.kReverse);
+		}
 
 		if (triggerButton.Pressedp()) {
 			grippersLatched = false;
@@ -613,6 +667,13 @@ public class Robot extends IterativeRobot {
 
 		// Update button tracker
 
+		if (antennieButton.Pressedp() && 
+				(armEncoder.getDistance() < 0.95993 || armEncoder.getDistance() > 2.18166)) { // 55 and 125 degrees
+			antennie.set(Value.kForward);
+		} else {
+			antennie.set(Value.kReverse);
+		}
+		
 		if (overrideTracker.Pressedp()) {
 			armMotors.jamesBond(weapons.getY() * -0.5);
 		} else {
@@ -620,6 +681,12 @@ public class Robot extends IterativeRobot {
 			armController.periodic();
 		}
 
+		if (grabberRotateButton.Pressedp()) {
+			grabberRotatePiston.set(Value.kForward);
+		} else {
+			grabberRotatePiston.set(Value.kReverse);
+		}
+		
 		// System.out.println("Telleop Ends" + timeLag.get());
 
 		// System.out.println("After Button updates" + timeLag.get());
