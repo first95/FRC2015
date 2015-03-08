@@ -93,10 +93,9 @@ public class Robot extends IterativeRobot {
 
 	Joystick chasis, weapons;
 
-	ButtonTracker changeDriveStyle, rotate90Left, rotate90Right, autoStack,
-			overrideTracker, blue1, blue2, blue3, blue4, blue5, blue6,
-			triggerButton, stopSpin, upTurnSpeed, antennieButton,
-			grabberRotateButton;
+	ButtonTracker changeDriveStyle,overrideTracker, blue1, blue2, blue3, 
+			blue4, blue5, blue6,triggerButton, stopSpin, upTurnSpeed, 
+			antennieButton,grabberRotateButton;
 
 	boolean driveStyle, rotating, fingersAtBottom, fieldcentric = false;
 	boolean armForwards = false;
@@ -365,8 +364,6 @@ public class Robot extends IterativeRobot {
 		}
 
 		changeDriveStyle.update();
-		rotate90Right.update();
-		rotate90Left.update();
 		overrideTracker.update();
 
 		blue1.update();
@@ -375,7 +372,6 @@ public class Robot extends IterativeRobot {
 		blue4.update();
 		blue5.update();
 		blue6.update();
-		autoStack.update();
 		triggerButton.update();
 		smallUp.update();
 		smallDown.update();
@@ -554,9 +550,9 @@ public class Robot extends IterativeRobot {
 
 		// Drive style determines weather left and right are turn or strafe.
 
-		if (changeDriveStyle.justPressedp()) {
+		/*if (changeDriveStyle.justPressedp()) {
 			driveStyle = !driveStyle;
-		}
+		}*/
 
 		// Limits on arm positions
 
@@ -651,9 +647,9 @@ public class Robot extends IterativeRobot {
 		}
 
 		if (triggerButton.Pressedp() || grippersLatched) {
-			armPistons.set(Value.kForward);
-		} else {
 			armPistons.set(Value.kReverse);
+		} else {
+			armPistons.set(Value.kForward);
 		}
 
 		if (triggerButton.Pressedp()) {
@@ -681,8 +677,8 @@ public class Robot extends IterativeRobot {
 			armController.periodic();
 		}
 
-		if (grabberRotateButton.Pressedp() &&
-				(armEncoder.getDistance() < 0.9599 || armEncoder.getDistance() > 2.18166)) {
+		if (grabberRotateButton.Pressedp() /*&&
+				(armEncoder.getDistance() < 0.9599 || armEncoder.getDistance() > 2.18166)*/) {
 			grabberRotatePiston.set(Value.kForward);
 		} else {
 			grabberRotatePiston.set(Value.kReverse);
