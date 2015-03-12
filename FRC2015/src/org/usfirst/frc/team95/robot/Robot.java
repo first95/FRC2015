@@ -677,8 +677,8 @@ public class Robot extends IterativeRobot {
 			armController.periodic();
 		}
 
-		if (grabberRotateButton.Pressedp() /*&&
-				(armEncoder.getDistance() < 0.9599 || armEncoder.getDistance() > 2.18166)*/) {
+		if (grabberRotateButton.Pressedp() &&
+				(armEncoder.getDistance() < 0.9599 || armEncoder.getDistance() > 2.18166)) {
 			grabberRotatePiston.set(Value.kForward);
 		} else {
 			grabberRotatePiston.set(Value.kReverse);
