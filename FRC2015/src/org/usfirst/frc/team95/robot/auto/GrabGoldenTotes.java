@@ -6,42 +6,21 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 
-public class GrabGoldenTotes extends AutoMove {
+public class GrabGoldenTotes extends PureSequentialMove {
 	Robot robot;
-	SequentialMove sequential;
-	boolean stopped;
 
 	public GrabGoldenTotes(Robot robo) {
 		robot = robo;
-		AutoMove[] vector = { new TakeToteRight(robot),
+		AutoMove[] vector = { new GrabToteForcefully(robo),
+				new GrabToteForcefully(robo), new GrabToteForcefully(robo),
+				new GoRight(robo), new MakeToteStack(robo), 
+				new GoBackward(robo, 0.5, 0.25), new NoMove(robot) } ;
+		/*AutoMove[] vector = { new TakeToteRight(robot),
 				new TakeToteRight(robot), new TakeToteRight(robot),
-				new GoBackward(robot), new MakeStack(robot), new NoMove(robot) };
-		sequential = new SequentialMove(vector);
-		stopped = false;
-	}
-
-	@Override
-	public Status init() {
-		return sequential.init();
-	}
-
-	@Override
-	public Status periodic() {
-		System.out.println("Grab Golden Totes!");
-		Status status = Status.emergency;
-		if (!stopped) {
-			status = sequential.periodic();
-		}
-		if (status == Status.isNotAbleToContinue
-				|| status == Status.isAbleToContinue) {
-			stopped = true;
-		}
-		return Status.wantsToContinue;
-	}
-
-	@Override
-	public Status stop() {
-		return sequential.stop();
+				new GoBackward(robot), new MakeStack(robot), new NoMove(robot) }; */
+		sequence = new SequentialMove(vector);
 	}
 
 }
+
+// GrabToteForcefullly x 3, GoRight, PutDownTotes, GoBack (a little), NoMove
