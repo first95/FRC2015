@@ -342,6 +342,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putBoolean("Bottem Finger Limit", lowFingerLimitSwitch.get());
 		SmartDashboard.putNumber("Totem Current",
 				powerDistribution.getCurrent(7));
+		
+		SmartDashboard.putNumber("Chassis X", chasis.getX());
 
 		// Listen to arguments
 		double leftMotorCurrent = powerDistribution
@@ -402,22 +404,22 @@ public class Robot extends IterativeRobot {
 
 			downfulnessTimeOut.reset();
 			downfulnessTimeOut.start();
-			fingerEncoder.setPosition(43); // Inches
+			fingerEncoder.setPosition(42.5); // Inches
 		}
 		
 		if(!lowFingerLimitSwitch.get()) { // This is what is going to go horribly wrong.
-			fingerEncoder.setPosition(8);
+			fingerEncoder.setPosition(9);
 		}
 		
 		if(!midLowFingerLimitSwitch.get()) {
-			fingerEncoder.setPosition(23);
+			fingerEncoder.setPosition(24);
 		}
 		
 		if(!midHighFingerLimitSwitch.get()) {
-			fingerEncoder.setPosition(38);
+			fingerEncoder.setPosition(39);
 		}
 		
-		if (fingerEncoder.getDistance() < 0) {
+		if (fingerEncoder.getDistance() < 0 && false) {
 			if (fingerEncoder.getRate() < 0.05) {
 				fingersAtBottom = true;
 			} else if (fingerEncoder.getRate() > 0.05) {
@@ -609,7 +611,7 @@ public class Robot extends IterativeRobot {
 		y *= sensitivity;
 		if (turnSpeed = true) {
 			rotate *= sensitivity;
-		}else {
+		} else {
 			rotate *= sensitivity * 0.2;
 		}
 
@@ -638,6 +640,8 @@ public class Robot extends IterativeRobot {
 		if (Math.abs(rotate) < (RobotConstants.kDeadband)) {
 			rotate = 0;
 		}
+		
+		driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0);
 
 		// System.out.println("True Middle Teleop" + timeLag.get());
 
@@ -678,7 +682,7 @@ public class Robot extends IterativeRobot {
 		}
 
 		if (grabberRotateButton.Pressedp() &&
-				(armEncoder.getDistance() < 0.9599 || armEncoder.getDistance() > 2.18166)) {
+				(armEncoder.getDistance() > 0.9599 || armEncoder.getDistance() < 2.18166)) {
 			grabberRotatePiston.set(Value.kForward);
 		} else {
 			grabberRotatePiston.set(Value.kReverse);
