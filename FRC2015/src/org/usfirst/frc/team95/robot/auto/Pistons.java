@@ -31,10 +31,12 @@ public class Pistons extends AutoMove {
 			postons.set(on);
 		}
 		
-		if (on) {
-			pistons.set(Value.kForward);
-		} else {
-			pistons.set(Value.kReverse);
+		if (pistons != null) {
+			if (on) {
+				pistons.set(Value.kForward);
+			} else {
+				pistons.set(Value.kReverse);
+			}
 		}
 		return Status.isNotAbleToContinue;
 	}

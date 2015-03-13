@@ -21,22 +21,34 @@ public class PickUpTote extends AutoMove {
 	}
 
 	public Status init() {
-		System.out.print("Pick tote initialization.");
+		robot.startedMovingTimeOut.reset();
+		robot.startedMovingTimeOut.start();
+		/*System.out.print("Pick tote initialization.");
 		fingerController.setSetpoint(findSetpoint(fingerController
-				.getSetpoint()) + 1);
+				.getSetpoint()) + 1);*/
 		return Status.wantsToContinue;
 	}
 
 	public Status periodic() {
-		System.out.println("Pick Tote");
+		if ((!(robot.topFingerLimitSwitch.get() && robot.lowFingerLimitSwitch.get() && 
+				robot.midLowFingerLimitSwitch.get() && robot.midHighFingerLimitSwitch.get())) 
+				&& robot.startedMovingTimeOut.get() > 0.2) {
+			robot.realFingerMotor.set(0);
+			return Status.isNotAbleToContinue;
+		} else {
+			robot.realFingerMotor.set(0.25);
+			return Status.wantsToContinue;
+		}
+		/*System.out.println("Pick Tote");
 		if (fingerController.onTarget()) {
 			return Status.isNotAbleToContinue;
 		} else {
 			return Status.needsToContinue;
-		}
+		}*/
 	}
 
 	public Status stop() {
+		robot.realFingerMotor.set(0);
 		return Status.isNotAbleToContinue;
 	}
 
