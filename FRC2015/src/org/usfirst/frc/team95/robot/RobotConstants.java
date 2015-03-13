@@ -33,8 +33,8 @@ public class RobotConstants {
 	public static final double kTurningCloseness = 1;
 	public static final double kTurningTimeoute = 3;
 	public static final double kArmPositionGrab = -0.1;
-	public static final double kArmPositionZenith = Math.PI / 4;
-	public static final double kArmPositionBehind = Math.PI / 2;
+	public static final double kArmPositionZenith = Math.PI / 2;
+	public static final double kArmPositionBehind = Math.PI;
 	public static final int kArmPistons = 0;
 	public static final int kAntennie = 2;
 	public static final int kArmPistonsButton = 1;
@@ -52,7 +52,7 @@ public class RobotConstants {
 	public static final double kArmDistanceD = 0;
 	public static final double kTippynessTolerance = 20;
 	public static final int kArmLimitSwitch = 0;
-	public static final double kArmLimitSwitchSloppyness = 0.1;
+	public static final double kArmLimitSwitchSloppyness = 0.03;
 	public static final double kRotationTolerance = 5;
 	public static final double kMaxRotationSpeed = 1800 / Math.PI; // degrees /
 																	// sec
