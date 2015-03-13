@@ -96,7 +96,7 @@ public class Robot extends IterativeRobot {
 
 	ButtonTracker changeDriveStyle,overrideTracker, blue1, blue2, blue3, 
 			blue4, blue5, blue6,triggerButton, stopSpin, upTurnSpeed, 
-			antennieButton,grabberRotateButton;
+			antennieButton,grabberRotateButton, toteUp, toteDown;
 
 	boolean driveStyle, rotating, fingersAtBottom, fieldcentric = false;
 	boolean armForwards = false;
@@ -128,9 +128,9 @@ public class Robot extends IterativeRobot {
 	TippynessMeasure tipsyness, swayfulness;
 
 	public DigitalInput armLimitSwitch, topFingerLimitSwitch, lowFingerLimitSwitch, midLowFingerLimitSwitch, midHighFingerLimitSwitch;
-	private MotorWrapper realFingerMotor;
+	public MotorWrapper realFingerMotor;
 
-	Timer bouncyTimeOut, downfulnessTimeOut, upfulnessTimeOut;
+	public Timer bouncyTimeOut, downfulnessTimeOut, upfulnessTimeOut, startedMovingTimeOut;
 
 	ButtonTracker smallUp, smallDown, largeUp, largeDown;
 
@@ -140,6 +140,11 @@ public class Robot extends IterativeRobot {
 	
 	//false is slow turn
 	boolean turnSpeed = false;
+	
+	enum MovingState {
+		up, still, down
+	}
+	MovingState movingIndependantly;
 	
 
 	/**
@@ -214,6 +219,9 @@ public class Robot extends IterativeRobot {
 		triggerButton = new ButtonTracker(weapons,
 				RobotConstants.kArmPistonsButton);
 		stopSpin = new ButtonTracker(chasis, RobotConstants.kResetRateButton);
+		toteUp = new ButtonTracker(chasis, 11);
+		toteDown = new ButtonTracker(chasis, 16);
+		
 		rotating = false;
 		fieldcentric = true;
 
@@ -261,6 +269,7 @@ public class Robot extends IterativeRobot {
 		bouncyTimeOut = new Timer();
 		downfulnessTimeOut = new Timer();
 		upfulnessTimeOut = new Timer();
+		startedMovingTimeOut = new Timer();
 
 		smallUp = new ButtonTracker(chasis, 5);
 		smallDown = new ButtonTracker(chasis, 10);
@@ -341,7 +350,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
 		SmartDashboard.putBoolean("Finger Limit", topFingerLimitSwitch.get());
+		SmartDashboard.putBoolean("Mid High Finger Limit", midHighFingerLimitSwitch.get());
+		SmartDashboard.putBoolean("Mid Low Finger Limit", midLowFingerLimitSwitch.get());
 		SmartDashboard.putBoolean("Bottem Finger Limit", lowFingerLimitSwitch.get());
+		SmartDashboard.putBoolean("Main thing fish dude what....", !(topFingerLimitSwitch.get() && lowFingerLimitSwitch.get() && 
+				midLowFingerLimitSwitch.get() && midHighFingerLimitSwitch.get()));
 		SmartDashboard.putNumber("Totem Current",
 				powerDistribution.getCurrent(7));
 		
@@ -387,6 +400,8 @@ public class Robot extends IterativeRobot {
 		upTurnSpeed.update();
 		antennieButton.update();
 		grabberRotateButton.update();
+		toteUp.update();
+		toteDown.update();
 
 		if (!armLimitSwitch.get()) {
 			armEncoder.setOffset(RobotConstants.kArmPositionZenith);
@@ -496,6 +511,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		armEncoder.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
+		startedMovingTimeOut.reset();
+		startedMovingTimeOut.start();
 
 		armMotors.manual = false;
 		armController.enabled = true;
@@ -506,8 +523,25 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
+		
+		if (weapons.getRawButton(11) || chasis.getRawButton(11)) {
+			startedMovingTimeOut.reset();
+			startedMovingTimeOut.start();
+			movingIndependantly = MovingState.up;
+		}
+		if (weapons.getRawButton(16) || chasis.getRawButton(16)) {
+			startedMovingTimeOut.reset();
+			startedMovingTimeOut.start();
+			movingIndependantly = MovingState.down;
+		}
+		
+		if ((!(topFingerLimitSwitch.get() && lowFingerLimitSwitch.get() && 
+				midLowFingerLimitSwitch.get() && midHighFingerLimitSwitch.get()) ||
+				Math.abs(weapons.getTwist()) > 0.1) && startedMovingTimeOut.get() > 0.2) {
+			movingIndependantly = MovingState.still;
+		}
 
-		// Put currents and temperature on the smartDashboard
+		
 
 		if (armEncoder.getRate() > 0) {
 			armForwards = true;
@@ -539,6 +573,10 @@ public class Robot extends IterativeRobot {
 			realFingerMotor.set(-0.15);
 		} else if (fingersAtBottom && upfulnessTimeOut.get() < 1) {
 			realFingerMotor.set(0.15);
+		} else if (movingIndependantly == MovingState.up) {
+			realFingerMotor.set(0.25);
+		} else if (movingIndependantly == MovingState.down) {
+			realFingerMotor.set(-0.25);
 		} else if (weapons.getThrottle() > 0) {
 			realFingerMotor.set(weapons.getTwist()
 					* Math.abs(weapons.getTwist()));
