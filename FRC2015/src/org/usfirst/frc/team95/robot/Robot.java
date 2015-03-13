@@ -111,11 +111,12 @@ public class Robot extends IterativeRobot {
 	double[] xAccelCalibration, yAccelCalibration, zAccelCalibration,
 			xGyroCalibration, yGyroCalibration, zGyroCalibration;
 
-	double xAccelMean, yAccelMean, zAccelMean, xGyroMean, yGyroMean, zGyroMean;
+	double xAccelMean, yAccelMean, zAccelMean, xGyroMean, GyroMean, zGyroMean;
 
 	public FauxPID armController, fingerController;
 
-	public DoubleSolenoid armPistons, antennie, grabberRotatePiston;
+	public DoubleSolenoid antennie, grabberRotatePiston;
+	public Solenoid armPistons;
 
 	AutoMove autoMove;
 
@@ -241,8 +242,8 @@ public class Robot extends IterativeRobot {
 		// fingerController.setAbsoluteTolerance(RobotConstants.kFingerTolerance);
 		// fingerController.enable();
 
-		armPistons = new DoubleSolenoid(RobotConstants.kPCMId,
-				2, 5);
+		armPistons = new Solenoid(RobotConstants.kPCMId,
+				2);
 		
 		tipsyness = new TippynessMeasure();
 		swayfulness = new TippynessMeasure();
@@ -646,10 +647,11 @@ public class Robot extends IterativeRobot {
 			gyro.set(chasis.getPOV());
 		}
 
+		armPistons.set(triggerButton.Pressedp() || grippersLatched);
 		if (triggerButton.Pressedp() || grippersLatched) {
-			armPistons.set(Value.kReverse);
+			//armPistons.set(Value.kReverse);
 		} else {
-			armPistons.set(Value.kForward);
+			//armPistons.set(Value.kForward);
 		}
 
 		if (triggerButton.Pressedp()) {

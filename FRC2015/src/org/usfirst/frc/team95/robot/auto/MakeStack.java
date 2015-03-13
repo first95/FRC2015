@@ -32,7 +32,7 @@ public class MakeStack extends AutoMove {
 			timeOut.start();
 			stage = 1;
 		} else if (stage == 1 && (timeOut.get() > 2)) {
-			robot.armPistons.set(Value.kReverse);
+			robot.armPistons.set(false);
 			robot.armController.setSetpoint(-0.1);
 			stage = 2;
 		} else if (stage == 2) {
