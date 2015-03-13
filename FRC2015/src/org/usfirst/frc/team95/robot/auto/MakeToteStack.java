@@ -15,19 +15,17 @@ public class MakeToteStack extends AutoMove {
 
 	@Override
 	public Status init() {
-		robot.fingerController.setSetpoint(RobotConstants.kFingerSetpoints[0]);
-		timeOut = new Timer();
-		timeOut.stop();
-		timeOut.reset();
+		robot.realFingerMotor.set(-0.5);
 		return Status.needsToContinue;
 	}
 
 	@Override
 	public Status periodic() {
-		if (robot.fingerController.onTarget() || timeOut.get() > 2) {
+		if (!robot.lowFingerLimitSwitch.get()) {
+			robot.realFingerMotor.set(0);
 			return Status.isAbleToContinue;
 		}
-		
+		robot.realFingerMotor.set(-0.5);
 		return Status.wantsToContinue;
 	}
 

@@ -524,12 +524,12 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		
-		if (weapons.getRawButton(11) || chasis.getRawButton(11)) {
+		if (weapons.getRawButton(5) || chasis.getRawButton(11)) {
 			startedMovingTimeOut.reset();
 			startedMovingTimeOut.start();
 			movingIndependantly = MovingState.up;
 		}
-		if (weapons.getRawButton(16) || chasis.getRawButton(16)) {
+		if (weapons.getRawButton(10) || chasis.getRawButton(16)) {
 			startedMovingTimeOut.reset();
 			startedMovingTimeOut.start();
 			movingIndependantly = MovingState.down;
@@ -574,9 +574,9 @@ public class Robot extends IterativeRobot {
 		} else if (fingersAtBottom && upfulnessTimeOut.get() < 1) {
 			realFingerMotor.set(0.15);
 		} else if (movingIndependantly == MovingState.up) {
-			realFingerMotor.set(0.25);
+			realFingerMotor.set(0.5);
 		} else if (movingIndependantly == MovingState.down) {
-			realFingerMotor.set(-0.25);
+			realFingerMotor.set(-0.5);
 		} else if (weapons.getThrottle() > 0) {
 			realFingerMotor.set(weapons.getTwist()
 					* Math.abs(weapons.getTwist()));

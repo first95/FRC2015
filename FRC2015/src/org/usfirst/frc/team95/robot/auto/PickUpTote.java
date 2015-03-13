@@ -36,7 +36,7 @@ public class PickUpTote extends AutoMove {
 			robot.realFingerMotor.set(0);
 			return Status.isNotAbleToContinue;
 		} else {
-			robot.realFingerMotor.set(0.25);
+			robot.realFingerMotor.set(0.5);
 			return Status.wantsToContinue;
 		}
 		/*System.out.println("Pick Tote");
