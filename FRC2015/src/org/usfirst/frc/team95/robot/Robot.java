@@ -344,6 +344,9 @@ public class Robot extends IterativeRobot {
 				powerDistribution.getCurrent(7));
 		
 		SmartDashboard.putNumber("Chassis X", chasis.getX());
+		
+		SmartDashboard.putBoolean("Limit Fish", (armEncoder.getDistance() < 0.75 || armEncoder.getDistance() > 1.5));
+		
 
 		// Listen to arguments
 		double leftMotorCurrent = powerDistribution
@@ -384,15 +387,7 @@ public class Robot extends IterativeRobot {
 		grabberRotateButton.update();
 
 		if (!armLimitSwitch.get()) {
-			if (armEncoder.getRate() > 0) {
-				armEncoder.setOffset(RobotConstants.kArmPositionZenith
-						- RobotConstants.kArmLimitSwitchSloppyness
-						- armEncoder.getDistance());
-			} else {
-				armEncoder.setOffset(RobotConstants.kArmPositionZenith
-						+ RobotConstants.kArmLimitSwitchSloppyness
-						- armEncoder.getDistance());
-			}
+			armEncoder.setOffset(RobotConstants.kArmPositionZenith);
 		}
 
 		if (!topFingerLimitSwitch.get()) {
@@ -609,7 +604,7 @@ public class Robot extends IterativeRobot {
 
 		x *= sensitivity;
 		y *= sensitivity;
-		if (turnSpeed = true) {
+		if (turnSpeed) {
 			rotate *= sensitivity;
 		} else {
 			rotate *= sensitivity * 0.2;
@@ -641,7 +636,7 @@ public class Robot extends IterativeRobot {
 			rotate = 0;
 		}
 		
-		driveTrain.mecanumDrive_Cartesian(x, y, rotate, 0);
+		driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
 
 		// System.out.println("True Middle Teleop" + timeLag.get());
 
@@ -682,11 +677,12 @@ public class Robot extends IterativeRobot {
 		}
 
 		if (grabberRotateButton.Pressedp() &&
-				(armEncoder.getDistance() > 0.9599 || armEncoder.getDistance() < 2.18166)) {
+				(armEncoder.getDistance() < 0.75 || armEncoder.getDistance() > 1.5)) {
 			grabberRotatePiston.set(Value.kForward);
 		} else {
 			grabberRotatePiston.set(Value.kReverse);
 		}
+		
 		
 		// System.out.println("Telleop Ends" + timeLag.get());
 
