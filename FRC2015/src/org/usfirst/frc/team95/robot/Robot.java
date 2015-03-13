@@ -9,6 +9,7 @@ package org.usfirst.frc.team95.robot;
 
 import org.usfirst.frc.team95.robot.auto.AntennieAndTotes;
 import org.usfirst.frc.team95.robot.auto.AntennieGrabAndBack;
+import org.usfirst.frc.team95.robot.auto.GrabCanAndFlip;
 import org.usfirst.frc.team95.robot.auto.PlainAntennieGrab;
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
@@ -242,43 +243,7 @@ public class Robot extends IterativeRobot {
 
 		armPistons = new DoubleSolenoid(RobotConstants.kPCMId,
 				2, 5);
-
-		compressor = new Compressor();
-		compressor.start();
-
-		chooser = new SendableChooser();
-		chooser.addObject("Zombie", new NoMove(this));
-		// chooser.addObject("TakeToteRight", new TakeToteRight(this));
-		// chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
-		// chooser.addObject("Dance", new Dance(this));
-		// chooser.addObject("GrabMaximumFrontAndStack",
-		// new GrabMaximumFrontAndStack(this));
-		chooser.addObject("Grab Barrier Can and Move Back",
-				new GrabLeftCentralCan(this));
-		// chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25,
-		// 1.0));
-		// chooser.addObject("Floor Can", new GrabCanFromFloor(this));
-		chooser.addObject("Move Forward", new GoForward(this));
-		 chooser.addObject("Grab Can and Move Left", new
-		 GrabFrontMoveLeft(this));
-		chooser.addObject("Grab Can and Move Right", new GrabFrontMoveRight(
-				this));
-		// chooser.addObject("Grab Can and Move Forward", new
-		// GrabFrontMoveForwards(this));
-		chooser.addObject("Grab Can and Move Backward",
-				new GrabFrontMoveBackwards(this));
-		//chooser.addObject("Grab Barrier Can and Place Behind",
-		//		new GrabStepCanPutBehind(this));
-		chooser.addObject("Grab Barrier Can and Place Front",
-				new GrabStepCanPutFront(this));
-		chooser.addObject("Quick Barrier Grab", new QuickBarrierGrab(this));
-		chooser.addObject("Plain Antennie", new PlainAntennieGrab(this));
-		chooser.addObject("Antennie And Totes", new AntennieAndTotes(this));
-		chooser.addObject("Antennie And Move Back", new AntennieGrabAndBack(this));
-		SmartDashboard.putData("Autonomous Move", chooser);
 		
-		
-
 		tipsyness = new TippynessMeasure();
 		swayfulness = new TippynessMeasure();
 
@@ -303,6 +268,42 @@ public class Robot extends IterativeRobot {
 		
 		antennie = new DoubleSolenoid(RobotConstants.kPCMId, 0, 7);
 		grabberRotatePiston = new DoubleSolenoid(RobotConstants.kPCMId, 1, 6);
+
+		compressor = new Compressor();
+		compressor.start();
+
+		chooser = new SendableChooser();
+		chooser.addObject("Zombie", new NoMove(this));
+		// chooser.addObject("TakeToteRight", new TakeToteRight(this));
+		chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
+		// chooser.addObject("Dance", new Dance(this));
+		// chooser.addObject("GrabMaximumFrontAndStack",
+		// new GrabMaximumFrontAndStack(this));
+		chooser.addObject("Grab Barrier Can and Move Back",
+				new GrabLeftCentralCan(this));
+		// chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25,
+		// 1.0));
+		// chooser.addObject("Floor Can", new GrabCanFromFloor(this));
+		chooser.addObject("Move Forward", new GoForward(this));
+		 chooser.addObject("Already Grabbed Can and Move Left", new
+		 GrabFrontMoveLeft(this));
+		chooser.addObject("Already Grabbed Can and Move Right", new GrabFrontMoveRight(
+				this));
+		// chooser.addObject("Grab Can and Move Forward", new
+		// GrabFrontMoveForwards(this));
+		chooser.addObject("Already Grabbed Can and Move Backward",
+				new GrabFrontMoveBackwards(this));
+		//chooser.addObject("Grab Barrier Can and Place Behind",
+		//		new GrabStepCanPutBehind(this));
+		chooser.addObject("Grab Barrier Can and Place Front",
+				new GrabStepCanPutFront(this));
+		chooser.addObject("Grab Barrier Can and Flip", new GrabCanAndFlip(this));
+		chooser.addObject("Quick Barrier Grab", new QuickBarrierGrab(this));
+		chooser.addObject("Plain Antennie", new PlainAntennieGrab(this));
+		//chooser.addObject("Antennie And Totes", new AntennieAndTotes(this));
+		chooser.addObject("Antennie And Move Back", new AntennieGrabAndBack(this));
+		SmartDashboard.putData("Autonomous Move", chooser);
+		
 	}
 
 	public void commonPeriodic() {
@@ -676,8 +677,8 @@ public class Robot extends IterativeRobot {
 			armController.periodic();
 		}
 
-		if (grabberRotateButton.Pressedp() &&
-				(armEncoder.getDistance() < 0.75 || armEncoder.getDistance() > 1.5)) {
+		if (grabberRotateButton.Pressedp()
+				/*(armEncoder.getDistance() < 0.75 || armEncoder.getDistance() > 1.5)*/) {
 			grabberRotatePiston.set(Value.kForward);
 		} else {
 			grabberRotatePiston.set(Value.kReverse);
