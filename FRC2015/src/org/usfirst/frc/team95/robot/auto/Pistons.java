@@ -4,14 +4,16 @@ import org.usfirst.frc.team95.robot.Robot;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Pistons extends AutoMove {
 
 	DoubleSolenoid pistons;
+	Solenoid postons;
 	boolean on;
 
 	public Pistons(Robot robo, boolean b) {
-		pistons = robo.armPistons;
+		postons = robo.armPistons;
 		on = b;
 	}
 	
@@ -25,6 +27,10 @@ public class Pistons extends AutoMove {
 	}
 
 	public Status periodic() {
+		if (postons != null) {
+			postons.set(on);
+		}
+		
 		if (on) {
 			pistons.set(Value.kForward);
 		} else {
