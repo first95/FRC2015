@@ -524,12 +524,12 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		
-		if (weapons.getRawButton(5) || chasis.getRawButton(11)) {
+		if (weapons.getRawButton(5) || chasis.getRawButton(5)) {
 			startedMovingTimeOut.reset();
 			startedMovingTimeOut.start();
 			movingIndependantly = MovingState.up;
 		}
-		if (weapons.getRawButton(10) || chasis.getRawButton(16)) {
+		if (weapons.getRawButton(10) || chasis.getRawButton(10)) {
 			startedMovingTimeOut.reset();
 			startedMovingTimeOut.start();
 			movingIndependantly = MovingState.down;
