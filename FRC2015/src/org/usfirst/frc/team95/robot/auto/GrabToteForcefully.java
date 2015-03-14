@@ -6,7 +6,7 @@ public class GrabToteForcefully extends PureSequentialMove {
 	
 	public GrabToteForcefully(Robot robot) {
 		AutoMove[] moves = { new GoForward(robot, 0.75, 0.5), new PickUpTote(robot), new GoLeft(robot),
-				new GoForward(robot, 0.75, 0.5), new GoRight(robot) } ;
+				new MoveRelative(robot, 0.3, 0.75, 0.0, 0.5), new GoRight(robot) } ;
 		sequence = new SequentialMove(moves);
 	}
 
