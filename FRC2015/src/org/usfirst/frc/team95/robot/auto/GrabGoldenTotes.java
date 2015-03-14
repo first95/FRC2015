@@ -12,7 +12,7 @@ public class GrabGoldenTotes extends PureSequentialMove {
 	public GrabGoldenTotes(Robot robo) {
 		robot = robo;
 		AutoMove[] vector = { new GrabToteForcefully(robo),
-				new GrabToteForcefully(robo), new GrabToteForcefully(robo),
+				new GrabToteForcefully(robo), new GrabToteForcefu(robo),
 				new GoRight(robo), new MakeToteStack(robo), 
 				new GoBackward(robo, 0.5, 0.25), new NoMove(robot) } ;
 		/*AutoMove[] vector = { new TakeToteRight(robot),
