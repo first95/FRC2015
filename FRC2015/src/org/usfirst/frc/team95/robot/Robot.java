@@ -331,23 +331,23 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void commonPeriodic() {
-		SmartDashboard.putNumber("PowerDistributionTemperature",
-				powerDistribution.getTemperature());
+		//SmartDashboard.putNumber("PowerDistributionTemperature",
+		//		powerDistribution.getTemperature());
 		SmartDashboard.putNumber(
 				"PowerDistribution Total Motor Current",
 				powerDistribution.getCurrent(12)
 						+ powerDistribution.getCurrent(13)
 						+ powerDistribution.getCurrent(14)
 						+ powerDistribution.getCurrent(15));
-		SmartDashboard.putNumber("PowerDistribution Back Right Motor Current",
-				powerDistribution.getCurrent(12));
+		//SmartDashboard.putNumber("PowerDistribution Back Right Motor Current",
+		//		powerDistribution.getCurrent(12));
 
-		SmartDashboard.putNumber("PowerDistribution Front Right Motor Current",
-				powerDistribution.getCurrent(13));
-		SmartDashboard.putNumber("PowerDistribution Back Left Motor Current",
-				powerDistribution.getCurrent(14));
-		SmartDashboard.putNumber("PowerDistribution Front Left Motor Current",
-				powerDistribution.getCurrent(15));
+		//SmartDashboard.putNumber("PowerDistribution Front Right Motor Current",
+		//		powerDistribution.getCurrent(13));
+		//SmartDashboard.putNumber("PowerDistribution Back Left Motor Current",
+		//		powerDistribution.getCurrent(14));
+		//SmartDashboard.putNumber("PowerDistribution Front Left Motor Current",
+		//		powerDistribution.getCurrent(15));
 
 		// Put accelerations and positions
 		SmartDashboard.putNumber("Current Z Acceleration",
@@ -358,8 +358,8 @@ public class Robot extends IterativeRobot {
 				yDisplacement.mDisplacementIntegral);
 		SmartDashboard.putNumber("Current Z Displacement",
 				zDisplacement.mDisplacementIntegral);
-		SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
-		SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
+		//SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
+		//SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
 		SmartDashboard.putNumber("Arm Encoder", armEncoder.getDistance());
 		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
@@ -372,7 +372,7 @@ public class Robot extends IterativeRobot {
 				lowFingerLimitSwitch.get());
 		SmartDashboard
 				.putBoolean(
-						"Main thing fish dude what....",
+						"In Between Limit Switches",
 						!(topFingerLimitSwitch.get()
 								&& lowFingerLimitSwitch.get()
 								&& midLowFingerLimitSwitch.get() && midHighFingerLimitSwitch
@@ -380,7 +380,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Totem Current",
 				powerDistribution.getCurrent(7));
 
-		SmartDashboard.putNumber("Chassis X", chasis.getX());
+		//SmartDashboard.putNumber("Chassis X", chasis.getX());
 
 		SmartDashboard
 				.putBoolean("Limit Fish",
