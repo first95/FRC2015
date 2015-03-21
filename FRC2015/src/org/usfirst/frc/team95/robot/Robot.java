@@ -39,6 +39,7 @@ import org.usfirst.frc.team95.robot.auto.TakeToteRight;
 import org.usfirst.frc.team95.robot.auto.GoForward;
 
 import edu.wpi.first.wpilibj.ADXL345_I2C;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -144,7 +145,10 @@ public class Robot extends IterativeRobot {
 	enum MovingState {
 		up, still, down
 	}
+	
 	MovingState movingIndependantly;
+	
+	AnalogInput forwardLeft, forwardRight, sidewaysLeft, sidewaysRight;
 	
 
 	/**
@@ -281,6 +285,11 @@ public class Robot extends IterativeRobot {
 
 		compressor = new Compressor();
 		compressor.start();
+		
+		forwardLeft = new AnalogInput(0);
+		forwardRight = new AnalogInput(1);
+		sidewaysLeft = new AnalogInput(2);
+		sidewaysRight = new AnalogInput(3);
 
 		chooser = new SendableChooser();
 		chooser.addObject("Zombie", new NoMove(this));
@@ -676,6 +685,37 @@ public class Robot extends IterativeRobot {
 			rotate = 0;
 		}
 		
+		// AutoCentering
+		if (chasis.getRawButton(8) || weapons.getRawButton(8)) {
+			if (Math.abs(forwardLeft.getVoltage()*RobotConstants.kSensorLength - 
+					forwardRight.getVoltage()*RobotConstants.kSensorLength) > 
+					RobotConstants.kStraightAlignmentDeadband) {
+				y = 0;
+				x = 0;
+				if (forwardLeft.getVoltage()*RobotConstants.kSensorLength > 
+						forwardRight.getVoltage()*RobotConstants.kSensorLength) {
+					rotate = 0.3;
+				} else {
+					rotate = -0.3;
+				}
+			} else if ((forwardLeft.getVoltage() + forwardRight.getVoltage()) / 2 * 
+					RobotConstants.kSensorLength > RobotConstants.kSensorCloseness) {
+				x = 0.3;
+				y = 0;
+				rotate = 0;
+			} else if (sidewaysLeft.getVoltage() * RobotConstants.kSensorLength > 
+					RobotConstants.kSideDistanceLength) {
+				x = 0;
+				y = 0.3;
+				rotate = 0;
+			} else if (sidewaysRight.getVoltage() * RobotConstants.kSensorLength >
+					RobotConstants.kSideDistanceLength) {
+				x = 0;
+				y = -0.3;
+				rotate = 0;
+			}
+		}
+		
 		driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
 
 		// System.out.println("True Middle Teleop" + timeLag.get());
@@ -723,6 +763,9 @@ public class Robot extends IterativeRobot {
 		} else {
 			grabberRotatePiston.set(Value.kReverse);
 		}
+		
+		
+		
 		
 		
 		// System.out.println("Telleop Ends" + timeLag.get());
