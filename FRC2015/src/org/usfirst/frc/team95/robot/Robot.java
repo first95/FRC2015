@@ -371,6 +371,21 @@ public class Robot extends IterativeRobot {
 		
 		SmartDashboard.putBoolean("Limit Fish", (armEncoder.getDistance() < 0.75 || armEncoder.getDistance() > 1.5));
 		
+		SmartDashboard.putNumber("Front Left IR Sensor", 
+				forwardLeft.getVoltage() * RobotConstants.kSensorLength);
+		SmartDashboard.putNumber("Front Right IR Sensor", 
+				forwardRight.getVoltage() * RobotConstants.kSensorLength);
+		SmartDashboard.putNumber("Side Left IR Sensor", 
+				sidewaysLeft.getVoltage() * RobotConstants.kSensorLength);
+		SmartDashboard.putNumber("Side Right IR Sensor", 
+				sidewaysRight.getVoltage() * RobotConstants.kSensorLength); 
+		
+		SmartDashboard.putBoolean("Straight?", Math.abs(forwardLeft.getVoltage()*RobotConstants.kSensorLength - 
+					forwardRight.getVoltage()*RobotConstants.kSensorLength) < 
+					RobotConstants.kStraightAlignmentDeadband);
+		SmartDashboard.putBoolean("Centered?", (sidewaysLeft.getVoltage() * RobotConstants.kSensorLength <
+					RobotConstants.kSideDistanceLength) && (sidewaysRight.getVoltage() * RobotConstants.kSensorLength < 
+					RobotConstants.kSideDistanceLength));
 
 		// Listen to arguments
 		double leftMotorCurrent = powerDistribution
@@ -686,7 +701,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 		// AutoCentering
-		if (chasis.getRawButton(8) || weapons.getRawButton(8)) {
+		if ((chasis.getRawButton(8) || weapons.getRawButton(8)) && false) {
 			if (Math.abs(forwardLeft.getVoltage()*RobotConstants.kSensorLength - 
 					forwardRight.getVoltage()*RobotConstants.kSensorLength) > 
 					RobotConstants.kStraightAlignmentDeadband) {
