@@ -41,6 +41,7 @@ import org.usfirst.frc.team95.robot.auto.GoForward;
 import edu.wpi.first.wpilibj.ADXL345_I2C;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -153,6 +154,7 @@ public class Robot extends IterativeRobot {
 	MovingState movingIndependantly;
 
 	AnalogInput forwardLeft, forwardRight, forwardMiddle, forwardOffCenter;
+	
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -197,7 +199,7 @@ public class Robot extends IterativeRobot {
 		driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
 		driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
 
-		gyro = new ResetableGyro(RobotConstants.kGyro);
+		//gyro = new ResetableGyro(RobotConstants.kGyro);
 		extraAccel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k8G);
 		builtinAccel = new BuiltInAccelerometer();
 		accel = new CommonFilter(extraAccel, builtinAccel);
@@ -290,10 +292,12 @@ public class Robot extends IterativeRobot {
 		compressor = new Compressor();
 		compressor.start();
 
-		forwardLeft = new AnalogInput(0);
-		forwardRight = new AnalogInput(1);
+		forwardLeft = new AnalogInput(3);
+		forwardRight = new AnalogInput(0);
 		forwardMiddle = new AnalogInput(2);
-		forwardOffCenter = new AnalogInput(3);
+		forwardOffCenter = new AnalogInput(1);
+		
+		//CameraServer.getInstance().startAutomaticCapture("cam0");
 
 		chooser = new SendableChooser();
 		chooser.addObject("Zombie", new NoMove(this));
@@ -670,7 +674,7 @@ public class Robot extends IterativeRobot {
 
 		// Temporary variables
 		double x, y, rotate, turned, sensitivity;
-		turned = ((gyro.getAngle()));// / 180.0) * Math.PI);
+		turned = 0; //((gyro.getAngle()));// / 180.0) * Math.PI);
 		sensitivity = (chasis.getAxis(Joystick.AxisType.kThrottle) * -1 + 1) * 0.9 + 0.1;
 
 		if (upTurnSpeed.Pressedp()) {
@@ -726,7 +730,7 @@ public class Robot extends IterativeRobot {
 		}
 
 		// AutoCentering
-		if ((chasis.getRawButton(8) || weapons.getRawButton(8)) && false) {
+		if ((chasis.getRawButton(8) || weapons.getRawButton(8)) && true) {
 			if (Math.abs(RobotConstants.sensorVoltageToCm(forwardLeft
 					.getVoltage())
 					- RobotConstants.sensorVoltageToCm(forwardRight
@@ -735,30 +739,31 @@ public class Robot extends IterativeRobot {
 				x = 0;
 				if (RobotConstants.sensorVoltageToCm(forwardLeft.getVoltage()) > RobotConstants
 						.sensorVoltageToCm(forwardRight.getVoltage())) {
-					rotate = 0.3;
-				} else {
 					rotate = -0.3;
+				} else {
+					rotate = 0.3;
 				}
+			}
+			else if (RobotConstants.sensorVoltageToCm(forwardMiddle
+						.getVoltage()) > RobotConstants.kObjectpLength
+						&& RobotConstants.sensorVoltageToCm(forwardOffCenter
+								.getVoltage()) > RobotConstants.kObjectpLength) {
+					x = 0;
+					y = -0.3;
+					rotate = 0;
+			} else if (RobotConstants.sensorVoltageToCm(forwardMiddle
+						.getVoltage()) < RobotConstants.kObjectpLength
+						&& RobotConstants.sensorVoltageToCm(forwardOffCenter
+								.getVoltage()) < RobotConstants.kObjectpLength) {
+					x = 0;
+					y = 0.3;
+					rotate = 0;
 			} else if (RobotConstants.sensorVoltageToCm((forwardLeft
 					.getVoltage() + forwardRight.getVoltage()) / 2) > RobotConstants.kSensorCloseness) {
 				x = 0.3;
 				y = 0;
 				rotate = 0;
-			} else if (RobotConstants.sensorVoltageToCm(forwardMiddle
-					.getVoltage()) > RobotConstants.kObjectpLength
-					&& RobotConstants.sensorVoltageToCm(forwardOffCenter
-							.getVoltage()) > RobotConstants.kObjectpLength) {
-				x = 0;
-				y = -0.3;
-				rotate = 0;
-			} else if (RobotConstants.sensorVoltageToCm(forwardMiddle
-					.getVoltage()) < RobotConstants.kObjectpLength
-					&& RobotConstants.sensorVoltageToCm(forwardOffCenter
-							.getVoltage()) < RobotConstants.kObjectpLength) {
-				x = 0;
-				y = 0.3;
-				rotate = 0;
-			}
+			} 
 		}
 
 		driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);

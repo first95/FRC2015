@@ -11,7 +11,7 @@ public class RobotConstants {
 	public static final int kFingerMotor = 6;
 	public static final int kArmEncoder = 8;
 	public static final int kFingerEncoder = 6;
-	public static final int kGyro = 0;
+	public static final int kGyro = 5;
 	public static final int kChasis = 0;
 	public static final int kWeapons = 1;
 	public static final int kChangeDriveStyle = 11;
@@ -66,11 +66,19 @@ public class RobotConstants {
 	public static final int kMidLowFingerLimitSwitch = 5;
 	public static final int kMidHighFingerLimitSwitch = 4;
 
-	public static final double kStraightAlignmentDeadband = 1;
-	public static final double kSensorCloseness = 4;
-	public static final double kObjectpLength = 4;
+	public static final double kStraightAlignmentDeadband = 5;
+	public static final double kSensorCloseness = 3;
+	public static final double kObjectpLength = 6;
 
 	public static double sensorVoltageToCm(double voltage) {
+		if (voltage - 0.0625 == 0) {
+			return 4;
+		}
+		
+		if (voltage > 40 || voltage < 0) {
+			return 40;
+		}
+		
 		return 11.75 / (voltage - 0.0625) - 0.42;
 	}
 
