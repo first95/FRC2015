@@ -152,7 +152,7 @@ public class Robot extends IterativeRobot {
 
 	MovingState movingIndependantly;
 
-	AnalogInput forwardLeft, forwardRight, sidewaysLeft, sidewaysRight;
+	AnalogInput forwardLeft, forwardRight, forwardMiddle, forwardOffCenter;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -292,8 +292,8 @@ public class Robot extends IterativeRobot {
 
 		forwardLeft = new AnalogInput(0);
 		forwardRight = new AnalogInput(1);
-		sidewaysLeft = new AnalogInput(2);
-		sidewaysRight = new AnalogInput(3);
+		forwardMiddle = new AnalogInput(2);
+		forwardOffCenter = new AnalogInput(3);
 
 		chooser = new SendableChooser();
 		chooser.addObject("Zombie", new NoMove(this));
@@ -391,10 +391,11 @@ public class Robot extends IterativeRobot {
 				RobotConstants.sensorVoltageToCm(forwardLeft.getVoltage()));
 		SmartDashboard.putNumber("Front Right IR Sensor",
 				RobotConstants.sensorVoltageToCm(forwardRight.getVoltage()));
-		SmartDashboard.putNumber("Side Left IR Sensor",
-				RobotConstants.sensorVoltageToCm(sidewaysLeft.getVoltage()));
-		SmartDashboard.putNumber("Side Right IR Sensor",
-				RobotConstants.sensorVoltageToCm(sidewaysRight.getVoltage()));
+		SmartDashboard.putNumber("Front Middle IR Sensor",
+				RobotConstants.sensorVoltageToCm(forwardMiddle.getVoltage()));
+		SmartDashboard
+				.putNumber("Front Offset IR Sensor", RobotConstants
+						.sensorVoltageToCm(forwardOffCenter.getVoltage()));
 
 		SmartDashboard
 				.putBoolean(
@@ -406,11 +407,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard
 				.putBoolean(
 						"Centered?",
-						(RobotConstants.sensorVoltageToCm(sidewaysLeft
-								.getVoltage()) < RobotConstants.kSideDistanceLength)
+						(RobotConstants.sensorVoltageToCm(forwardMiddle
+								.getVoltage()) < RobotConstants.kObjectpLength)
 								&& (RobotConstants
-										.sensorVoltageToCm(sidewaysRight
-												.getVoltage()) < RobotConstants.kSideDistanceLength));
+										.sensorVoltageToCm(forwardOffCenter
+												.getVoltage()) < RobotConstants.kObjectpLength));
 
 		// Listen to arguments
 		double leftMotorCurrent = powerDistribution
@@ -743,15 +744,19 @@ public class Robot extends IterativeRobot {
 				x = 0.3;
 				y = 0;
 				rotate = 0;
-			} else if (RobotConstants.sensorVoltageToCm(sidewaysLeft
-					.getVoltage()) > RobotConstants.kSideDistanceLength) {
-				x = 0;
-				y = 0.3;
-				rotate = 0;
-			} else if (RobotConstants.sensorVoltageToCm(sidewaysRight
-					.getVoltage()) > RobotConstants.kSideDistanceLength) {
+			} else if (RobotConstants.sensorVoltageToCm(forwardMiddle
+					.getVoltage()) > RobotConstants.kObjectpLength
+					&& RobotConstants.sensorVoltageToCm(forwardOffCenter
+							.getVoltage()) > RobotConstants.kObjectpLength) {
 				x = 0;
 				y = -0.3;
+				rotate = 0;
+			} else if (RobotConstants.sensorVoltageToCm(forwardMiddle
+					.getVoltage()) < RobotConstants.kObjectpLength
+					&& RobotConstants.sensorVoltageToCm(forwardOffCenter
+							.getVoltage()) < RobotConstants.kObjectpLength) {
+				x = 0;
+				y = 0.3;
 				rotate = 0;
 			}
 		}
