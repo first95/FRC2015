@@ -3,7 +3,7 @@ package org.usfirst.frc.team95.robot.auto;
 public class MoveFauxPIDTo extends AutoMove {
 	FauxPID pid;
 	double setpoint;
-	
+
 	public MoveFauxPIDTo(FauxPID pid, double setpoint) {
 		this.pid = pid;
 		this.setpoint = setpoint;
