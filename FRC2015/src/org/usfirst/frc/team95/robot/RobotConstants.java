@@ -65,5 +65,10 @@ public class RobotConstants {
 	public static final int kLowFingerLimitSwitch = 2;
 	public static final int kMidLowFingerLimitSwitch = 5;
 	public static final int kMidHighFingerLimitSwitch = 4;
+	
+	public static final double kSensorLength = 1;
+	public static final double kStraightAlignmentDeadband = 1;
+	public static final double kSensorCloseness = 4;
+	public static final double kSideDistanceLength = 4;
 
 }
