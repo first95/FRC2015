@@ -66,9 +66,12 @@ public class RobotConstants {
 	public static final int kMidLowFingerLimitSwitch = 5;
 	public static final int kMidHighFingerLimitSwitch = 4;
 
-	public static final double kSensorLength = 1;
 	public static final double kStraightAlignmentDeadband = 1;
 	public static final double kSensorCloseness = 4;
 	public static final double kSideDistanceLength = 4;
+
+	public static double sensorVoltageToCm(double voltage) {
+		return 11.75 / (voltage - 0.0625) - 0.42;
+	}
 
 }
