@@ -331,23 +331,23 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void commonPeriodic() {
-		//SmartDashboard.putNumber("PowerDistributionTemperature",
-		//		powerDistribution.getTemperature());
+		// SmartDashboard.putNumber("PowerDistributionTemperature",
+		// powerDistribution.getTemperature());
 		SmartDashboard.putNumber(
 				"PowerDistribution Total Motor Current",
 				powerDistribution.getCurrent(12)
 						+ powerDistribution.getCurrent(13)
 						+ powerDistribution.getCurrent(14)
 						+ powerDistribution.getCurrent(15));
-		//SmartDashboard.putNumber("PowerDistribution Back Right Motor Current",
-		//		powerDistribution.getCurrent(12));
+		// SmartDashboard.putNumber("PowerDistribution Back Right Motor Current",
+		// powerDistribution.getCurrent(12));
 
-		//SmartDashboard.putNumber("PowerDistribution Front Right Motor Current",
-		//		powerDistribution.getCurrent(13));
-		//SmartDashboard.putNumber("PowerDistribution Back Left Motor Current",
-		//		powerDistribution.getCurrent(14));
-		//SmartDashboard.putNumber("PowerDistribution Front Left Motor Current",
-		//		powerDistribution.getCurrent(15));
+		// SmartDashboard.putNumber("PowerDistribution Front Right Motor Current",
+		// powerDistribution.getCurrent(13));
+		// SmartDashboard.putNumber("PowerDistribution Back Left Motor Current",
+		// powerDistribution.getCurrent(14));
+		// SmartDashboard.putNumber("PowerDistribution Front Left Motor Current",
+		// powerDistribution.getCurrent(15));
 
 		// Put accelerations and positions
 		SmartDashboard.putNumber("Current Z Acceleration",
@@ -358,8 +358,8 @@ public class Robot extends IterativeRobot {
 				yDisplacement.mDisplacementIntegral);
 		SmartDashboard.putNumber("Current Z Displacement",
 				zDisplacement.mDisplacementIntegral);
-		//SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
-		//SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
+		// SmartDashboard.putNumber("Angular Acceleration", gyro.getRate());
+		// SmartDashboard.putNumber("Angular Positon", gyro.getAngle());
 		SmartDashboard.putNumber("Arm Encoder", armEncoder.getDistance());
 		SmartDashboard.putNumber("Totem Encoder", fingerEncoder.getDistance());
 		SmartDashboard.putBoolean("Arm Limit", armLimitSwitch.get());
@@ -380,7 +380,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Totem Current",
 				powerDistribution.getCurrent(7));
 
-		//SmartDashboard.putNumber("Chassis X", chasis.getX());
+		// SmartDashboard.putNumber("Chassis X", chasis.getX());
 
 		SmartDashboard
 				.putBoolean("Limit Fish",
@@ -388,28 +388,29 @@ public class Robot extends IterativeRobot {
 								.getDistance() > 1.5));
 
 		SmartDashboard.putNumber("Front Left IR Sensor",
-				forwardLeft.getVoltage() * RobotConstants.kSensorLength);
+				RobotConstants.sensorVoltageToCm(forwardLeft.getVoltage()));
 		SmartDashboard.putNumber("Front Right IR Sensor",
-				forwardRight.getVoltage() * RobotConstants.kSensorLength);
+				RobotConstants.sensorVoltageToCm(forwardRight.getVoltage()));
 		SmartDashboard.putNumber("Side Left IR Sensor",
-				sidewaysLeft.getVoltage() * RobotConstants.kSensorLength);
+				RobotConstants.sensorVoltageToCm(sidewaysLeft.getVoltage()));
 		SmartDashboard.putNumber("Side Right IR Sensor",
-				sidewaysRight.getVoltage() * RobotConstants.kSensorLength);
+				RobotConstants.sensorVoltageToCm(sidewaysRight.getVoltage()));
 
 		SmartDashboard
 				.putBoolean(
 						"Straight?",
-						Math.abs(forwardLeft.getVoltage()
-								* RobotConstants.kSensorLength
-								- forwardRight.getVoltage()
-								* RobotConstants.kSensorLength) < RobotConstants.kStraightAlignmentDeadband);
+						Math.abs(RobotConstants.sensorVoltageToCm(forwardLeft
+								.getVoltage())
+								- RobotConstants.sensorVoltageToCm(forwardRight
+										.getVoltage())) < RobotConstants.kStraightAlignmentDeadband);
 		SmartDashboard
 				.putBoolean(
 						"Centered?",
-						(sidewaysLeft.getVoltage()
-								* RobotConstants.kSensorLength < RobotConstants.kSideDistanceLength)
-								&& (sidewaysRight.getVoltage()
-										* RobotConstants.kSensorLength < RobotConstants.kSideDistanceLength));
+						(RobotConstants.sensorVoltageToCm(sidewaysLeft
+								.getVoltage()) < RobotConstants.kSideDistanceLength)
+								&& (RobotConstants
+										.sensorVoltageToCm(sidewaysRight
+												.getVoltage()) < RobotConstants.kSideDistanceLength));
 
 		// Listen to arguments
 		double leftMotorCurrent = powerDistribution
@@ -725,28 +726,30 @@ public class Robot extends IterativeRobot {
 
 		// AutoCentering
 		if ((chasis.getRawButton(8) || weapons.getRawButton(8)) && false) {
-			if (Math.abs(forwardLeft.getVoltage()
-					* RobotConstants.kSensorLength - forwardRight.getVoltage()
-					* RobotConstants.kSensorLength) > RobotConstants.kStraightAlignmentDeadband) {
+			if (Math.abs(RobotConstants.sensorVoltageToCm(forwardLeft
+					.getVoltage())
+					- RobotConstants.sensorVoltageToCm(forwardRight
+							.getVoltage())) > RobotConstants.kStraightAlignmentDeadband) {
 				y = 0;
 				x = 0;
-				if (forwardLeft.getVoltage() * RobotConstants.kSensorLength > forwardRight
-						.getVoltage() * RobotConstants.kSensorLength) {
+				if (RobotConstants.sensorVoltageToCm(forwardLeft.getVoltage()) > RobotConstants
+						.sensorVoltageToCm(forwardRight.getVoltage())) {
 					rotate = 0.3;
 				} else {
 					rotate = -0.3;
 				}
-			} else if ((forwardLeft.getVoltage() + forwardRight.getVoltage())
-					/ 2 * RobotConstants.kSensorLength > RobotConstants.kSensorCloseness) {
+			} else if (RobotConstants.sensorVoltageToCm((forwardLeft
+					.getVoltage() + forwardRight.getVoltage()) / 2) > RobotConstants.kSensorCloseness) {
 				x = 0.3;
 				y = 0;
 				rotate = 0;
-			} else if (sidewaysLeft.getVoltage() * RobotConstants.kSensorLength > RobotConstants.kSideDistanceLength) {
+			} else if (RobotConstants.sensorVoltageToCm(sidewaysLeft
+					.getVoltage()) > RobotConstants.kSideDistanceLength) {
 				x = 0;
 				y = 0.3;
 				rotate = 0;
-			} else if (sidewaysRight.getVoltage()
-					* RobotConstants.kSensorLength > RobotConstants.kSideDistanceLength) {
+			} else if (RobotConstants.sensorVoltageToCm(sidewaysRight
+					.getVoltage()) > RobotConstants.kSideDistanceLength) {
 				x = 0;
 				y = -0.3;
 				rotate = 0;
