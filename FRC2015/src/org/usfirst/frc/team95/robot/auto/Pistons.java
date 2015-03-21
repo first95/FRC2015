@@ -16,7 +16,7 @@ public class Pistons extends AutoMove {
 		postons = robo.armPistons;
 		on = b;
 	}
-	
+
 	public Pistons(DoubleSolenoid solenoid, boolean b) {
 		pistons = solenoid;
 		on = b;
@@ -30,7 +30,7 @@ public class Pistons extends AutoMove {
 		if (postons != null) {
 			postons.set(on);
 		}
-		
+
 		if (pistons != null) {
 			if (on) {
 				pistons.set(Value.kForward);

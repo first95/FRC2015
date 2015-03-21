@@ -13,11 +13,13 @@ public class GrabGoldenTotes extends PureSequentialMove {
 		robot = robo;
 		AutoMove[] vector = { new GrabToteForcefully(robo),
 				new GrabToteForcefully(robo), new GrabToteForcefu(robo),
-				new GoRight(robo), new MakeToteStack(robo), 
-				new GoBackward(robo, 0.5, 0.25), new NoMove(robot) } ;
-		/*AutoMove[] vector = { new TakeToteRight(robot),
-				new TakeToteRight(robot), new TakeToteRight(robot),
-				new GoBackward(robot), new MakeStack(robot), new NoMove(robot) }; */
+				new GoRight(robo), new MakeToteStack(robo),
+				new GoBackward(robo, 0.5, 0.25), new NoMove(robot) };
+		/*
+		 * AutoMove[] vector = { new TakeToteRight(robot), new
+		 * TakeToteRight(robot), new TakeToteRight(robot), new
+		 * GoBackward(robot), new MakeStack(robot), new NoMove(robot) };
+		 */
 		sequence = new SequentialMove(vector);
 	}
 

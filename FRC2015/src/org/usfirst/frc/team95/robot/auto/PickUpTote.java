@@ -23,28 +23,30 @@ public class PickUpTote extends AutoMove {
 	public Status init() {
 		robot.startedMovingTimeOut.reset();
 		robot.startedMovingTimeOut.start();
-		/*System.out.print("Pick tote initialization.");
-		fingerController.setSetpoint(findSetpoint(fingerController
-				.getSetpoint()) + 1);*/
+		/*
+		 * System.out.print("Pick tote initialization.");
+		 * fingerController.setSetpoint(findSetpoint(fingerController
+		 * .getSetpoint()) + 1);
+		 */
 		return Status.wantsToContinue;
 	}
 
 	public Status periodic() {
-		if ((!(robot.topFingerLimitSwitch.get() && robot.lowFingerLimitSwitch.get() && 
-				robot.midLowFingerLimitSwitch.get() && robot.midHighFingerLimitSwitch.get())) 
-				&& robot.startedMovingTimeOut.get() > 0.2) {
+		if ((!(robot.topFingerLimitSwitch.get()
+				&& robot.lowFingerLimitSwitch.get()
+				&& robot.midLowFingerLimitSwitch.get() && robot.midHighFingerLimitSwitch
+					.get())) && robot.startedMovingTimeOut.get() > 0.2) {
 			robot.realFingerMotor.set(0);
 			return Status.isNotAbleToContinue;
 		} else {
 			robot.realFingerMotor.set(0.5);
 			return Status.wantsToContinue;
 		}
-		/*System.out.println("Pick Tote");
-		if (fingerController.onTarget()) {
-			return Status.isNotAbleToContinue;
-		} else {
-			return Status.needsToContinue;
-		}*/
+		/*
+		 * System.out.println("Pick Tote"); if (fingerController.onTarget()) {
+		 * return Status.isNotAbleToContinue; } else { return
+		 * Status.needsToContinue; }
+		 */
 	}
 
 	public Status stop() {
