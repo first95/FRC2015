@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>FRC 2015 - OLD</name>
+	<name>95 2015</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -18,7 +18,7 @@
 		<link>
 			<name>wpilib</name>
 			<type>2</type>
-			<location>/home/daroc/wpilib</location>
+			<location>C:/Users/Spencer/wpilib</location>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -2,11 +2,10 @@ package org.usfirst.frc.team95.robot.auto;
 
 import org.usfirst.frc.team95.robot.Robot;
 
-public class AntennieGrabAndBack extends PureSequentialMove {
+public class AntennieGrabAndBackMeteoricAlign extends PureSequentialMove {
 
-	public AntennieGrabAndBack(Robot robot) {
-		AutoMove[] moves = {
-				new AutoAlign(robot, 1.0),
+	public AntennieGrabAndBackMeteoricAlign(Robot robot) {
+		AutoMove[] moves = { new GoForward(robot, 0.75, 0.5), // Go forward until we slam into the totes, hopefully self-aligning
 				new Pistons(robot.antennie, true),
 				new PlainMotorMove(robot.armMotors, 0.5, 0.75),
 				new PlainMotorMove(robot.armMotors, 0.5, 0.75),

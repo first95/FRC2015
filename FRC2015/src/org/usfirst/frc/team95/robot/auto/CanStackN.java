@@ -11,7 +11,7 @@ public class CanStackN extends PureSequentialMove {
 		k = 5 * Math.cos(Math.asin(h / 5));
 		AutoMove[] cans = {
 				new MoveRelative(robot, 0.0, -0.75, 0.0, k),
-				new TimedArmMove(robot, 1, RobotConstants.kArmLimitedSpeed
+				new PlainMotorMove(robot.armMotors, 1, RobotConstants.kArmLimitedSpeed
 						* (Math.PI - Math.asin(h / 5))) };
 		sequence = new SequentialMove(cans);
 	}
