@@ -17,6 +17,8 @@ public class RobotConstants {
 	public static final int kChangeDriveStyle = 11;
 	public static final int kArmOverride = 2;
 	public static final int kCalibrationLength = 500;
+	public static final int kAutoAlignButton = 8;
+	public static final int kAutoAlignSlamButton = 1;
 	public static final int kAntennieButton = 3;
 	public static final double kArmP = 0.042;
 	public static final double kArmI = 0;
@@ -66,7 +68,7 @@ public class RobotConstants {
 	public static final int kMidLowFingerLimitSwitch = 5;
 	public static final int kMidHighFingerLimitSwitch = 4;
 
-	public static final double kStraightAlignmentDeadband = 5;
+	public static final double kStraightAlignmentDeadband = 1.5;
 	public static final double kSensorCloseness = 3;
 	public static final double kObjectpLength = 6;
 

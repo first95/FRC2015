@@ -9,7 +9,10 @@ package org.usfirst.frc.team95.robot;
 
 import org.usfirst.frc.team95.robot.auto.AntennieAndTotes;
 import org.usfirst.frc.team95.robot.auto.AntennieGrabAndBack;
+import org.usfirst.frc.team95.robot.auto.AntennieGrabAndBackMeteoricAlign;
+import org.usfirst.frc.team95.robot.auto.AntennieGrabAndStayMeteoricAlign;
 import org.usfirst.frc.team95.robot.auto.GrabCanAndFlip;
+import org.usfirst.frc.team95.robot.auto.GrabStepCan;
 import org.usfirst.frc.team95.robot.auto.PlainAntennieGrab;
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
@@ -297,39 +300,45 @@ public class Robot extends IterativeRobot {
 		forwardMiddle = new AnalogInput(2);
 		forwardOffCenter = new AnalogInput(1);
 		
-		//CameraServer.getInstance().startAutomaticCapture("cam0");
-
+		try {
+//			CameraServer.getInstance().startAutomaticCapture("cam0");
+		} catch (Exception e){
+			System.out.println("Failed to initialize camera!");
+		}
 		chooser = new SendableChooser();
 		chooser.addObject("Zombie", new NoMove(this));
 		// chooser.addObject("TakeToteRight", new TakeToteRight(this));
-		chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
+//		chooser.addObject("TakeGoldenTotes", new GrabGoldenTotes(this));
+		chooser.addObject("Plain Antennie", new PlainAntennieGrab(this));
+		// chooser.addObject("Antennie And Totes", new AntennieAndTotes(this));
+		chooser.addObject("Antennie autoalign grab and Move Back", new AntennieGrabAndBack(this));
+		chooser.addObject("Antennie slam and stay", new AntennieGrabAndStayMeteoricAlign(this));
+		chooser.addObject("Antennie slam and back", new AntennieGrabAndBackMeteoricAlign(this));
 		// chooser.addObject("Dance", new Dance(this));
 		// chooser.addObject("GrabMaximumFrontAndStack",
 		// new GrabMaximumFrontAndStack(this));
 		chooser.addObject("Grab Barrier Can and Move Back",
 				new GrabLeftCentralCan(this));
+		chooser.addObject("Grab Barrier Can",
+				new GrabStepCan(this));
 		// chooser.addObject("Move the Arm", new PlainMotorMove(armMotors, 0.25,
 		// 1.0));
 		// chooser.addObject("Floor Can", new GrabCanFromFloor(this));
 		chooser.addObject("Move Forward", new GoForward(this));
-		chooser.addObject("Already Grabbed Can and Move Left",
-				new GrabFrontMoveLeft(this));
-		chooser.addObject("Already Grabbed Can and Move Right",
-				new GrabFrontMoveRight(this));
+//		chooser.addObject("Already Grabbed Can and Move Left",
+//				new GrabFrontMoveLeft(this));
+//		chooser.addObject("Already Grabbed Can and Move Right",
+//				new GrabFrontMoveRight(this));
 		// chooser.addObject("Grab Can and Move Forward", new
 		// GrabFrontMoveForwards(this));
-		chooser.addObject("Already Grabbed Can and Move Backward",
-				new GrabFrontMoveBackwards(this));
+//		chooser.addObject("Already Grabbed Can and Move Backward",
+//				new GrabFrontMoveBackwards(this));
 		// chooser.addObject("Grab Barrier Can and Place Behind",
 		// new GrabStepCanPutBehind(this));
 		chooser.addObject("Grab Barrier Can and Place Front",
 				new GrabStepCanPutFront(this));
 		chooser.addObject("Grab Barrier Can and Flip", new GrabCanAndFlip(this));
 		chooser.addObject("Quick Barrier Grab", new QuickBarrierGrab(this));
-		chooser.addObject("Plain Antennie", new PlainAntennieGrab(this));
-		// chooser.addObject("Antennie And Totes", new AntennieAndTotes(this));
-		chooser.addObject("Antennie And Move Back", new AntennieGrabAndBack(
-				this));
 		SmartDashboard.putData("Autonomous Move", chooser);
 
 	}
@@ -647,7 +656,7 @@ public class Robot extends IterativeRobot {
 
 		// Limits on arm positions
 
-		if ((fingerEncoder.getDistance() > 3 & armForwards & !armLimitSwitch
+		if ((fingerEncoder.getDistance() > 20 & armForwards & !armLimitSwitch
 				.get())) {
 			armMotors.setMaxSpeed(-0.1);
 			bouncyTimeOut.reset();
@@ -729,43 +738,15 @@ public class Robot extends IterativeRobot {
 			rotate = 0;
 		}
 
-		// AutoCentering
-		if ((chasis.getRawButton(8) || weapons.getRawButton(8)) && true) {
-			if (Math.abs(RobotConstants.sensorVoltageToCm(forwardLeft
-					.getVoltage())
-					- RobotConstants.sensorVoltageToCm(forwardRight
-							.getVoltage())) > RobotConstants.kStraightAlignmentDeadband) {
-				y = 0;
-				x = 0;
-				if (RobotConstants.sensorVoltageToCm(forwardLeft.getVoltage()) > RobotConstants
-						.sensorVoltageToCm(forwardRight.getVoltage())) {
-					rotate = -0.3;
-				} else {
-					rotate = 0.3;
-				}
-			}
-			else if (RobotConstants.sensorVoltageToCm(forwardMiddle
-						.getVoltage()) > RobotConstants.kObjectpLength
-						&& RobotConstants.sensorVoltageToCm(forwardOffCenter
-								.getVoltage()) > RobotConstants.kObjectpLength) {
-					x = 0;
-					y = -0.3;
-					rotate = 0;
-			} else if (RobotConstants.sensorVoltageToCm(forwardMiddle
-						.getVoltage()) < RobotConstants.kObjectpLength
-						&& RobotConstants.sensorVoltageToCm(forwardOffCenter
-								.getVoltage()) < RobotConstants.kObjectpLength) {
-					x = 0;
-					y = 0.3;
-					rotate = 0;
-			} else if (RobotConstants.sensorVoltageToCm((forwardLeft
-					.getVoltage() + forwardRight.getVoltage()) / 2) > RobotConstants.kSensorCloseness) {
-				x = 0.3;
-				y = 0;
-				rotate = 0;
-			} 
+		if ((chasis.getRawButton(RobotConstants.kAutoAlignButton) || weapons.getRawButton(RobotConstants.kAutoAlignButton))) {
+//			boolean slamIt = chasis.getRawButton(RobotConstants.kAutoAlignSlamButton) || weapons.getRawButton(RobotConstants.kAutoAlignSlamButton);
+			boolean slamIt = false;
+			double[] newDriveValues = autoAlign(x, y, rotate, slamIt);
+			x = newDriveValues[0];
+			y = newDriveValues[1];
+			rotate = newDriveValues[2];
 		}
-
+		
 		driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
 
 		// System.out.println("True Middle Teleop" + timeLag.get());
@@ -775,15 +756,11 @@ public class Robot extends IterativeRobot {
 			gyro.set(chasis.getPOV());
 		}
 
-		armPistons.set(triggerButton.Pressedp() || grippersLatched);
-		if (triggerButton.Pressedp() || grippersLatched) {
-			// armPistons.set(Value.kReverse);
-		} else {
-			// armPistons.set(Value.kForward);
-		}
+//		armPistons.set(triggerButton.Pressedp() || grippersLatched);
+		armPistons.set(grippersLatched);
 
-		if (triggerButton.Pressedp()) {
-			grippersLatched = false;
+		if (triggerButton.justPressedp()) {
+			grippersLatched = !grippersLatched;
 		}
 
 		if (stopSpin.Pressedp()) {
@@ -820,6 +797,77 @@ public class Robot extends IterativeRobot {
 
 		commonPeriodic();
 
+	}
+
+	public double[] autoAlign(double x, double y, double rotate, boolean slamIt) {
+		// AutoCentering
+		double left = RobotConstants.sensorVoltageToCm(forwardLeft.getVoltage());
+		double right = RobotConstants.sensorVoltageToCm(forwardRight.getVoltage());
+		double center = RobotConstants.sensorVoltageToCm(forwardMiddle.getVoltage());
+		double justRightOfCenter = RobotConstants.sensorVoltageToCm(forwardOffCenter.getVoltage());
+		
+		// Floor the sensors to min range
+		left = Math.max(0, left);
+		right = Math.max(0, right);
+		center = Math.max(0, center);
+		justRightOfCenter = Math.max(0, justRightOfCenter);
+		
+		final double maxSpinSpeed = 0.5;
+		final double minSpinSpeed = 0.15;
+		final double topSpinSpeedAngle = 20.0;
+		final double crabSpeed = 0.2;
+		final double approachSpeed = slamIt? 0.5 : 0.3;
+		final double thereRange = 3;
+		final double maxCenteringRange = 10; // Above a certain range, we can't see down canyons, don't even try to align
+		final double minRotatingRange = 3; // Closer than this, you'll do more harm than good by turning 
+		final double maxRotatingRange = 30; // Farther than this, the sensor reading isn't accurate enough 
+		final double canyonRangeDelta = 4;  // surfaces farther than this from the range are considered canyon
+
+		// Determine approach speed and rotation speed from left and right sensors
+		double robotRange = (left + right) / 2.0;
+		double robotAngle = (right - left); // not really an angle; we're just using it like it is
+		if (Math.abs(robotAngle) > RobotConstants.kStraightAlignmentDeadband
+				&& left < maxRotatingRange && right < maxRotatingRange) {
+			System.out.printf("    ");
+			// P control
+			rotate = (Math.abs(robotAngle) / topSpinSpeedAngle) * maxSpinSpeed;
+			rotate = Math.max(minSpinSpeed, rotate);
+			rotate = Math.min(maxSpinSpeed, rotate);
+			rotate = (robotAngle > 0? 1.0:-1.0) * rotate;
+//			rotate = (robotAngle > 0? 1:-1) * topSpinSpeed; // bang bang control
+		} else {
+			System.out.printf("not ");
+			rotate = 0;
+		} 
+//		rotate = 0;
+		System.out.printf("rotating. ");
+		x = (robotRange > thereRange)? approachSpeed:0;
+		System.out.printf((robotRange > thereRange)? "    approaching. ": "not approaching. ");
+
+		
+		// Determine crab direction from center and justOffCenter sensors
+		if(robotRange > maxCenteringRange) {
+			// We're far enough away that we can't reliably detect the canyon
+			System.out.printf("too far to center.  ");
+			y = 0;
+		} else if (center - robotRange > canyonRangeDelta) {
+			System.out.printf("centered!           ");
+			y = 0;
+		} else if (justRightOfCenter - robotRange > canyonRangeDelta) {
+			System.out.printf("jroc down canyon.   ");
+			y = -crabSpeed;
+		} else {
+			// Chances are the canyon is to the left of center
+			System.out.printf("nothin down canyon. ");
+			y = crabSpeed;
+		}
+		
+		System.out.printf("got: left: %f right: %f center: %f jroc: %f x:%f y:%f r:%f\n",
+				left, right, center, justRightOfCenter, x, y, rotate);
+		
+		double[] retval = {x, y, rotate}; 
+//		double[] retval = {0, 0, 0}; 
+		return retval;
 	}
 
 	public double reccomendedSpeed() {

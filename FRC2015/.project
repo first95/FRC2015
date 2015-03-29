@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>95 2015</name>
+	<name>FRC 2015 - Hartford re-projecting 2</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -13,12 +13,6 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>edu.wpi.first.wpilib.plugins.core.nature.FRCProjectNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>wpilib</name>
-			<type>2</type>
-			<location>C:/Users/Spencer/wpilib</location>
-		</link>
-	</linkedResources>
 </projectDescription>
