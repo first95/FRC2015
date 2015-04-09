@@ -35,9 +35,9 @@ public class AutoAlign extends AutoMove {
 			double[] newDriveValues = robot.autoAlign(0, 0, 0, false);
 			x = newDriveValues[0];
 			y = newDriveValues[1];
-//			r = newDriveValues[2]; // this had some issues, so restricting movement to just x and y
+			r = newDriveValues[2]; // this had some issues, so restricting movement to just x and y
 		
-			robot.driveTrain.mecanumDrive_Cartesian(x, y, r, 0);
+			robot.straighteningDrive.mecanumDrive_Cartesian(x, y, r, 0);
 			return Status.wantsToContinue;
 		}
 	}
