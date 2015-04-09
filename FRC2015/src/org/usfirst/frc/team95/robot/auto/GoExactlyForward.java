@@ -19,6 +19,7 @@ public class GoExactlyForward extends AutoMove {
 	}
 	
 	public Status init() {
+		gyro.reset();
 		timeOut.reset();
 		timeOut.start();
 		return Status.wantsToContinue;
@@ -28,7 +29,7 @@ public class GoExactlyForward extends AutoMove {
 		if (timeOut.get() > timeLimit) {
 			return Status.isAbleToContinue;
 		} else {
-			drive.mecanumDrive_Cartesian(0, 0.75, gyro.getAngle(), 2);
+			drive.mecanumDrive_Cartesian(0, 0.75, gyro.getAngle() / 100, 2);
 		}
 		return Status.wantsToContinue;
 	}
