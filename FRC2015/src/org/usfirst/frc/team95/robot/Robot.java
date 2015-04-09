@@ -13,6 +13,7 @@ import org.usfirst.frc.team95.robot.auto.AntennieGrabAndBackMeteoricAlign;
 import org.usfirst.frc.team95.robot.auto.AntennieGrabAndStayMeteoricAlign;
 import org.usfirst.frc.team95.robot.auto.GrabCanAndFlip;
 import org.usfirst.frc.team95.robot.auto.GrabStepCan;
+import org.usfirst.frc.team95.robot.auto.PinOnTop;
 import org.usfirst.frc.team95.robot.auto.PlainAntennieGrab;
 import org.usfirst.frc.team95.robot.auto.AutoMove;
 import org.usfirst.frc.team95.robot.auto.AutoMove.Status;
@@ -339,6 +340,7 @@ public class Robot extends IterativeRobot {
 				new GrabStepCanPutFront(this));
 		chooser.addObject("Grab Barrier Can and Flip", new GrabCanAndFlip(this));
 		chooser.addObject("Quick Barrier Grab", new QuickBarrierGrab(this));
+		chooser.addObject("Canduken", new PinOnTop(this));
 		SmartDashboard.putData("Autonomous Move", chooser);
 
 	}
@@ -827,7 +829,8 @@ public class Robot extends IterativeRobot {
 		double robotRange = (left + right) / 2.0;
 		double robotAngle = (right - left); // not really an angle; we're just using it like it is
 		if (Math.abs(robotAngle) > RobotConstants.kStraightAlignmentDeadband
-				&& left < maxRotatingRange && right < maxRotatingRange) {
+				&& left < maxRotatingRange && right < maxRotatingRange
+				&& left > minRotatingRange && right > minRotatingRange) {
 			System.out.printf("    ");
 			// P control
 			rotate = (Math.abs(robotAngle) / topSpinSpeedAngle) * maxSpinSpeed;

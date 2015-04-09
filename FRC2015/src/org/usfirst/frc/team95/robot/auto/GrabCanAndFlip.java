@@ -7,7 +7,7 @@ public class GrabCanAndFlip extends PureSequentialMove {
 
 	public GrabCanAndFlip(Robot robo) {
 		AutoMove[] stuff = {
-				new GoForward(robo, 0.75, 0.75),
+				new GoExactlyForward(robo, 0.75),
 				new PickUpCan(robo),
 //				new PlainMotorMove(robo.armMotors, -1, 0.5),
 				new Pistons(robo.grabberRotatePiston, true) };

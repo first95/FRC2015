@@ -5,7 +5,7 @@ import org.usfirst.frc.team95.robot.Robot;
 public class AntennieAndTotes extends PureSequentialMove {
 
 	public AntennieAndTotes(Robot robot) {
-		AutoMove[] moves = { new GoForward(robot, 0.75, 0.3),
+		AutoMove[] moves = { new AutoAlign(robot, 2),
 				new Pistons(robot.antennie, true),
 				new PlainMotorMove(robot.armMotors, 0.5, 0.75),
 				new PlainMotorMove(robot.armMotors, 0.5, 0.75),
