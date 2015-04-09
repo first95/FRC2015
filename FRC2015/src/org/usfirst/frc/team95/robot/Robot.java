@@ -159,6 +159,8 @@ public class Robot extends IterativeRobot {
 
 	AnalogInput forwardLeft, forwardRight, forwardMiddle, forwardOffCenter;
 	
+	public GyroStraighteningDrive straighteningDrive;
+	
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -203,7 +205,10 @@ public class Robot extends IterativeRobot {
 		driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
 		driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
 
-		//gyro = new ResetableGyro(RobotConstants.kGyro);
+		gyro = new ResetableGyro(RobotConstants.kGyro);
+		
+		straighteningDrive = new GyroStraighteningDrive(driveTrain, gyro);
+		
 		extraAccel = new ADXL345_I2C(Port.kOnboard, Accelerometer.Range.k8G);
 		builtinAccel = new BuiltInAccelerometer();
 		accel = new CommonFilter(extraAccel, builtinAccel);
@@ -747,9 +752,14 @@ public class Robot extends IterativeRobot {
 			x = newDriveValues[0];
 			y = newDriveValues[1];
 			rotate = newDriveValues[2];
-		}
+			
+			straighteningDrive.mecanumDrive_Cartesian(x, y, rotate, 0);
+			
+		} else {
 		
-		driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
+			driveTrain.mecanumDrive_Cartesian(y, x, rotate, 0);
+		
+		}
 
 		// System.out.println("True Middle Teleop" + timeLag.get());
 
